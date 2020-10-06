@@ -33,10 +33,10 @@ int main() {
 
     // Se genera el sistema de coordenadas
     Vector i = axis;
-    Vector j (-i.y,i.x,0);	// perpendicular a i --> el producto vectorial es 0
+    Vector j = city - center;	// perpendicular a i --> el producto vectorial es 0
     Vector k = i ->* j;		// perpendicular a i y j --> i x j = k
 
-    Matriz T(i,j,k), v(city, 1);
+    Matriz T(i,j,k,center), v(city, 1);
 
     Punto position = (T*v).punto();
 
