@@ -6,6 +6,7 @@
  */
 
 #include "Figures_3D.hpp"
+#include "Punto.hpp"
 #include "Vector.hpp"
 #include "iostream"
 
@@ -27,11 +28,11 @@ public:
 	}
 
 	/* Matriz de transformacion */
-	Matriz(Vector i, Vector j, Vector k) {
+	Matriz(Vector i, Vector j, Vector k, Punto o) {
 		N = DIM, M = DIM;
-		A[0][0] = i.x, A[0][1] = j.x, A[0][2] = k.x, A[0][3] = 0;
-		A[1][0] = i.y, A[1][1] = j.y, A[1][2] = k.y, A[1][3] = 0;
-		A[2][0] = i.z, A[2][1] = j.z, A[2][2] = k.z, A[2][3] = 0;
+		A[0][0] = i.x, A[0][1] = j.x, A[0][2] = k.x, A[0][3] = o.x;
+		A[1][0] = i.y, A[1][1] = j.y, A[1][2] = k.y, A[1][3] = o.y;
+		A[2][0] = i.z, A[2][1] = j.z, A[2][2] = k.z, A[2][3] = o.z;
 		A[3][0] = 0,   A[3][1] = 0,   A[3][2] = 0,   A[3][3] = 1;
 	}
 
