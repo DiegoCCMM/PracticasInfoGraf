@@ -37,6 +37,14 @@ public:
         return {this->x / b.x, this->y / b.y, this->z / b.z};
     }
 
+    Vector operator*(const int b) {
+        return {this->x * b, this->y * b, this->z * b};
+    }
+    
+    Vector operator/(const int b) {
+        return {this->x / b, this->y / b, this->z / b};
+    }
+
 };
 
 #endif //PRACTICAS_VECTOR_HPP
