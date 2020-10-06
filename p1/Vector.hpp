@@ -38,9 +38,12 @@ public:
         return this->x * b.x + this->y * b.y + this->z * b.z;
     }
 
-    Vector operator/(const Vector b) {
-        return {this->x / b.x, this->y / b.y, this->z / b.z};
-    }
+    /* Producto vectorial */
+    Vector operator->*(const Vector b) {
+		return {this->y*b.z - this->z*b.y,
+				this->z*b.x - this->x*b.z,
+				this->x*b.y - this->y*b.x};
+	}
 
     Vector operator*(const int b) {
         return {this->x * b, this->y * b, this->z * b};

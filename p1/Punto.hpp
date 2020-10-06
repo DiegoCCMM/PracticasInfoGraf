@@ -28,14 +28,6 @@ public:
         return Vector(this->x - b.x, this->y - b.y, this->z - b.z);
     }
 
-    Punto operator*(const Punto b) {
-        return {this->x * b.x, this->y * b.y, this->z * b.z};
-    }
-
-    Punto operator/(const Punto b) {
-        return {this->x / b.x, this->y / b.y, this->z / b.z};
-    }
-
 };
 
 #endif //PRACTICAS_PUNTO_HPP

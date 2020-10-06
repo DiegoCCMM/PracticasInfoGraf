@@ -93,3 +93,8 @@ p1/.settings/language.settings.xml
 .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.cdt.debug.core.prefs
 .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.cdt.managedbuilder.core.prefs
 .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.cdt.ui.prefs
+/.metadata/
+p1/.settings/org.eclipse.cdt.managedbuilder.core.prefs
+p1/Debug/main.o
+p1/Debug/p2.exe
+p1/Debug/p1.exe
