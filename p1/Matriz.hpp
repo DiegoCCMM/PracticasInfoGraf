@@ -37,7 +37,7 @@ public:
 
 	/* n --> Punto(1) o direccion(0) */
 	Matriz(Figures_3D f, int n) {
-		N = 1, M = DIM;
+		N = DIM, M = 1;
 		A[0][0] = f.x;
 		A[1][0] = f.y;
 		A[2][0] = f.z;
@@ -46,7 +46,7 @@ public:
 
 	Matriz operator*(const Matriz B) {
 		if(M != B.N) {
-			cout << "Matrices icompatibles" << endl;
+			cout << "Matrices incompatibles" << endl;
 		}
 
 		Matriz sol(N, B.M);

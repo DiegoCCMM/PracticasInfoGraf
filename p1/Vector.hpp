@@ -33,7 +33,7 @@ public:
         return {this->x * b.x, this->y * b.y, this->z * b.z};
     }
 
-    /* Producto escalar */
+    /* Producto vectorial */
     Vector operator->*(const Vector b) {
 		return {this->y*b.z - this->z*b.y,
 				this->z*b.x - this->x*b.z,

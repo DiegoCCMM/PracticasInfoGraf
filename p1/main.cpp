@@ -7,8 +7,6 @@
 using namespace std;
 
 bool datos_correctos(Vector axis, Punto center, Punto city){
-	cout << (city-center).module() << endl;
-	cout << axis.module()/2 << endl;
 	return axis.module()/2 == (city-center).module();
 }
 
@@ -16,9 +14,9 @@ bool datos_correctos(Vector axis, Punto center, Punto city){
 int main() {
 
 	/* DATOS INICIALES */
-	Vector axis   (8,12,16);
-	Punto  center (3,19,-4);
-	Punto  city   (1,16,-8);
+	Vector axis   (12,0,2.1);
+	Punto  center (8.3,-5,3.5);
+	Punto  city   (9.6,-4.5,5.6);
 
 	/* APARTADO 2 */
 	bool correcto = datos_correctos(axis, center, city);
@@ -26,7 +24,7 @@ int main() {
 	/* APARTADO 3 */
 	if(!correcto) {
 		cout << "Datos incorrectos" << endl;
-		return 1;
+		//return 1;
 	}
 
 	/* DATOS */
@@ -35,7 +33,7 @@ int main() {
 
 	// Se genera el sistema de coordenadas
 	Vector i = axis;
-	Vector j (-i.y,i.x,0);	// perpendicular a i --> el producto escalar es 0
+	Vector j (-i.y,i.x,0);	// perpendicular a i --> el producto vectorial es 0
 	Vector k = i ->* j;		// perpendicular a i y j --> i x j = k
 
 	Matriz T(i,j,k), v(city, 1);
