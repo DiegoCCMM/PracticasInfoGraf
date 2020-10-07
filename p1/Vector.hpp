@@ -11,6 +11,8 @@
 
 class Vector : public Figures_3D {
 public:
+	Vector(){}
+
     Vector(double coordx, double coordy, double coordz) {
         x = coordx;
         y = coordy;
@@ -34,7 +36,8 @@ public:
         return {this->x - b.x, this->y - b.y, this->z - b.z};
     }
 
-    double operator*(const Vector b) {  //producto escalar
+    /* Producto escalar */
+    double operator*(const Vector b) {
         return this->x * b.x + this->y * b.y + this->z * b.z;
     }
 
@@ -44,10 +47,6 @@ public:
 				this->z*b.x - this->x*b.z,
 				this->x*b.y - this->y*b.x};
 	}
-
-    Vector operator*(const int b) {
-        return {this->x * b, this->y * b, this->z * b};
-    }
     
     Vector operator/(const int b) {
         return {this->x / b, this->y / b, this->z / b};

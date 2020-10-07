@@ -67,6 +67,10 @@ public:
 	Punto punto() {
 		return {A[0][0], A[1][0], A[2][0]};
 	}
+
+	Vector vector() {
+		return {A[0][0], A[1][0], A[2][0]};
+	}
 };
 
 
