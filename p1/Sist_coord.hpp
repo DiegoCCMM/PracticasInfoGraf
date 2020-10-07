@@ -14,6 +14,12 @@ class Sist_coord {
 public:
 	Vector i, j, k;
 
+	Sist_coord(Vector axis) {
+		i = axis;
+		j = Vector (-i.y,i.x,0);	// perpendicular a i --> el producto vectorial es 0
+		k = i ->* j;				// perpendicular a i y j --> i x j = k
+	}
+
 	Sist_coord(double R, double inclination, double azimuth) {
 		/* Longitude tangent direction = (−Rsin(ϕ)sin(θ),Rsin(ϕ)cos(θ),0) */
 		i = Vector (-R*sin(azimuth)*sin(inclination),

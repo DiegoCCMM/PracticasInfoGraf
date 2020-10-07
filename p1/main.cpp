@@ -45,8 +45,11 @@ int main() {
     		azimuth = M_PI;				// ϕ Range: (-PI,PI]
     double R = (city-center).module(); 	// Radio
 
-    Punto position (R, inclination, azimuth);
-    Sist_coord sistema (R, inclination, azimuth);
+    Sist_coord sist_planeta (axis);
+
+    Matriz T (sist_planeta.i, sist_planeta.j, sist_planeta.k, center);
+	Matriz v (city, 0);
+    Punto position = (T*v).punto();
 
     /* ------------------- APARTADO 4 -------------------*/
 
@@ -75,19 +78,27 @@ int main() {
 	 * ambas estaciones, el eje k debe ser positivo desde el punto
 	 * de vista en ambos sistemas.
 	 */
-	Punto position1 (R1, inclination1, azimuth1);
-	Punto position2 (R2, inclination2, azimuth2);
+	Sist_coord sist_planeta1 (axis1);
+	Sist_coord sist_planeta2 (axis2);
 
-	Sist_coord sistema1 (R1, inclination1, azimuth1);
-	Sist_coord sistema2 (R2, inclination2, azimuth2);
+	Matriz T1_1 (sist_planeta1.i, sist_planeta1.j, sist_planeta1.k, center1);
+	Matriz v1_1 (city1, 0);
+	Punto position1 = (T1_1*v1_1).punto();
 
-	Vector connection (position2-position1); // Podría ser: city2-city1 (???????)
+	Matriz T2_1 (sist_planeta2.i, sist_planeta2.j, sist_planeta2.k, center2);
+	Matriz v2_1 (city2, 0);
+	Punto position2 = (T2_1*v2_1).punto();
+
+	Sist_coord sist_station1 (R1, inclination1, azimuth1);
+	Sist_coord sist_station2 (R2, inclination2, azimuth2);
+
+	Vector connection (position2-position1);
 
 	/* Se transforma el vector de la conexión respecto cada uno de los
 	 * sistemas de coordenadas.
 	 */
-	Matriz T1 (sistema1.i, sistema1.j, sistema1.k, position1),
-		   T2 (sistema2.i, sistema2.j, sistema2.k, position2);
+	Matriz T1 (sist_station1.i, sist_station1.j, sist_station1.k, city1),
+		   T2 (sist_station2.i, sist_station2.j, sist_station2.k, city2);
 	Matriz v (connection, 0);
 	Vector sist_con1 = (T1*v).vector();
 	Vector sist_con2 = (T2*v).vector();
