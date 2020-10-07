@@ -48,7 +48,7 @@ int main() {
     Sist_coord sist_planeta (axis);
 
     Matriz T_planet (sist_planeta.i, sist_planeta.j, sist_planeta.k, center);
-	Matriz v_city (city, 0);
+	Matriz v_city (city, 1);
     Punto position = (T_planet*v_city).punto();
 
     Sist_coord sist_station (R, inclination, azimuth);
@@ -94,11 +94,11 @@ int main() {
 	Sist_coord sist_planeta2 (axis2);
 
 	Matriz T1_planet (sist_planeta1.i, sist_planeta1.j, sist_planeta1.k, center1);
-	Matriz v1_city (city1, 0);
+	Matriz v1_city (city1, 1);
 	Punto position1 = (T1_planet*v1_city).punto();
 
 	Matriz T2_planet (sist_planeta2.i, sist_planeta2.j, sist_planeta2.k, center2);
-	Matriz v2_city (city2, 0);
+	Matriz v2_city (city2, 1);
 	Punto position2 = (T2_planet*v2_city).punto();
 
 	Sist_coord sist_station1 (R1, inclination1, azimuth1);
