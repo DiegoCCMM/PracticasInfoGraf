@@ -45,7 +45,7 @@ int main() {
     		azimuth = M_PI;				// ϕ Range: (-PI,PI]
     double R = (city-center).module(); 	// Radio
 
-    Sist_coord sist_planeta (axis);
+    Sist_coord sist_planeta (axis, city-center);
 
     Matriz T_planet (sist_planeta.i, sist_planeta.j, sist_planeta.k, center);
 	Matriz v_city (city, 1);
@@ -90,8 +90,8 @@ int main() {
 	 * ambas estaciones, el eje k debe ser positivo desde el punto
 	 * de vista en ambos sistemas.
 	 */
-	Sist_coord sist_planeta1 (axis1);
-	Sist_coord sist_planeta2 (axis2);
+	Sist_coord sist_planeta1 (axis1, city1-center1);
+	Sist_coord sist_planeta2 (axis2, city2-center2);
 
 	Matriz T1_planet (sist_planeta1.i, sist_planeta1.j, sist_planeta1.k, center1);
 	Matriz v1_city (city1, 1);

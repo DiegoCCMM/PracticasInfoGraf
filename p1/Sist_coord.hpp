@@ -14,10 +14,11 @@ class Sist_coord {
 public:
 	Vector i, j, k;
 
-	Sist_coord(Vector axis) {
+	Sist_coord(Vector axis, Vector center_city) {
 		i = axis;
-		j = Vector (-i.y,i.x,0);	// perpendicular a i --> el producto vectorial es 0
-		k = i ->* j;				// perpendicular a i y j --> i x j = k
+		Vector j_aux = i ->* center_city;
+		k = i ->* j_aux;
+		j = i ->* k;
 	}
 
 	Sist_coord(double R, double inclination, double azimuth) {
