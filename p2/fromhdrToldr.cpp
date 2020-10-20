@@ -38,24 +38,25 @@ void fromhdrToldr::readWrite() {
 
     int data;
     float fdata;
-    if (hdrfile.is_open())
-    {
-        for(int i = 0; i<3*width; i++) {
-            hdrfile >> data;
+    if (hdrfile.is_open() && ldrfile.is_open()){
+        for(int j = 0; j < height; j++) {
+            for (int i = 0; i < 3 * width; i++) {
+                hdrfile >> data;
 
-            fdata=(data*Max)/resInColorSpace; //(1)
+                fdata = (data * Max) / resInColorSpace; //(1)
 
-            fdata = resInColorSpace * pow((fdata/resInColorSpace), 1/2); //gamma
+                fdata = resInColorSpace * pow((fdata / resInColorSpace), 1 / 2); //gamma
 
-            data=(fdata*resInColorSpace)/Max; //(2)
+                data = (fdata * resInColorSpace) / Max; //(2)
 
-            ldrfile << data;
-            if(i%3 != 0)
-            {
-                ldrfile << " ";
-            }else{
-                ldrfile << "     ";
+                ldrfile << data;
+                if (i % 3 != 0) {
+                    ldrfile << " ";
+                } else {
+                    ldrfile << "     ";
+                }
             }
+            ldrfile << "\n";
         }
 
     }
