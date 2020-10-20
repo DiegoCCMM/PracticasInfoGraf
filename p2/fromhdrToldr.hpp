@@ -17,7 +17,7 @@ class fromhdrToldr {
     float Max;
 
 public:
-    fromhdrToldr(const string& hdrfile, const string& ldrfile);
+    fromhdrToldr(const string& output, const string& input);
     void readWrite();
 
 

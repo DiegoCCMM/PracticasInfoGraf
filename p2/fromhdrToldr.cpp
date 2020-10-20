@@ -10,11 +10,12 @@
 
 fromhdrToldr::fromhdrToldr(const string& output, const string&  input)
 {
-    hdrfile.open(input);
     ldrfile.open(output);
+    hdrfile.open(input);
+
 
     string line;
-    if (ldrfile.is_open())
+    if (hdrfile.is_open())
     {
         getline(hdrfile,line); //#MAX=48
 
