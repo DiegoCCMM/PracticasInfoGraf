@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
 
-    fromhdrToldr operacion(argv[0], argv[1]);
+    fromhdrToldr operacion(argv[1], argv[2]);
     operacion.readWrite();
 
 }
