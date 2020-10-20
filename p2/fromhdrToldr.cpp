@@ -22,7 +22,7 @@ fromhdrToldr::fromhdrToldr(const string& input, const string&  output)
         getline(hdrfile,line); //#MAX=48
         ldrfile << line << endl;
 
-        string sMax = line.substr(2, line.find('='));
+        string sMax = line.substr(line.find("=")+1);
         Max = stof(sMax);
 
         getline(hdrfile,line); //# forest_path.ppm
@@ -31,7 +31,7 @@ fromhdrToldr::fromhdrToldr(const string& input, const string&  output)
         getline(hdrfile,line);    //2048 1536
         ldrfile << line << endl;
         width = stoi(line.substr(0, line.find(' ')));
-        height = stoi(line.substr(1, line.find(' ')));
+        height = stoi(line.substr(line.find(' ')+1));
 
         getline(hdrfile,line);    //10000000
         ldrfile << line << endl;
@@ -50,9 +50,10 @@ void fromhdrToldr::readWrite() {
             for (int i = 0; i < 3 * width; i++) {
                 hdrfile >> data;
 
-                fdata = (data * Max) / resInColorSpace; //(1)
+                if(data>255) fdata = 1.0; //(1)
+                else fdata = (float)(data * Max) / (float)resInColorSpace;
 
-                fdata = resInColorSpace * pow((fdata / resInColorSpace), 1 / 2); //gamma
+                fdata = (float) resInColorSpace * pow((fdata / (float)resInColorSpace), 0.5); //gamma
 
                 data = (fdata * resInColorSpace) / Max; //(2)
 
@@ -60,10 +61,10 @@ void fromhdrToldr::readWrite() {
                 if (i % 3 != 0) {
                     ldrfile << " ";
                 } else {
-                    ldrfile << "     ";
+                    ldrfile << "    ";
                 }
             }
-            ldrfile << "\n";
+            ldrfile << endl;
         }
 
     }
