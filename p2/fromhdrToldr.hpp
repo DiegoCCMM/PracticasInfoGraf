@@ -12,8 +12,13 @@ using namespace std;
 class fromhdrToldr {
     ofstream ldrfile;
     ifstream hdrfile;
+
+    int width, height, resInColorSpace;
+    float Max;
+
 public:
-    fromhdrToldr(const string hdrfile, const string ldrfile);
+    fromhdrToldr(const string& hdrfile, const string& ldrfile);
+    void readWrite();
 
 
 };
