@@ -8,6 +8,13 @@
 #include <cmath>
 #include "fromhdrToldr.hpp"
 
+/*
+* c --> resInColorSpace
+* v --> valor real guardado en memoria
+* m --> máximo valor de la imagen (Max)
+* s --> tupla con el valor de R, G, B
+*/
+
 fromhdrToldr::fromhdrToldr(const string& input, const string&  output)
 {
     hdrfile.open(input);
@@ -20,7 +27,7 @@ fromhdrToldr::fromhdrToldr(const string& input, const string&  output)
     	ldrfile << line << endl;
 
         getline(hdrfile,line); //#MAX=48
-        ldrfile << line << endl;
+        ldrfile << "#MAX=255" << endl;
 
         string sMax = line.substr(line.find("=")+1);
         Max = stof(sMax);
@@ -34,33 +41,37 @@ fromhdrToldr::fromhdrToldr(const string& input, const string&  output)
         height = stoi(line.substr(line.find(' ')+1));
 
         getline(hdrfile,line);    //10000000
-        ldrfile << line << endl;
+        ldrfile << 255 << endl;
         resInColorSpace = stoi(line);
 
     }
-
 }
 
 void fromhdrToldr::readWrite() {
 
-    int data;
-    float fdata;
+    int s1,s2,s3;
+    float fdata, v1, v2, v3;
+
     if (hdrfile.is_open() && ldrfile.is_open()){
         for(int j = 0; j < height; j++) {
-            for (int i = 0; i < 3 * width; i++) {
-                hdrfile >> data;
+            for (int i = 0; i < width; i++) {
+                hdrfile >> s1 >> s2 >> s3;
+                //(1)
+                v1 = (float)s1*Max/(float)resInColorSpace;
+                v2 = (float)s2*Max/(float)resInColorSpace;
+                v3 = (float)s3*Max/(float)resInColorSpace;
 
-                if(data>255) fdata = 1.0; //(1)
-                else fdata = (float)(data * Max) / (float)resInColorSpace;
+                //(2) m = 1
+                s1 = v1*255;
+                s2 = v2*255;
+                s3 = v3*255;
 
-                fdata = (float) resInColorSpace * pow((fdata / (float)resInColorSpace), 0.5); //gamma
+                if(s1>255) s1 = 255;
+                if(s2>255) s2 = 255;
+                if(s3>255) s3 = 255;
 
-                data = (fdata * resInColorSpace) / Max; //(2)
-
-                ldrfile << data;
-                if (i % 3 != 0) {
-                    ldrfile << " ";
-                } else {
+                ldrfile << s1 << " " << s2 << " " << s3 << " ";
+                if (i < width-1) {
                     ldrfile << "    ";
                 }
             }
@@ -68,5 +79,6 @@ void fromhdrToldr::readWrite() {
         }
 
     }
-
+    hdrfile.close();
+    ldrfile.close();
 }

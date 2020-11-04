@@ -105,3 +105,10 @@ p2/.settings/language.settings.xml
 p2/.settings/org.eclipse.cdt.managedbuilder.core.prefs
 p2/forest_pathLDR.ppm
 p2/forest_path.ppm
+p2/.vscode/launch.json
+p2/.vscode/settings.json
+p2/.vscode/tasks.json
+p2/main.exe
+p1/.vscode/launch.json
+p1/.vscode/tasks.json
+p1/main.exe
