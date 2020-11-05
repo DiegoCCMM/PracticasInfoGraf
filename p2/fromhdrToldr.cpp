@@ -56,16 +56,26 @@ void fromhdrToldr::readWrite() {
         for(int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 hdrfile >> s1 >> s2 >> s3;
-                //(1)
-                v1 = (float)s1*Max/(float)resInColorSpace;
-                v2 = (float)s2*Max/(float)resInColorSpace;
-                v3 = (float)s3*Max/(float)resInColorSpace;
+                // Equalization m = 1
+                v1 = (float)s1/(float)resInColorSpace;
+                v2 = (float)s2/(float)resInColorSpace;
+                v3 = (float)s3/(float)resInColorSpace;
 
-                //(2) m = 1
-                s1 = v1*255;
-                s2 = v2*255;
-                s3 = v3*255;
+                // Para tener valores entre 0 y 1
+                v1 = v1/Max;
+                v2 = v2/Max;
+                v3 = v3/Max;
 
+                // Gamma curve
+                v1 = pow(v1,(float)0.555);
+                v2 = pow(v2,(float)0.555);
+                v3 = pow(v3,(float)0.555);
+
+                s1 = v1*255*Max;
+                s2 = v2*255*Max;
+                s3 = v3*255*Max;
+
+                // Clamping
                 if(s1>255) s1 = 255;
                 if(s2>255) s2 = 255;
                 if(s3>255) s3 = 255;
