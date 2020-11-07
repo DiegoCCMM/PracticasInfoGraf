@@ -21,7 +21,7 @@ fromhdrToldr::fromhdrToldr(const string& input, const string&  output)
     ldrfile.open(output);
 
     string line;
-    if (ldrfile.is_open())
+    if (ldrfile.is_open() && hdrfile.is_open())
     {
     	getline(hdrfile,line); //P3
     	ldrfile << line << endl;
