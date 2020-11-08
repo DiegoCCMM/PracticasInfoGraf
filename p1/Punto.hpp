@@ -28,6 +28,10 @@ public:
         return Vector(this->x - b.x, this->y - b.y, this->z - b.z);
     }
 
+    /* Producto escalar */
+    double operator*(const Vector b) {
+        return this->x * b.x + this->y * b.y + this->z * b.z;
+    }
 };
 
 #endif //PRACTICAS_PUNTO_HPP

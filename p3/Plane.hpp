@@ -13,13 +13,25 @@
 class Plane {
 
     Vector normal;
-    Vector distance;
+    double distance;
+public:
+    const Vector &getNormal() const;
+
+    void setNormal(const Vector &normal);
+
+    double getDistance() const;
+
+    void setDistance(double distance);
+
+private:
     int red;
     int green;
     int blue;
 
 public:
-    Plane(Vector normal, Vector distance, int red, int green, int blue);
+    Plane(Vector normal, double distance, int red, int green, int blue);
+
+
 };
 
 

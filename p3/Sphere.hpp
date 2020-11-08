@@ -15,13 +15,23 @@
 class Sphere {
 
     Punto center = Punto(0, 0, 0);
-    Vector radius;
+    double radius;
+public:
+    const Punto &getCenter() const;
+
+    void setCenter(const Punto &center);
+
+    double getRadius() const;
+
+    void setRadius(double radius);
+
+private:
     int red;
     int green;
     int blue;
 
 public:
-    Sphere(Punto center, Vector radius, int red, int green, int blue);
+    Sphere(Punto center, double radius, int red, int green, int blue);
 };
 
 
