@@ -84,6 +84,9 @@ int main(int argc, char* argv[]){
 
 }
 
-void initializeLDRfile(ofstream ofstream) {
-
+void initializeLDRfile(ofstream ldrfile) {
+    ldrfile << "P3" << endl;
+    ldrfile << "#MAX=255" << endl;
+    ldrfile << "15 15" << endl;
+    ldrfile << "255" << endl;
 }
