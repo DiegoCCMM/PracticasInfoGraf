@@ -5,14 +5,14 @@
 #include "../p1/Figures_3D.hpp"
 #include "../p1/Vector.hpp"
 #include "../p1/Punto.hpp"
-
+#include "geometryRGBFigures.hpp"
 
 
 #ifndef P3_SPHERE_HPP
 #define P3_SPHERE_HPP
 
 
-class Sphere {
+class Sphere : public geometryRGBFigures {
 
     Punto center = Punto(0, 0, 0);
     double radius;
@@ -24,11 +24,6 @@ public:
     double getRadius() const;
 
     void setRadius(double radius);
-
-private:
-    int red;
-    int green;
-    int blue;
 
 public:
     Sphere(Punto center, double radius, int red, int green, int blue);

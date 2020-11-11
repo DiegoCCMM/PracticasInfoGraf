@@ -14,6 +14,8 @@
 
 class Punto : public Figures_3D {
 public:
+    Punto(){}
+
     Punto(double coordx, double coordy, double coordz) {
         x = coordx;
         y = coordy;

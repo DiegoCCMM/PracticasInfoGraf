@@ -12,7 +12,7 @@ Plane::Plane(Vector normal, double distance, int red, int green, int blue) {
      blue = blue;
 }
 
-const Vector &Plane::getNormal() const {
+const Vector Plane::getNormal() const {
     return normal;
 }
 
@@ -27,3 +27,4 @@ double Plane::getDistance() const {
 void Plane::setDistance(double distance) {
     Plane::distance = distance;
 }
+

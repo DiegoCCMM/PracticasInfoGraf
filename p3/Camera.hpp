@@ -3,6 +3,7 @@
 //
 
 #include "../p1/Sist_coord.hpp"
+#include "../p1/Matriz.hpp"
 #include "../p1/Punto.hpp"
 #include "Plane.hpp"
 #include "Sphere.hpp"
@@ -12,10 +13,10 @@
 
 
 class Camera {
-    Sist_coord sistCoordCam;
+    Matriz sistCoordCam;
     Punto origen;
 public:
-    Camera(const Sist_coord &sistCoordCam, const Punto &origen);
+    Camera(const Matriz &sistCoordCam, const Punto &origen);
 };
 
 class Rayo{
@@ -23,6 +24,7 @@ class Rayo{
     Vector direccion;
 public:
     Rayo(const Punto &origen, const Vector &direccion);
+    Rayo();
     double interseccion(Plane plano);
     double interseccion(Sphere esfera);
     double secGradeEcuation(double a, double b, double c);

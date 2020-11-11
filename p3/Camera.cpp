@@ -4,7 +4,7 @@
 
 #include "Camera.hpp"
 
-Camera::Camera(const Sist_coord &sistCoordCam, const Punto &origen) : sistCoordCam(sistCoordCam), origen(origen) {}
+Camera::Camera(const Matriz &sistCoordCam, const Punto &origen) : sistCoordCam(sistCoordCam), origen(origen) {}
 
 Rayo::Rayo(const Punto &origen, const Vector &direccion) : origen(origen), direccion(direccion) {}
 
@@ -36,4 +36,9 @@ double Rayo::secGradeEcuation(double a, double b, double c) {
 
     }else{return -1;}
 
+}
+
+Rayo::Rayo() {
+    origen = Punto();
+    direccion = Vector();
 }

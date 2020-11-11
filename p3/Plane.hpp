@@ -5,17 +5,18 @@
 #include "../p1/Figures_3D.hpp"
 #include "../p1/Vector.hpp"
 #include "../p1/Punto.hpp"
+#include "geometryRGBFigures.hpp"
 
 #ifndef P3_PLANE_HPP
 #define P3_PLANE_HPP
 
 
-class Plane {
+class Plane : public geometryRGBFigures{
 
     Vector normal;
     double distance;
 public:
-    const Vector &getNormal() const;
+    const Vector getNormal() const;
 
     void setNormal(const Vector &normal);
 
@@ -23,10 +24,6 @@ public:
 
     void setDistance(double distance);
 
-private:
-    int red;
-    int green;
-    int blue;
 
 public:
     Plane(Vector normal, double distance, int red, int green, int blue);
