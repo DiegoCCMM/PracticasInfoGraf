@@ -55,7 +55,7 @@ public:
 		for(int i=0; i<N; i++) {
 			for(int j=0; j<B.M; j++) {
 				sol.A[i][j] = 0;
-				for(int k=0; k<M; j++) {
+				for(int k=0; k<M; k++) {
 					sol.A[i][j] = sol.A[i][j] + A[i][k] * B.A[k][j];
 				}
 			}
