@@ -8,58 +8,68 @@
 #include "Camera.hpp"
 #include "Sphere.hpp"
 #include "../p1/Matriz.hpp"
-
+#include <list>
 
 
 int main(int argc, char* argv[]){
 
-    std::string s(argv[1]);
-    std::string out(argv[2]);
-    int pixelRes = stoi(s);
+    int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576)
     ofstream ldrfile;
-    ldrfile.open(out);
+    ldrfile.open(argv[2]);
 
-    //initializeLDRfile(&ldrfile);
+    int width = 1024,
+        height = 1024;
+
+
+    // Escena
+    Sphere sphere1 = Sphere(Punto(0,0,2200), 20.0, 34, 153, 84);    // Verde
+    Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
+
+    list<Sphere> figuras;
+    figuras.push_back(sphere1);
+    figuras.push_back(sphere2);    
+
+    // Sistema de coordenadas de la cámara
+    int front = 2000;
+    Vector  x = Vector(width/2.0,0,0),
+            y = Vector(0,width/2.0,0),
+            z = Vector(0,0,front);
+    
+    
+    Punto origen = Punto(0,0,0);
+    //Sistemas de coordenadas en matriz para hacer el cambio de sistemas
+    Matriz siscam = Matriz(x,y,z,origen);
+
+    //plano de proyección
+    double area = width*height;
+    double pixelUnit = area / (double)pixelRes; // medidas de cada pixel
+    
+    //variables para el for
+    Rayo r;
+    double xLocal, yLocal = height/2.0 - pixelUnit/2.0, max = -1;
+    int rmax, gmax, bmax;
+    Vector dirLocal, dirGlobal;
+
+    //cuantos pixeles tendrá cada lado
+    int numPixAncho = width/pixelUnit;
+    int numPixAlto = height/pixelUnit;
 
     ldrfile << "P3" << endl;
     ldrfile << "#MAX=255" << endl;
-    ldrfile << "15 15" << endl;
-    ldrfile << "255" << endl;
+    ldrfile << numPixAncho << " " << numPixAlto << endl;
+    ldrfile << 255 << endl;
 
-    //primera escena
-    //
-    //Esfera 0,0,10 / 10
-    //Cámara 0,0,0 / y = 0,15,0 – z = 0,0,10 – x = 15,0,0
-    //Pixeles 144
+    // Procedimiento: izq -> der, arriba -> abajo
+    for (int j = 0; j < numPixAlto; j++) {
 
-    //Escena
-    Sphere shape1 = Sphere(Punto(0,0,10), 10.0, 255, 0,0);
+        xLocal = -width/2.0 + pixelUnit/2.0;
 
-    //SistCoordenadasCam
-    Vector z = Vector(0,0,10);
-    Vector y = Vector(0,15,0);
-    Vector x = Vector(15,0,0);
-    Punto center = Punto(0,0,0);
-    //Sistemas de coordenadas en matriz para hacer el cambio de sistemas
-    Matriz siscam = Matriz(x,y,z,center);
+        for (int i = 0; i < numPixAncho; i++) {
+            double dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
+            double posZ = sqrt(pow(dist,2) + pow(front,2));
+            double normalized = Vector(xLocal, yLocal, posZ).module();
+            dirLocal = Vector(xLocal/normalized, yLocal/normalized, 1);
 
-    //plano de proyección
-    double area = 15*15;
-    double pixelUnit = area / (double)pixelRes;
-    //variables para el for
-    Rayo r;
-    double xLocal, yLocal, max = -1;
-    int rmax = 0,gmax = 0,bmax = 0;
-    Vector dirLocal, dirGlobal;
-    //cuantos pixeles tendrá cada lado, si hay 3x3 pixeles iteraremos para sacar los 9 rayos en cada pixel
-    int howManyPixelsOnSide = 15.0 / pixelUnit;
-
-    for( int f = 1; f <= howManyPixelsOnSide; f++){
-        for(int c = 1; c <= howManyPixelsOnSide; c++){
-            //punto por el que queremos pasar
-            xLocal = (f*pixelUnit)/2;
-            yLocal = (c*pixelUnit)/2;
-            dirLocal = Vector(xLocal, yLocal, 1);
             //Vector con la dirección local a la matriz de proyección
             //de tipo matriz para poder operar con la matriz de cambio de base
             Matriz local = Matriz(dirLocal, 0);
@@ -67,25 +77,38 @@ int main(int argc, char* argv[]){
             //cambio de base, de salida tendremos la dirección del vector en coordenadas globales
             Matriz Global = siscam * local;
 
-            r = Rayo(center, Global.vector());
-            //aquí usariamos este rayo para iterar sobre la lista de figuras
-            //como sólo tenemos una...
-            double res = r.interseccion(shape1);
-            if(res > 0 && res > max){
-                max = res;
-                rmax = shape1.getRed();
-                gmax = shape1.getGreen();
-                bmax = shape1.getBlue();
-            }
-            //escribimos en el fichero
-            ldrfile << rmax << " " << gmax << " " << bmax << " ";
+            r = Rayo(origen, Global.vector());
+
+            max = 3;
             rmax = 0;
             gmax = 0;
             bmax = 0;
-            max = -1;
+            list<Sphere>::iterator it = figuras.begin();
+            while(it != figuras.end()){
+                double res = (*it).interseccion(r);
+
+                if(res > 0 && res < max){
+                    max = res;
+                    rmax = (*it).getRed();
+                    gmax = (*it).getGreen();
+                    bmax = (*it).getBlue();
+                }
+                
+                it++;
+            }
+
+            ldrfile << rmax << " " << gmax << " " << bmax;
+            if (i < numPixAncho-1) {
+                ldrfile << "    ";
+            }
+
+            //punto por el que queremos pasar
+            xLocal += pixelUnit;
         }
+        ldrfile << endl;
+        yLocal -= pixelUnit;
     }
 
-
+    ldrfile.close();
 }
 
