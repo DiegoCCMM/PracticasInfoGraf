@@ -2,6 +2,8 @@
 // Created by diego on 11/11/20.
 //
 
+#include "Camera.hpp"
+
 #ifndef P3_GEOMETRYRGBFIGURES_HPP
 #define P3_GEOMETRYRGBFIGURES_HPP
 
@@ -9,17 +11,15 @@
 class geometryRGBFigures {
 
 public:
-    int getRed() const;
 
-    int getGreen() const;
+    int red, green, blue;
 
-    int getBlue() const;
+    int getRed()   const { return red;   }
+    int getGreen() const { return green; }
+    int getBlue()  const { return blue;  }
 
-private:
-    int red;
-    int green;
-    int blue;
-
+    virtual double interseccion (Rayo ray) {}
+    
 };
 
 
