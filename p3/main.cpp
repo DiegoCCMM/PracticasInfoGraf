@@ -9,16 +9,17 @@
 #include "Sphere.hpp"
 #include "../p1/Matriz.hpp"
 #include <list>
+#include <random>
 
 
 int main(int argc, char* argv[]){
 
-    int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576)
+    int pixelRes = stoi(argv[1]); // Número de rayos (usar 1048576)
     ofstream ldrfile;
     ldrfile.open(argv[2]);
 
     int width = 1024,
-            height = 1024;
+        height = 1024;
 
 
     // Escena
@@ -46,9 +47,11 @@ int main(int argc, char* argv[]){
 
     //variables para el for
     Rayo r;
-    double xLocal, yLocal = height/2.0 - pixelUnit/2.0, max = -1;
+    double xInit, yInit = height/2.0, max,
+            xEnd, yEnd, xLocal, yLocal;
     int rmax, gmax, bmax;
     Vector dirLocal, dirGlobal;
+    double dist, posZ, normalized;
 
     //cuantos pixeles tendrá cada lado
     int numPixAncho = width/pixelUnit;
@@ -62,12 +65,25 @@ int main(int argc, char* argv[]){
     // Procedimiento: izq -> der, arriba -> abajo
     for (int j = 0; j < numPixAlto; j++) {
 
-        xLocal = -width/2.0 + pixelUnit/2.0;
+        xInit = -width/2.0;
 
         for (int i = 0; i < numPixAncho; i++) {
-            double dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
-            double posZ = sqrt(pow(dist,2) + pow(front,2));
-            double normalized = Vector(xLocal, yLocal, posZ).module();
+            xEnd = xInit + pixelUnit;
+            yEnd = yInit - pixelUnit;
+
+            //Antialiasing
+            int m;
+            xLocal = 0.0, yLocal = 0.0;
+            for(m=1.0; m<=6.0; m++){
+                xLocal += xInit + (double)(rand()) / ((double)(RAND_MAX/(xEnd - xInit)));
+                yLocal += yInit + (double)(rand()) / ((double)(RAND_MAX/(yEnd - yInit)));
+            }
+            xLocal /= m;
+            yLocal /= m;
+
+            dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
+            posZ = sqrt(pow(dist,2) + pow(front,2));
+            normalized = Vector(xLocal, yLocal, posZ).module();
             dirLocal = Vector(xLocal/normalized, yLocal/normalized, 1);
 
             //Vector con la dirección local a la matriz de proyección
@@ -80,9 +96,7 @@ int main(int argc, char* argv[]){
             r = Rayo(origen, Global.vector());
 
             max = 3;
-            rmax = 0;
-            gmax = 0;
-            bmax = 0;
+            rmax = 0; gmax = 0; bmax = 0;
             list<Sphere>::iterator it = figuras.begin();
             while(it != figuras.end()){
                 double res = (*it).interseccion(r);
@@ -103,10 +117,10 @@ int main(int argc, char* argv[]){
             }
 
             //punto por el que queremos pasar
-            xLocal += pixelUnit;
+            xInit += pixelUnit;
         }
         ldrfile << endl;
-        yLocal -= pixelUnit;
+        yInit -= pixelUnit;
     }
 
     ldrfile.close();
