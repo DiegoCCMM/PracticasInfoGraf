@@ -115,3 +115,10 @@ p1/main.exe
 p2/seymour_park.ppm
 p2/seymour_parkLDR.ppm
 p3/ppm.hpp
+p3/main.exe
+p3/seymour_park.ppm
+p3/.vscode/launch.json
+p3/.vscode/settings.json
+p3/.vscode/tasks.json
+p3/figureLDR.ppm
+p3/figureLDR.ppm
