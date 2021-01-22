@@ -9,7 +9,6 @@
 #include <string>
 #include <fstream>
 #include "Plane.hpp"
-#include "Camera.hpp"
 #include "Sphere.hpp"
 #include "../p1/Matriz.hpp"
 #include <list>
