@@ -48,6 +48,16 @@ public:
         return secGradeEcuation(x, y, z);
     }
 
+    Matriz ejeCoord (Rayo ray) {
+        Vector i = Punto(radius+center.getX(),center.getY(),center.getZ()) - this->center;
+        Vector j = i ->* ray.getDir();
+        Vector k = i ->* j;
+
+        Matriz resul(i, j, k);
+
+        retu
+    }
+
 private:
 
     double secGradeEcuation(double a, double b, double c) {

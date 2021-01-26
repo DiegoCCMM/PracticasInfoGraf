@@ -44,6 +44,15 @@ public:
         return -(c + o*n) / (d*n);
     }
 
+    Matriz ejeCoord (Rayo ray) {
+        Vector j = ray.getDir()->*normal;
+        Vector k = j->*normal;
+
+        Matriz resul(normal, j, k);
+
+        return resul;
+    }
+
 };
 
 

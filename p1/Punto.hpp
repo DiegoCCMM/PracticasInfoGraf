@@ -22,6 +22,18 @@ public:
         z = coordz;
     }
 
+    double getX(){
+        return x;
+    }
+
+    double getY(){
+        return y;
+    }
+
+    double getZ(){
+        return z;
+    }
+
     double module() {
         return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
     }

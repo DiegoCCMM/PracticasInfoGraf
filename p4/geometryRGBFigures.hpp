@@ -21,6 +21,7 @@ public:
     int getBlue()  const { return blue;  }
 
     virtual double interseccion (Rayo ray) {}
+    virtual Matriz ejeCoord (Rayo ray) {}
     
 };
 

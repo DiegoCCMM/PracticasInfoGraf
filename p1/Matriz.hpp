@@ -36,6 +36,14 @@ public:
 		A[3][0] = 0,   A[3][1] = 0,   A[3][2] = 0,   A[3][3] = 1;
 	}
 
+	/* Matriz de transformacion sin punto*/
+	Matriz(Vector i, Vector j, Vector k) {
+		N = DIM, M = DIM;
+		A[0][0] = i.x, A[0][1] = j.x, A[0][2] = k.x;
+		A[1][0] = i.y, A[1][1] = j.y, A[1][2] = k.y;
+		A[2][0] = i.z, A[2][1] = j.z, A[2][2] = k.z;
+	}
+
 	/* n --> Punto(1) o direccion(0) */
 	Matriz(Figures_3D f, int n) {
 		N = DIM, M = 1;
@@ -43,6 +51,10 @@ public:
 		A[1][0] = f.y;
 		A[2][0] = f.z;
 		A[3][0] = n;
+	}
+
+	void setNum(int i, int j, int valor){
+		A[i][j] = valor;
 	}
 
 	Matriz operator*(const Matriz B) {
