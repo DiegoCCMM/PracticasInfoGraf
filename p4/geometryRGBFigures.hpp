@@ -14,6 +14,8 @@ public:
 
     int red, green, blue;
 
+
+
     int getRed()   const { return red;   }
     int getGreen() const { return green; }
     int getBlue()  const { return blue;  }
