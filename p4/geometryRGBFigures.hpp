@@ -29,8 +29,8 @@ public:
     }
 
     void esDielectrico(){
-        ks = 0.3;
-        kt = 0.4;
+        ks = 0.4;
+        kt = 0.6;
     }
 
     double getKd() const {
@@ -47,7 +47,7 @@ public:
 
     void esEspecular(){
         kd = max(max(red, green), blue)/(double)(red + green + blue);
-        ks = 0.3;
+        ks = 1-kd;
     }
     
 };
