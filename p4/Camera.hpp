@@ -26,16 +26,23 @@ class Rayo {
 
     Punto origen;
     Vector direccion;
+    bool hayEvento;
 
 public:
 
-    Rayo() : origen(Punto()), direccion(Vector()) {}
+    Rayo() : origen(Punto()), direccion(Vector()), hayEvento(true) {}
 
     Rayo(const Punto &origen, const Vector &direccion) : 
-                origen(origen), direccion(direccion) {}
+                origen(origen), direccion(direccion), hayEvento(true) {}
 
     Vector getDir ()   { return direccion; }
     Punto getOrigen () { return origen;    }
+    void setEvento(bool val){
+        hayEvento = val;
+    }
+    bool hayEvento(){
+        return hayEvento;
+    }
 
 };
 
