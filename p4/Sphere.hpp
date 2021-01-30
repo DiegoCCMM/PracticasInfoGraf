@@ -55,7 +55,7 @@ public:
 
         Matriz resul(i, j, k);
 
-        retu
+        return(resul);
     }
 
 private:

@@ -10,6 +10,7 @@
 #include <fstream>
 #include "Plane.hpp"
 #include "Sphere.hpp"
+#include "Material.hpp"
 #include "../p1/Matriz.hpp"
 #include <list>
 
