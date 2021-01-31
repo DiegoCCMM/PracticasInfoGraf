@@ -51,6 +51,7 @@ int main(int argc, char* argv[]){
     int rmax, gmax, bmax;
     int rmedia, gmedia, bmedia; // Media de los colores del pixel
     Vector dirLocal, dirGlobal;
+    bool colisiona;
 
     //cuantos pixeles tendrá cada lado
     int numPixAncho = width/pixelUnit;
@@ -87,12 +88,13 @@ int main(int argc, char* argv[]){
                 hayEvento=true en el constructor del rayo.
             */
             int k=0;
-            geometryRGBFigures *fig = nullptr;
+            geometryRGBFigures *fig;
             do {
                 k++;
 
                 max = 3;
                 rmax = 0; gmax = 0; bmax = 0;
+                colisiona = false;
                 
                 list<geometryRGBFigures>::iterator it = figuras.begin();
                 while(it != figuras.end()){
@@ -104,6 +106,7 @@ int main(int argc, char* argv[]){
                         gmax = (*it).getGreen();
                         bmax = (*it).getBlue();
                         *fig = *it;
+                        colisiona = true;
                     }
 
                     it++;
@@ -111,12 +114,12 @@ int main(int argc, char* argv[]){
 
                 rmedia += rmax, gmedia += gmax, bmedia += bmax; 
 
-                if (fig != nullptr) {
+                if (colisiona) {
                     // Modifica valor rayo r por el nuevo generado del rebote
                     reboteCamino(r, *fig);
                 }
 
-            } while(!r.hayAbsorcion() && fig != nullptr);
+            } while(!r.hayAbsorcion() && colisiona);
 
 
             ldrfile << rmedia/k << " " << gmedia/k << " " << bmedia/k;

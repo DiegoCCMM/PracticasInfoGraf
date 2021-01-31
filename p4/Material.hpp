@@ -10,7 +10,7 @@
 #ifndef P4_MATERIAL_HPP
 #define P4_MATERIAL_HPP
 
-void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, double prAbs){
+void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, double &prAbs){
     srand(NULL);
 
     double e = ((double) rand() / (RAND_MAX));
@@ -20,35 +20,38 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, d
     kt = figure.getKt();
 
     // Normalizar para mejorar la probabilidad de no evento
-    kd = ((1-prAbs)*kd) / (kd+ks+kt);
-    ks = ((1-prAbs)*ks) / (kd+ks+kt);
-    kt = ((1-prAbs)*kt) / (kd+ks+kt);
+    double pd = ((1-prAbs)*kd) / (kd+ks+kt);
+    double ps = ((1-prAbs)*ks) / (kd+ks+kt);
+    double pt = ((1-prAbs)*kt) / (kd+ks+kt);
 
     if(ks == 0.0 && kt == 0.0){//difuso
-        if( e <= kd) {
-            //kd = 1.0;
+        if( e <= pd) {
+            kd = kd/pd;
         }else{
+            prAbs = 1.0;
             kd = 0.0;
         }
     }else if(kt == 0.0){//plastico
-        if( e <= kd ){//difuso
-            //kd = 1.0;
+        if( e <= pd ){//difuso
+            kd = kd/pd;
             ks = 0.0;
-        }else if( e > kd && e <= kd+ks ){  //especular
-            //ks = 1.0;
+        }else if( e > pd && e <= pd+ps ){  //especular
+            ks = ks/pd;
             kd = 0.0;
         }else{ //absorbido
+            prAbs = 1.0;
             ks = 0.0;
             kd = 0.0;
         }
     }else if(kd == 0.0){//dielectrico
-        if( e <= kt ){//difuso
-            //kt = 1.0;
+        if( e <= pt ){//difuso
+            kt = kt/pt;
             ks = 0.0;
-        }else if( e > kt && e <= kt+ks){  //especular
-            //ks = 1.0;
+        }else if( e > pt && e <= pt+ps){  //especular
+            ks = ks/pd;
             kt = 0.0;
         }else{  //absorbido
+            prAbs = 1.0;
             ks = 0.0;
             kt = 0.0;
         }
@@ -68,7 +71,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure) {
     // todo calcular el punto origen del rayo rebote
     rayo = Rayo(origen, );
     
-    if (figure.soyFoco()) {
+    if (figure.soyFoco() || prAbs==1.0) {
         rayo.setAbsorcion(1.0);
     } else{
         rayo.setAbsorcion(prAbs+0.05);
