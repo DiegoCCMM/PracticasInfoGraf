@@ -10,7 +10,7 @@
 #ifndef P4_MATERIAL_HPP
 #define P4_MATERIAL_HPP
 
-void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt){
+void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, double prAbs){
     srand(NULL);
 
     double e = ((double) rand() / (RAND_MAX));
@@ -19,18 +19,23 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt){
     ks = figure.getKs();
     kt = figure.getKt();
 
+    // Normalizar para mejorar la probabilidad de no evento
+    kd = ((1-prAbs)*kd) / (kd+ks+kt);
+    ks = ((1-prAbs)*ks) / (kd+ks+kt);
+    kt = ((1-prAbs)*kt) / (kd+ks+kt);
+
     if(ks == 0.0 && kt == 0.0){//difuso
         if( e <= kd) {
-            kd = 1.0;
+            //kd = 1.0;
         }else{
             kd = 0.0;
         }
     }else if(kt == 0.0){//plastico
         if( e <= kd ){//difuso
-            kd = 1.0;
+            //kd = 1.0;
             ks = 0.0;
         }else if( e > kd && e <= kd+ks ){  //especular
-            ks = 1.0;
+            //ks = 1.0;
             kd = 0.0;
         }else{ //absorbido
             ks = 0.0;
@@ -38,27 +43,36 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt){
         }
     }else if(kd == 0.0){//dielectrico
         if( e <= kt ){//difuso
-            kt = 1.0;
+            //kt = 1.0;
             ks = 0.0;
         }else if( e > kt && e <= kt+ks){  //especular
-            ks = 1.0;
+            //ks = 1.0;
             kt = 0.0;
         }else{  //absorbido
             ks = 0.0;
             kt = 0.0;
         }
     }
-
 }
 
-void reboteCamino(Rayo rayo, geometryRGBFigures figure) {
+void reboteCamino(Rayo &rayo, geometryRGBFigures figure) {
+    double kd, ks, kt, prAbs = rayo.getAbsorcion();
+    ruletaRusa(figure, kd, ks, kt, prAbs);
+
     //TODO fr(x, wi, w0) = kd/pi + ks(x, w0)(delta wr(wi) / n*wi) + kt(x,w0)(delta wt(wi)/n*wi)
     //TODO delta wr = 2n(n*wi) - wi
     //TODO delta wt = arcsin((n0 * sin(w0)) / n1)
     //TODO https://es.wikipedia.org/wiki/%C3%8Dndice_de_refracci%C3%B3n
     //TODO vidrio 1,45 aire 1
 
-
+    // todo calcular el punto origen del rayo rebote
+    rayo = Rayo(origen, );
+    
+    if (figure.soyFoco()) {
+        rayo.setAbsorcion(1.0);
+    } else{
+        rayo.setAbsorcion(prAbs+0.05);
+    }
 
 }
 

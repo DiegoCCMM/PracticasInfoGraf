@@ -17,13 +17,18 @@ int main(int argc, char* argv[]){
             height = 1024;
 
 
-    // Escena
+    // --------------------------------------------------Escena
     Sphere sphere1 = Sphere(Punto(0,0,2200), 20.0, 34, 153, 84);    // Verde
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
+    Plane planoFoco = Plane(Vector(20,50,70),100.0,255,255,255);     // Plano foco
+    planoFoco.setFoco(true);
 
-    list<Sphere> figuras;
+    list<geometryRGBFigures> figuras;
     figuras.push_back(sphere1);
     figuras.push_back(sphere2);
+    figuras.push_back(planoFoco);
+
+    // --------------------------------------------------FIN Escena
 
     // Sistema de coordenadas de la cámara
     int front = 2000;
@@ -81,14 +86,15 @@ int main(int argc, char* argv[]){
                 de elegir que el rayo generado (rebote) sea sin evento. Será
                 hayEvento=true en el constructor del rayo.
             */
-            int k;
-            for(k=1; r.hayEvento(); k++) {
+            int k=0;
+            geometryRGBFigures *fig = nullptr;
+            do {
+                k++;
 
                 max = 3;
                 rmax = 0; gmax = 0; bmax = 0;
                 
-                list<Sphere>::iterator it = figuras.begin();
-                auto fig = *it;
+                list<geometryRGBFigures>::iterator it = figuras.begin();
                 while(it != figuras.end()){
                     double res = (*it).interseccion(r);
 
@@ -97,7 +103,7 @@ int main(int argc, char* argv[]){
                         rmax = (*it).getRed();
                         gmax = (*it).getGreen();
                         bmax = (*it).getBlue();
-                        fig = *it;
+                        *fig = *it;
                     }
 
                     it++;
@@ -105,12 +111,15 @@ int main(int argc, char* argv[]){
 
                 rmedia += rmax, gmedia += gmax, bmedia += bmax; 
 
-                // Modifica valor rayo r por el nuevo generado del rebote
-                rayosSecundarios(r, fig); 
-            }
+                if (fig != nullptr) {
+                    // Modifica valor rayo r por el nuevo generado del rebote
+                    reboteCamino(r, *fig);
+                }
+
+            } while(!r.hayAbsorcion() && fig != nullptr);
 
 
-            ldrfile << fixed << rmedia/k << " " << gmedia/k << " " << bmedia/k;
+            ldrfile << rmedia/k << " " << gmedia/k << " " << bmedia/k;
             if (i < numPixAncho-1) {
                 ldrfile << "    ";
             }

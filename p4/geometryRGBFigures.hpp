@@ -15,7 +15,9 @@ public:
 
     int red, green, blue;
 
-    double kd, ks, kt;
+    double kd=0.0, ks=0.0, kt=0.0;
+
+    bool foco = false;
 
     int getRed()   const { return red;   }
     int getGreen() const { return green; }
@@ -33,6 +35,11 @@ public:
         kt = 0.6;
     }
 
+    void esEspecular(){
+        kd = max(max(red, green), blue)/(double)(red + green + blue);
+        ks = 1-kd;
+    }
+
     double getKd() const {
         return kd;
     }
@@ -45,9 +52,12 @@ public:
         return kt;
     }
 
-    void esEspecular(){
-        kd = max(max(red, green), blue)/(double)(red + green + blue);
-        ks = 1-kd;
+    bool soyFoco() const {
+        return foco;
+    }
+
+    void setFoco(bool val) {
+        foco = val;
     }
     
 };

@@ -26,22 +26,28 @@ class Rayo {
 
     Punto origen;
     Vector direccion;
-    bool hayEvento;
+    double absorcion;
 
 public:
 
-    Rayo() : origen(Punto()), direccion(Vector()), hayEvento(true) {}
+    Rayo() : origen(Punto()), direccion(Vector()), absorcion(0.1) {}
 
     Rayo(const Punto &origen, const Vector &direccion) : 
-                origen(origen), direccion(direccion), hayEvento(true) {}
+                origen(origen), direccion(direccion), absorcion(0.1) {}
 
     Vector getDir ()   { return direccion; }
     Punto getOrigen () { return origen;    }
-    void setEvento(bool val){
-        hayEvento = val;
+
+    void setAbsorcion(double val){
+        absorcion = val;
     }
-    bool hayEvento(){
-        return hayEvento;
+
+    double getAbsorcion(){
+        return absorcion;
+    }
+
+    bool hayAbsorcion() const {
+        return absorcion==1.0;
     }
 
 };
