@@ -58,8 +58,7 @@ public:
 
     void setFoco(bool val) {
         foco = val;
-    }
-    
+    }    
 };
 
 

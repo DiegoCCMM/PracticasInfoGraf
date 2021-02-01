@@ -6,9 +6,14 @@
 #include <cmath>
 #include "Camera.hpp"
 #include "geometryRGBFigures.hpp"
+#include <list>
 
 #ifndef P4_MATERIAL_HPP
 #define P4_MATERIAL_HPP
+
+// MEDIOS
+#define AIRE = 1.0
+#define VIDRIO = 1.45
 
 void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, double &prAbs){
     srand(NULL);
@@ -36,7 +41,7 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, d
             kd = kd/pd;
             ks = 0.0;
         }else if( e > pd && e <= pd+ps ){  //especular
-            ks = ks/pd;
+            ks = ks/ps;
             kd = 0.0;
         }else{ //absorbido
             prAbs = 1.0;
@@ -48,7 +53,7 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, d
             kt = kt/pt;
             ks = 0.0;
         }else if( e > pt && e <= pt+ps){  //especular
-            ks = ks/pd;
+            ks = ks/ps;
             kt = 0.0;
         }else{  //absorbido
             prAbs = 1.0;
@@ -63,15 +68,31 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures
     double kd, ks, kt, prAbs = rayo.getAbsorcion();
     ruletaRusa(figure, kd, ks, kt, prAbs);
 
-    //TODO fr(x, wi, w0) = kd/pi + ks(x, w0)(delta wr(wi) / n*wi) + kt(x,w0)(delta wt(wi)/n*wi)
-    //TODO delta wr = 2n(n*wi) - wi
-    //TODO delta wt = arcsin((n0 * sin(w0)) / n1)
-    //TODO https://es.wikipedia.org/wiki/%C3%8Dndice_de_refracci%C3%B3n
-    //TODO vidrio 1,45 aire 1
-    Vector wi; // calcular por muestreo coseno o deltas
+    // fr(x, wi, w0) = kd/pi + ks(x, w0)(delta wr(wi) / n*wi) + kt(x,w0)(delta wt(wi)/n*wi)
+    // delta wr = 2n(n*wi) - wi
+    // delta wt = arcsin((n0 * sin(w0)) / n1)
+    // https://es.wikipedia.org/wiki/%C3%8Dndice_de_refracci%C3%B3n
+    // vidrio 1,45 aire 1
+
+    // Punto origen coord globales del rayo rebote
+    Punto origen = rayo.getOrigen()+rayo.getDir();
+
+    Vector wi = muestreoCoseno(rayo, figure);
+    if(ks != 0) { // especular
+
+        // TODO
+        // 1. calcular plano a partir del punto origen (interseccion)
+        // 2. calcular normal al plano
+        Vector n;
+
+        wi = n.mul(2.0) ->* n ->* wi - wi;
+    }
+    else if(kt != 0) { // dielectrico difuso
+        Vector aux = wi.sin().mul(AIRE).div(VIDRIO);
+        wi = aux.asin();
+    }
 
     // Punto origen del rayo rebote
-    Punto origen = rayo.getOrigen()+rayo.getDir(); // Será global
     rayo = Rayo(origen, wi);
     
     if (prAbs==1.0) {

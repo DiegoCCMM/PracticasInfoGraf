@@ -23,11 +23,6 @@ public:
         return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
     }
 
-    Vector productoVectorial(Vector a, Vector b){
-
-        return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
-    }
-
     Vector operator+(const Vector b) {
         return {this->x + b.x, this->y + b.y, this->z + b.z};
     }
@@ -50,6 +45,22 @@ public:
     
     Vector operator/(const int b) {
         return {this->x / b, this->y / b, this->z / b};
+    }
+
+    Vector mul(const double a){
+        return {this->x*a, this->y*a, this->z*a};
+    }
+
+    Vector div(const double a){
+        return {this->x/a, this->y/a, this->z/a};
+    }
+
+    Vector sin(){
+        return {sin(this->x), sin(this->y), sin(this->z)};
+    }
+
+    Vector asin(){
+        return {asin(this->x), asin(this->y), asin(this->z)};
     }
 
 };
