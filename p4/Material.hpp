@@ -11,10 +11,6 @@
 #ifndef P4_MATERIAL_HPP
 #define P4_MATERIAL_HPP
 
-// MEDIOS
-#define AIRE = 1.0
-#define VIDRIO = 1.45
-
 void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, double &prAbs){
     srand(NULL);
 
@@ -88,11 +84,11 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures
         wi = n.mul(2.0) ->* n ->* wi - wi;
     }
     else if(kt != 0) { // dielectrico difuso
-        Vector aux = wi.sin().mul(AIRE).div(VIDRIO);
+        double aire = 1.0, vidrio = 1.45; // Medios
+        Vector aux = rayo.getDir().sin().mul(aire).div(vidrio);
         wi = aux.asin();
     }
 
-    // Punto origen del rayo rebote
     rayo = Rayo(origen, wi);
     
     if (prAbs==1.0) {

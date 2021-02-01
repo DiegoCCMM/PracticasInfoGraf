@@ -126,6 +126,8 @@ int main(int argc, char* argv[]){
                         gmax = (*fig).getGreen();
                         bmax = (*fig).getBlue();
                     }
+
+                    // IMP: Seguro que es multiplicar y no sumar??
                     rThr *= rmax;
                     gThr *= gmax;
                     bThr *= bmax; 
