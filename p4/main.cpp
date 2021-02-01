@@ -30,8 +30,8 @@ int main(int argc, char* argv[]){
     figuras.push_back(sphere2);
     figuras.push_back(planoFoco);
 
-    list<geometryRGBFigures> focos; // puntuales
-    focos.push_back(planoFoco);
+    list<Punto> focos; // puntuales
+    focos.push_back(Punto(2,5,6));
 
     // --------------------------------------------------FIN Escena
 
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]){
     double rmax, gmax, bmax;
     double rThr, gThr, bThr; // Throughput
     Vector dirLocal, dirGlobal;
-    bool colisiona;
+    bool colisiona, puntual;
 
     //cuantos pixeles tendrá cada lado
     int numPixAncho = width/pixelUnit;
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]){
                 if (colisiona) {
                     if(!fig->soyFoco()){
                         // Modifica valor rayo r por el nuevo generado del rebote
-                        reboteCamino(r, *fig, focos, rmax, gmax, bmax);
+                        reboteCamino(r, *fig, figuras, focos, rmax, gmax, bmax, puntual);
                     } else {
                         rmax = (*fig).getRed();
                         gmax = (*fig).getGreen();

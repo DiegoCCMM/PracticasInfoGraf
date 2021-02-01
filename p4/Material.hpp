@@ -83,25 +83,47 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures figure) {
     return wi;
 }
 
-void nextEstimation(Rayo &rayo, list<geometryRGBFigures> focos, list<geometryRGBFigures> figuras) {
+void nextEstimation(Rayo &rayo, list<Punto> focos, 
+                    list<geometryRGBFigures> figuras, bool& puntual) {
     // Los focos de luz puntuales tendrán la misma probabilidad
     int max = focos.size();
     int e =  1 + rand()%max;
 
-    list<geometryRGBFigures>::iterator it = focos.begin();
+    list<Punto>::iterator foco = focos.begin();
     for(int i=1; i<e; i++){
+        foco++;
+    }
+
+    Punto origen = rayo.getOrigen();
+    Rayo r = Rayo(origen, *foco-origen);
+
+    // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
+    // algún otro objeto
+    list<geometryRGBFigures>::iterator it = figuras.begin();
+    bool colisiona = false;
+    while(it != figuras.end()){
+        double res = (*it).interseccion(r);
+
+        if(res > 0 && res < max){
+            max = res;
+            colisiona = true;
+        }
         it++;
     }
 
-    // Comprobar si el rayo de sombra hasta la luz puntal 'it' intersecta con
-    // algún otro objeto
-
-    // En caso de ser un trazado directo el rayo final --> rayo.setAbsorcion(1.0);
+    if(!colisiona) {
+        rayo = r;
+        puntual = true;
+    } else {
+        puntual = false;
+    }
+    
 }
 
 
-void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures> focos,
-                    double& rmax, double& gmax, double& bmax) {
+void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<Punto> focos,
+                    list<geometryRGBFigures> figuras, double& rmax, double& gmax, 
+                    double& bmax, bool& puntual) {
 
     double kd, ks, kt, prAbs = rayo.getAbsorcion();
     RGB tupleKd = figure.getKd();
@@ -119,7 +141,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures
         // https://es.wikipedia.org/wiki/%C3%8Dndice_de_refracci%C3%B3n
         // vidrio 1,45 aire 1
         // Punto origen coord globales del rayo rebote
-        Punto origen = rayo.getOrigen()+rayo.getDir();
+        **********Punto origen = rayo.getOrigen()+rayo.getDir(); // MAL
 
         Vector wi = muestreoCoseno(rayo, figure);
         if(ks != 0) { // especular
@@ -127,7 +149,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures
             // TODO
             // 1. calcular plano a partir del punto origen (interseccion)
             // 2. calcular normal al plano
-            Vector n;
+            ********Vector n;
 
             wi = n.mul(2.0) ->* n ->* wi - wi;
             rmax = ks;
@@ -145,10 +167,17 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures
             rmax = tupleKd.r;
             gmax = tupleKd.g;
             bmax = tupleKd.b;
+
+            if(puntual){ // En caso de ser una luz puntual se divide por dist^2
+                // SE ASUME QUE LAS LUCES SON DIFUSAS
+                rmax /= rayo.getDir().module();
+                gmax /= rayo.getDir().module();
+                bmax /= rayo.getDir().module();
+            }
         }
 
         rayo = Rayo(origen, wi);
-        nextEstimation(rayo, focos);
+        nextEstimation(rayo, focos, figuras, puntual);
     }
 
 
