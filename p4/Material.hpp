@@ -83,7 +83,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures figure) {
     return wi;
 }
 
-void nextEstimation(Rayo &rayo, list<geometryRGBFigures> focos) {
+void nextEstimation(Rayo &rayo, list<geometryRGBFigures> focos, list<geometryRGBFigures> figuras) {
     // Los focos de luz puntuales tendrán la misma probabilidad
     int max = focos.size();
     int e =  1 + rand()%max;
