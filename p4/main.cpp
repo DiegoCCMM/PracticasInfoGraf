@@ -7,6 +7,8 @@
 #include <list>
 
 
+void fromDoubleToRGB(double thr, double thr1, double thr2, int &colour, int &colour1, int &colour2);
+
 int main(int argc, char* argv[]){
 
     int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576)
@@ -134,8 +136,10 @@ int main(int argc, char* argv[]){
             if (!colisiona || r.hayAbsorcion()) {
                 ldrfile << 0 << " " << 0 << " " << 0;
             } else {
-                // diego
-                ldrfile << rThr << " " << gThr << " " << bThr;
+                int rColour, gColour, bColour;
+
+                fromDoubleToRGB(rThr, gThr, bThr, rColour, gColour, bColour);
+                ldrfile << rColour << " " << gColour << " " << bColour;
             }
             if (i < numPixAncho-1) {
                 ldrfile << "    ";
@@ -149,4 +153,12 @@ int main(int argc, char* argv[]){
     }
 
     ldrfile.close();
+}
+
+void fromDoubleToRGB(double thr, double thr1, double thr2,
+                     int &colour, int &colour1, int &colour2) {
+    colour = (thr * 255.0);
+    colour1 = (thr1 * 255.0);
+    colour2 = (thr2 * 255.0);
+
 }
