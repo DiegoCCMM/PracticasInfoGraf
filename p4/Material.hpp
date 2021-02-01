@@ -58,7 +58,8 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, d
     }
 }
 
-void reboteCamino(Rayo &rayo, geometryRGBFigures figure) {
+void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures> focos,
+                    double& rmax, double& gmax, double& bmax) {
     double kd, ks, kt, prAbs = rayo.getAbsorcion();
     ruletaRusa(figure, kd, ks, kt, prAbs);
 
@@ -67,15 +68,19 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure) {
     //TODO delta wt = arcsin((n0 * sin(w0)) / n1)
     //TODO https://es.wikipedia.org/wiki/%C3%8Dndice_de_refracci%C3%B3n
     //TODO vidrio 1,45 aire 1
+    Vector wi; // calcular por muestreo coseno o deltas
 
-    // todo calcular el punto origen del rayo rebote
-    rayo = Rayo(origen, );
+    // Punto origen del rayo rebote
+    Punto origen = rayo.getOrigen()+rayo.getDir(); // Será global
+    rayo = Rayo(origen, wi);
     
-    if (figure.soyFoco() || prAbs==1.0) {
+    if (prAbs==1.0) {
         rayo.setAbsorcion(1.0);
     } else{
         rayo.setAbsorcion(prAbs+0.05);
     }
+
+    nextEstimation(rayo, focos);
 
 }
 
@@ -101,6 +106,22 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures figure) {
     Vector wi = matriz_wi.vector();
 
     return wi;
+}
+
+void nextEstimation(Rayo &rayo, list<geometryRGBFigures> focos) {
+    // Los focos de luz puntuales tendrán la misma probabilidad
+    int max = focos.size();
+    int e =  1 + rand()%max;
+
+    list<geometryRGBFigures>::iterator it = focos.begin();
+    for(int i=1; i<e; i++){
+        it++;
+    }
+
+    // Comprobar si el rayo de sombra hasta la luz puntal 'it' intersecta con
+    // algún otro objeto
+
+    // En caso de ser un trazado directo el rayo final --> rayo.setAbsorcion(1.0);
 }
 
 

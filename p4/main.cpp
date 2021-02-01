@@ -28,6 +28,9 @@ int main(int argc, char* argv[]){
     figuras.push_back(sphere2);
     figuras.push_back(planoFoco);
 
+    list<geometryRGBFigures> focos; // puntuales
+    focos.push_back(planoFoco);
+
     // --------------------------------------------------FIN Escena
 
     // Sistema de coordenadas de la cámara
@@ -48,8 +51,8 @@ int main(int argc, char* argv[]){
     //variables para el for
     Rayo r;
     double xLocal, yLocal = height/2.0 - pixelUnit/2.0, max = -1;
-    int rmax, gmax, bmax;
-    int rmedia, gmedia, bmedia; // Media de los colores del pixel
+    double rmax, gmax, bmax;
+    double rThr, gThr, bThr; // Throughput
     Vector dirLocal, dirGlobal;
     bool colisiona;
 
@@ -81,7 +84,7 @@ int main(int argc, char* argv[]){
             Matriz Global = siscam * local;
 
             r = Rayo(origen, Global.vector());
-            rmedia = 0, gmedia = 0, bmedia = 0; 
+            rThr = 0, gThr = 0, bThr = 0; 
 
             /* Nuevo atributo de un rayo que servirá para la ruleta rusa en caso
                 de elegir que el rayo generado (rebote) sea sin evento. Será
@@ -102,9 +105,9 @@ int main(int argc, char* argv[]){
 
                     if(res > 0 && res < max){
                         max = res;
-                        rmax = (*it).getRed();
-                        gmax = (*it).getGreen();
-                        bmax = (*it).getBlue();
+                        // rmax = (*it).getRed();
+                        // gmax = (*it).getGreen();
+                        // bmax = (*it).getBlue();
                         *fig = *it;
                         colisiona = true;
                     }
@@ -112,17 +115,28 @@ int main(int argc, char* argv[]){
                     it++;
                 }
 
-                rmedia += rmax, gmedia += gmax, bmedia += bmax; 
-
                 if (colisiona) {
-                    // Modifica valor rayo r por el nuevo generado del rebote
-                    reboteCamino(r, *fig);
+                    if(!fig->soyFoco()){
+                        // Modifica valor rayo r por el nuevo generado del rebote
+                        reboteCamino(r, *fig, focos, rmax, gmax, bmax);
+                    } else {
+                        rmax = (*fig).getRed();
+                        gmax = (*fig).getGreen();
+                        bmax = (*fig).getBlue();
+                    }
+                    rThr *= rmax;
+                    gThr *= gmax;
+                    bThr *= bmax; 
                 }
 
-            } while(!r.hayAbsorcion() && colisiona);
+            } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco());
 
-
-            ldrfile << rmedia/k << " " << gmedia/k << " " << bmedia/k;
+            if (!colisiona || r.hayAbsorcion()) {
+                ldrfile << 0 << " " << 0 << " " << 0;
+            } else {
+                // diego
+                ldrfile << rThr << " " << gThr << " " << bThr;
+            }
             if (i < numPixAncho-1) {
                 ldrfile << "    ";
             }

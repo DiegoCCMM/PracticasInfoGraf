@@ -46,6 +46,10 @@ public:
     double operator*(const Vector b) {
         return this->x * b.x + this->y * b.y + this->z * b.z;
     }
+
+    Punto operator+(const Vector b) {
+        return Punto(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
 };
 
 #endif //PRACTICAS_PUNTO_HPP
