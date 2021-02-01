@@ -20,7 +20,7 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, d
 
     double e = ((double) rand() / (RAND_MAX));
 
-    kd = figure.getKd();
+    kd = figure.getMaxKd();
     ks = figure.getKs();
     kt = figure.getKt();
 
@@ -62,6 +62,47 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, d
         }
     }
 }
+
+Vector muestreoCoseno(Rayo rayo, geometryRGBFigures figure) {
+    srand(NULL);
+
+    double Einclination, Eazimuth;
+
+    Einclination = ((double) rand() / (RAND_MAX));
+    Eazimuth = ((double) rand() / (RAND_MAX));
+
+    double inclinationi = acos(sqrt(1 - Einclination));
+    double azimuthi = 2 * M_PI * Eazimuth;
+
+    Matriz angulo(3, 1);
+    angulo.setNum(0, 0, sin(inclinationi) * cos(azimuthi));
+    angulo.setNum(1, 0, sin(inclinationi) * sin(azimuthi));
+    angulo.setNum(2, 0, cos(inclinationi));
+
+    Matriz T = figure.ejeCoord(rayo);
+
+    Matriz matriz_wi = T * angulo;
+    Vector wi = matriz_wi.vector();
+
+    return wi;
+}
+
+void nextEstimation(Rayo &rayo, list<geometryRGBFigures> focos) {
+    // Los focos de luz puntuales tendrán la misma probabilidad
+    int max = focos.size();
+    int e =  1 + rand()%max;
+
+    list<geometryRGBFigures>::iterator it = focos.begin();
+    for(int i=1; i<e; i++){
+        it++;
+    }
+
+    // Comprobar si el rayo de sombra hasta la luz puntal 'it' intersecta con
+    // algún otro objeto
+
+    // En caso de ser un trazado directo el rayo final --> rayo.setAbsorcion(1.0);
+}
+
 
 void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures> focos,
                     double& rmax, double& gmax, double& bmax) {
@@ -105,45 +146,6 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures
 
 }
 
-Vector muestreoCoseno(Rayo rayo, geometryRGBFigures figure) {
-    srand(NULL);
-
-    double Einclination, Eazimuth;
-
-    Einclination = ((double) rand() / (RAND_MAX));
-    Eazimuth = ((double) rand() / (RAND_MAX));
-
-    double inclinationi = acos(sqrt(1 - Einclination));
-    double azimuthi = 2 * M_PI * Eazimuth;
-
-    Matriz angulo(3, 1);
-    angulo.setNum(0, 0, sin(inclinationi) * cos(azimuthi));
-    angulo.setNum(1, 0, sin(inclinationi) * sin(azimuthi));
-    angulo.setNum(2, 0, cos(inclinationi));
-
-    Matriz T = figure.ejeCoord(rayo);
-
-    Matriz matriz_wi = T * angulo;
-    Vector wi = matriz_wi.vector();
-
-    return wi;
-}
-
-void nextEstimation(Rayo &rayo, list<geometryRGBFigures> focos) {
-    // Los focos de luz puntuales tendrán la misma probabilidad
-    int max = focos.size();
-    int e =  1 + rand()%max;
-
-    list<geometryRGBFigures>::iterator it = focos.begin();
-    for(int i=1; i<e; i++){
-        it++;
-    }
-
-    // Comprobar si el rayo de sombra hasta la luz puntal 'it' intersecta con
-    // algún otro objeto
-
-    // En caso de ser un trazado directo el rayo final --> rayo.setAbsorcion(1.0);
-}
 
 
 #endif //P4_MATERIAL_HPP
