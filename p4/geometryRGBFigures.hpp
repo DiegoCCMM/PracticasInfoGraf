@@ -8,6 +8,20 @@
 #ifndef P3_GEOMETRYRGBFIGURES_HPP
 #define P3_GEOMETRYRGBFIGURES_HPP
 
+struct RGB{
+    double r, g, b;
+
+    RGB(double r, double g, double b) : r(r), g(g), b(b) {}
+
+    RGB operator*(double i) const{
+        return(RGB(r*i, g*i, b*i));
+    }
+    RGB operator/(double i) const{
+        return(RGB(r/i, g/i, b/i));
+    }
+
+};
+
 
 class geometryRGBFigures {
 
@@ -15,6 +29,7 @@ public:
 
     int red, green, blue;
 
+    RGB kdTuple;
     double kd=0.0, ks=0.0, kt=0.0;
 
     bool foco = false;
@@ -28,6 +43,7 @@ public:
 
     void esDifuso(){
         kd = max(max(red, green), blue)/(double)(red + green + blue);
+        kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
     }
 
     void esDielectrico(){
@@ -37,11 +53,16 @@ public:
 
     void esEspecular(){
         kd = max(max(red, green), blue)/(double)(red + green + blue);
+        kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
         ks = 1-kd;
     }
 
-    double getKd() const {
-        return kd;
+    RGB getKd() const {
+        return kdTuple;
+    }
+
+    double getMaxKd() const{
+        return max(max(red, green), blue)/(double)(red + green + blue);
     }
 
     double getKs() const {
