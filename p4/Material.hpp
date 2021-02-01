@@ -11,11 +11,11 @@
 #ifndef P4_MATERIAL_HPP
 #define P4_MATERIAL_HPP
 
-void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, double &prAbs){
+void ruletaRusa(geometryRGBFigures figure, RGB& kdColours ,double& kd, double& ks, double& kt, double &prAbs){
     srand(NULL);
 
     double e = ((double) rand() / (RAND_MAX));
-
+    kdColours = figure.getKd();
     kd = figure.getMaxKd();
     ks = figure.getKs();
     kt = figure.getKt();
@@ -27,14 +27,14 @@ void ruletaRusa(geometryRGBFigures figure, double& kd, double& ks, double& kt, d
 
     if(ks == 0.0 && kt == 0.0){//difuso
         if( e <= pd) {
-            kd = kd/pd;
+            kdColours = kdColours/pd;
         }else{
             prAbs = 1.0;
             kd = 0.0;
         }
     }else if(kt == 0.0){//plastico
         if( e <= pd ){//difuso
-            kd = kd/pd;
+            kdColours = kdColours/pd;
             ks = 0.0;
         }else if( e > pd && e <= pd+ps ){  //especular
             ks = ks/ps;
@@ -102,43 +102,56 @@ void nextEstimation(Rayo &rayo, list<geometryRGBFigures> focos, list<geometryRGB
 
 void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<geometryRGBFigures> focos,
                     double& rmax, double& gmax, double& bmax) {
+
     double kd, ks, kt, prAbs = rayo.getAbsorcion();
-    ruletaRusa(figure, kd, ks, kt, prAbs);
+    RGB tupleKd = figure.getKd();
 
-    // fr(x, wi, w0) = kd/pi + ks(x, w0)(delta wr(wi) / n*wi) + kt(x,w0)(delta wt(wi)/n*wi)
-    // delta wr = 2n(n*wi) - wi
-    // delta wt = arcsin((n0 * sin(w0)) / n1)
-    // https://es.wikipedia.org/wiki/%C3%8Dndice_de_refracci%C3%B3n
-    // vidrio 1,45 aire 1
+    ruletaRusa(figure, tupleKd, kd, ks, kt, prAbs);
 
-    // Punto origen coord globales del rayo rebote
-    Punto origen = rayo.getOrigen()+rayo.getDir();
-
-    Vector wi = muestreoCoseno(rayo, figure);
-    if(ks != 0) { // especular
-
-        // TODO
-        // 1. calcular plano a partir del punto origen (interseccion)
-        // 2. calcular normal al plano
-        Vector n;
-
-        wi = n.mul(2.0) ->* n ->* wi - wi;
-    }
-    else if(kt != 0) { // dielectrico difuso
-        double aire = 1.0, vidrio = 1.45; // Medios
-        Vector aux = rayo.getDir().sin().mul(aire).div(vidrio);
-        wi = aux.asin();
-    }
-
-    rayo = Rayo(origen, wi);
     
     if (prAbs==1.0) {
         rayo.setAbsorcion(1.0);
     } else{
         rayo.setAbsorcion(prAbs+0.05);
+        // fr(x, wi, w0) = kd/pi + ks(x, w0)(delta wr(wi) / n*wi) + kt(x,w0)(delta wt(wi)/n*wi)
+        // delta wr = 2n(n*wi) - wi
+        // delta wt = arcsin((n0 * sin(w0)) / n1)
+        // https://es.wikipedia.org/wiki/%C3%8Dndice_de_refracci%C3%B3n
+        // vidrio 1,45 aire 1
+        // Punto origen coord globales del rayo rebote
+        Punto origen = rayo.getOrigen()+rayo.getDir();
+
+        Vector wi = muestreoCoseno(rayo, figure);
+        if(ks != 0) { // especular
+
+            // TODO
+            // 1. calcular plano a partir del punto origen (interseccion)
+            // 2. calcular normal al plano
+            Vector n;
+
+            wi = n.mul(2.0) ->* n ->* wi - wi;
+            rmax = ks;
+            gmax = ks;
+            bmax = ks;
+        }
+        else if(kt != 0) { // dielectrico
+            double aire = 1.0, vidrio = 1.45; // Medios
+            Vector aux = rayo.getDir().sin().mul(aire).div(vidrio);
+            wi = aux.asin();
+            rmax = kt;
+            gmax = kt;
+            bmax = kt;
+        }else{  //difuso
+            rmax = tupleKd.r;
+            gmax = tupleKd.g;
+            bmax = tupleKd.b;
+        }
+
+        rayo = Rayo(origen, wi);
+        nextEstimation(rayo, focos);
     }
 
-    nextEstimation(rayo, focos);
+
 
 }
 
