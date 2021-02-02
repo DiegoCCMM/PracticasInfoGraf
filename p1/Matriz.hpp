@@ -38,7 +38,7 @@ public:
 
 	/* Matriz de transformacion sin punto*/
 	Matriz(Vector i, Vector j, Vector k) {
-		N = DIM, M = DIM;
+		N = 3, M = 3;
 		A[0][0] = i.x, A[0][1] = j.x, A[0][2] = k.x;
 		A[1][0] = i.y, A[1][1] = j.y, A[1][2] = k.y;
 		A[2][0] = i.z, A[2][1] = j.z, A[2][2] = k.z;
