@@ -152,7 +152,7 @@ void reboteCamino(Rayo &rayo, Sphere figure, list<Punto> focos,
         Vector wi = muestreoCoseno(rayo, figure);
         if(ks != 0) { // especular
 
-            Vector n = figure.getNormal(origen_a_inter);
+            Vector n = figure.getNormal(inters);
 
             wi = n.mul(2.0) ->* n ->* wi - wi;
             rmax = ks;

@@ -40,7 +40,7 @@ public:
 
     virtual double interseccion (Rayo ray) {}
     virtual Matriz ejeCoord (Rayo ray) {}
-    virtual Vector getNormal(Vector origen_a_inter){}
+    virtual Vector getNormal(Punto inters){}
 
     void esDifuso(){
         kd = max(max(red, green), blue)/(double)(red + green + blue);

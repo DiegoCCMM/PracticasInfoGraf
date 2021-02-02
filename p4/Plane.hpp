@@ -26,7 +26,7 @@ public:
         this->blue = blue;
     }
 
-    Vector getNormal(Vector origen_a_inter) override { return normal; }
+    Vector getNormal(Punto inters) override { return normal; }
 
     void setNormal(const Vector &normal){ this->normal = normal; }
 

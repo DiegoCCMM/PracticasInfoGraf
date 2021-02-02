@@ -49,8 +49,8 @@ public:
         return secGradeEcuation(x, y, z);
     }
 
-    Vector getNormal(Vector origen_a_inter) override { 
-        return (this->center.minus(origen_a_inter)).normalizar(); 
+    Vector getNormal(Punto inters) override { 
+        return (inters - this->center).normalizar(); 
     }
 
     Matriz ejeCoord (Rayo ray) {
