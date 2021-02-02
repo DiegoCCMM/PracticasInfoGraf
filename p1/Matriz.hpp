@@ -19,56 +19,56 @@ using namespace std;
 
 class Matriz {
 public:
-	double A[DIM][DIM];	// matriz
-	int N, M;			// filas, columnas
+	double matriz[DIM][DIM];	// matriz
+	int filas, columnas;			// filas, columnas
 
-	Matriz(int N, int M) {
-		this->N = N;
-		this->M = M;
+	Matriz(int filas, int columnas) {
+		this->filas = filas;
+		this->columnas = columnas;
 	}
 
 	/* Matriz de transformacion */
 	Matriz(Vector i, Vector j, Vector k, Punto o) {
-		N = DIM, M = DIM;
-		A[0][0] = i.x, A[0][1] = j.x, A[0][2] = k.x, A[0][3] = o.x;
-		A[1][0] = i.y, A[1][1] = j.y, A[1][2] = k.y, A[1][3] = o.y;
-		A[2][0] = i.z, A[2][1] = j.z, A[2][2] = k.z, A[2][3] = o.z;
-		A[3][0] = 0,   A[3][1] = 0,   A[3][2] = 0,   A[3][3] = 1;
+		filas = DIM, columnas = DIM;
+		matriz[0][0] = i.x, matriz[0][1] = j.x, matriz[0][2] = k.x, matriz[0][3] = o.x;
+		matriz[1][0] = i.y, matriz[1][1] = j.y, matriz[1][2] = k.y, matriz[1][3] = o.y;
+		matriz[2][0] = i.z, matriz[2][1] = j.z, matriz[2][2] = k.z, matriz[2][3] = o.z;
+		matriz[3][0] = 0,   matriz[3][1] = 0,   matriz[3][2] = 0,   matriz[3][3] = 1;
 	}
 
 	/* Matriz de transformacion sin punto*/
 	Matriz(Vector i, Vector j, Vector k) {
-		N = 3, M = 3;
-		A[0][0] = i.x, A[0][1] = j.x, A[0][2] = k.x;
-		A[1][0] = i.y, A[1][1] = j.y, A[1][2] = k.y;
-		A[2][0] = i.z, A[2][1] = j.z, A[2][2] = k.z;
+		filas = 3, columnas = 3;
+		matriz[0][0] = i.x, matriz[0][1] = j.x, matriz[0][2] = k.x;
+		matriz[1][0] = i.y, matriz[1][1] = j.y, matriz[1][2] = k.y;
+		matriz[2][0] = i.z, matriz[2][1] = j.z, matriz[2][2] = k.z;
 	}
 
 	/* n --> Punto(1) o direccion(0) */
 	Matriz(Figures_3D f, int n) {
-		N = DIM, M = 1;
-		A[0][0] = f.x;
-		A[1][0] = f.y;
-		A[2][0] = f.z;
-		A[3][0] = n;
+		filas = DIM, columnas = 1;
+		matriz[0][0] = f.x;
+		matriz[1][0] = f.y;
+		matriz[2][0] = f.z;
+		matriz[3][0] = n;
 	}
 
-	void setNum(int i, int j, int valor){
-		A[i][j] = valor;
+	void setNum(int i, int j, double valor){
+		matriz[i][j] = valor;
 	}
 
-	Matriz operator*(const Matriz B) {
-		if(M != B.N) {
+	Matriz operator*(const Matriz derecha) {
+		if(columnas != derecha.filas) {
 			cout << "Matrices incompatibles" << endl;
 		}
 
-		Matriz sol(N, B.M);
+		Matriz sol(filas, derecha.columnas);
 
-		for(int i=0; i<N; i++) {
-			for(int j=0; j<B.M; j++) {
-				sol.A[i][j] = 0;
-				for(int k=0; k<M; k++) {
-					sol.A[i][j] = sol.A[i][j] + A[i][k] * B.A[k][j];
+		for(int i=0; i<filas; i++) {
+			for(int j=0; j<derecha.columnas; j++) {
+				sol.matriz[i][j] = 0;
+				for(int k=0; k<columnas; k++) {
+					sol.matriz[i][j] = sol.matriz[i][j] + this->matriz[i][k] * derecha.matriz[k][j];
 				}
 			}
 		}
@@ -77,11 +77,11 @@ public:
 	}
 
 	Punto punto() {
-		return {A[0][0], A[1][0], A[2][0]};
+		return {matriz[0][0], matriz[1][0], matriz[2][0]};
 	}
 
 	Vector vector() {
-		return {A[0][0], A[1][0], A[2][0]};
+		return {matriz[0][0], matriz[1][0], matriz[2][0]};
 	}
 };
 

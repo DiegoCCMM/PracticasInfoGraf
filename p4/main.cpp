@@ -30,18 +30,18 @@ int main(int argc, char* argv[]){
     Sphere sphere1 = Sphere(Punto(0,0,4000), 1000.0, 34, 153, 84);    // Verde
     sphere1.esDifuso();
     sphere1.setFoco(true);
-    Sphere sphere3 = Sphere(Punto(-2200,0,2200), 1000.0, 34, 153, 84);    // Verde
-    sphere1.esDifuso();
-    sphere1.setFoco(true);
-    Sphere sphere4 = Sphere(Punto(2200,0,2200), 1000.0, 34, 153, 84);    // Verde
-    sphere1.esDifuso();
-    sphere1.setFoco(true);
-    Sphere sphere5 = Sphere(Punto(0,-2200,2200), 1000.0, 34, 153, 84);    // Verde
-    sphere1.esDifuso();
-    sphere1.setFoco(true);
-    Sphere sphere6 = Sphere(Punto(0,2200,2200), 1000.0, 34, 153, 84);    // Verde
-    sphere1.esDifuso();
-    sphere1.setFoco(true);
+    Sphere sphere3 = Sphere(Punto(-2200,0,2200), 1000.0, 34, 153, 153);    // Verde
+    sphere3.esDifuso();
+    sphere3.setFoco(true);
+    Sphere sphere4 = Sphere(Punto(2200,0,2200), 1000.0, 153, 153, 84);    // Verde
+    sphere4.esDifuso();
+    sphere4.setFoco(true);
+    Sphere sphere5 = Sphere(Punto(0,-2200,2200), 1000.0, 34, 153, 153);    // Verde
+    sphere5.esDifuso();
+    sphere5.setFoco(true);
+    Sphere sphere6 = Sphere(Punto(0,2200,2200), 1000.0, 153, 153, 84);    // Verde
+    sphere6.esDifuso();
+    sphere6.setFoco(true);
 
 
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
@@ -59,6 +59,7 @@ int main(int argc, char* argv[]){
     figuras.push_back(&sphere4);
     figuras.push_back(&sphere5);
     figuras.push_back(&sphere6);
+    figuras.push_back(&sphere7);
     // figuras.push_back(&planoFoco);
 
     list<Punto> focos; // puntuales

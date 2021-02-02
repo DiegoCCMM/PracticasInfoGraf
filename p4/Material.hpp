@@ -12,7 +12,6 @@
 #define P4_MATERIAL_HPP
 
 void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& ks, double& kt, double &prAbs){
-    srand(NULL);
 
     double e = ((double) rand() / (RAND_MAX));
     kdColours = figure->getKd();
@@ -60,18 +59,20 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
 }
 
 Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
-    srand(NULL);
-
     double Einclination, Eazimuth;
 
     Einclination = ((double) rand() / (RAND_MAX));
     Eazimuth = ((double) rand() / (RAND_MAX));
 
+    if(Einclination < 0 || Einclination > 1  || Eazimuth < 0 || Eazimuth > 1 ){
+
+        cout<<"numeros aleatorios inccorrects"<<endl;
+    }
     double inclinationi = acos(sqrt(1 - Einclination));
     double azimuthi = 2 * M_PI * Eazimuth;
-
+    auto primFila = sin(inclinationi) * cos(azimuthi);
     Matriz angulo(3, 1);
-    angulo.setNum(0, 0, sin(inclinationi) * cos(azimuthi));
+    angulo.setNum(0, 0, primFila);
     angulo.setNum(1, 0, sin(inclinationi) * sin(azimuthi));
     angulo.setNum(2, 0, cos(inclinationi));
 
@@ -167,6 +168,9 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
             gmax = kt;
             bmax = kt;
         }else{  //difuso
+            if(!figure->soyFoco()) {
+                //cout << "he colisionado con la esfera difusa" << endl;
+            }
             rmax = tupleKd.r;
             gmax = tupleKd.g;
             bmax = tupleKd.b;
@@ -174,13 +178,13 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
 
         rayo = Rayo(inters, wi);
         rayo.setAbsorcion(prAbs+0.05);
-        nextEstimation(rayo, focos, figuras, puntual);
-        if(puntual){ // En caso de ser una luz puntual se divide por dist^2
+        //nextEstimation(rayo, focos, figuras, puntual);
+        //if(puntual){ // En caso de ser una luz puntual se divide por dist^2
             // SE ASUME QUE LAS LUCES SON DIFUSAS
-            rmax /= pow(rayo.getDir().module(),2);
-            gmax /= pow(rayo.getDir().module(),2);
-            bmax /= pow(rayo.getDir().module(),2);
-        }
+        //    rmax /= pow(rayo.getDir().module(),2);
+        //    gmax /= pow(rayo.getDir().module(),2);
+        //    bmax /= pow(rayo.getDir().module(),2);
+        //}
     }
 
 
