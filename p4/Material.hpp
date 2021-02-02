@@ -134,7 +134,6 @@ void reboteCamino(Rayo &rayo, Sphere figure, list<Punto> focos,
     if (prAbs==1.0) {
         rayo.setAbsorcion(1.0);
     } else{
-        rayo.setAbsorcion(prAbs+0.05);
         // fr(x, wi, w0) = kd/pi + ks(x, w0)(delta wr(wi) / n*wi) + kt(x,w0)(delta wt(wi)/n*wi)
         // delta wr = 2n(n*wi) - wi
         // delta wt = arcsin((n0 * sin(w0)) / n1)
@@ -170,6 +169,7 @@ void reboteCamino(Rayo &rayo, Sphere figure, list<Punto> focos,
         }
 
         rayo = Rayo(inters, wi);
+        rayo.setAbsorcion(prAbs+0.05);
         nextEstimation(rayo, focos, figuras, puntual);
         if(puntual){ // En caso de ser una luz puntual se divide por dist^2
             // SE ASUME QUE LAS LUCES SON DIFUSAS

@@ -13,7 +13,8 @@ void fromDoubleToRGB(double thr, double thr1, double thr2, int &colour, int &col
 
 int main(int argc, char* argv[]){
 
-    int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
+    // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
+    int pixelRes = 1024*1024; // Número de rayos (?) (1048576 = 1024x1024)
     ofstream ldrfile;
     ldrfile.open(argv[2]);
 
@@ -26,7 +27,7 @@ int main(int argc, char* argv[]){
     sphere1.esDifuso();
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
     sphere2.esDifuso();
-    Sphere planoFoco = Sphere(Punto(40,20,2300),20.0,255,255,255);     // Plano foco
+    Sphere planoFoco = Sphere(Punto(70,20,2300),20.0,255,255,255);     // Plano foco
     planoFoco.setFoco(true);
     planoFoco.esEspecular();
 
@@ -106,7 +107,7 @@ int main(int argc, char* argv[]){
             Matriz Global = siscam * local;
 
             r = Rayo(origen, Global.vector());
-            rThr = 0, gThr = 0, bThr = 0; 
+            rThr = 1, gThr = 1, bThr = 1; 
 
             int k=0;
             puntual = false;
@@ -115,15 +116,11 @@ int main(int argc, char* argv[]){
                 k++;
 
                 max = 3;
-                rmax = 0; gmax = 0; bmax = 0;
+                rmax = 1, gmax = 1, bmax = 1;
                 colisiona = false;
                 
                 list<Sphere>::iterator it = figuras.begin();
                 while(it != figuras.end()){
-                    // if(typeof(*it)){
-                        
-                    // }
-                    auto kjj = it;
                     double res = (*it).interseccion(r);
 
                     if(res > 0 && res < max){
@@ -139,10 +136,10 @@ int main(int argc, char* argv[]){
                 }
 
                 if (colisiona) {
-                    // if(!fig->soyFoco()){
+                    if(!fig.soyFoco()){
                         // Modifica valor rayo r por el nuevo generado del rebote
                         reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax, puntual);
-                    // } else {
+                    } //else {
                     //     rmax = (*fig).getRed();
                     //     gmax = (*fig).getGreen();
                     //     bmax = (*fig).getBlue();
@@ -161,6 +158,7 @@ int main(int argc, char* argv[]){
                 int rColour, gColour, bColour;
 
                 fromDoubleToRGB(rThr, gThr, bThr, rColour, gColour, bColour);
+                // TODO si se pasan de 255 acotar
                 ldrfile << rColour << " " << gColour << " " << bColour;
             }
             if (i < numPixAncho-1) {
