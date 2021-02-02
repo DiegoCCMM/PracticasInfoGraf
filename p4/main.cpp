@@ -30,10 +30,10 @@ int main(int argc, char* argv[]){
     Sphere sphere1 = Sphere(Punto(0,0,4000), 1000.0, 34, 153, 84);    // Verde
     sphere1.esDifuso();
     sphere1.setFoco(true);
-    Sphere sphere3 = Sphere(Punto(-2200,0,2200), 1000.0, 34, 153, 84);    // Verde
+    Sphere sphere3 = Sphere(Punto(-2200,0,2200), 1000.0, 205, 92, 92);    // Verde
     sphere1.esDifuso();
     sphere1.setFoco(true);
-    Sphere sphere4 = Sphere(Punto(2200,0,2200), 1000.0, 34, 153, 84);    // Verde
+    Sphere sphere4 = Sphere(Punto(2200,0,2200), 1000.0, 205, 100, 0);    // Verde
     sphere1.esDifuso();
     sphere1.setFoco(true);
     Sphere sphere5 = Sphere(Punto(0,-2200,2200), 1000.0, 34, 153, 84);    // Verde
@@ -173,6 +173,9 @@ int main(int argc, char* argv[]){
                         //     gmax = (*fig).getGreen();
                         //     bmax = (*fig).getBlue();
                         // }
+                        if(!fig->soyFoco()){
+                            int ggg = 0;
+                        }
 
                         rThr *= rmax;
                         gThr *= gmax;

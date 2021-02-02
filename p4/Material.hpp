@@ -174,7 +174,8 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
 
         rayo = Rayo(inters, wi);
         rayo.setAbsorcion(prAbs+0.05);
-        nextEstimation(rayo, focos, figuras, puntual);
+        // nextEstimation(rayo, focos, figuras, puntual);
+        puntual=false;
         if(puntual){ // En caso de ser una luz puntual se divide por dist^2
             // SE ASUME QUE LAS LUCES SON DIFUSAS
             rmax /= pow(rayo.getDir().module(),2);

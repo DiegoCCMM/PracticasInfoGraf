@@ -53,7 +53,7 @@ public:
 		A[3][0] = n;
 	}
 
-	void setNum(int i, int j, int valor){
+	void setNum(int i, int j, double valor){
 		A[i][j] = valor;
 	}
 
