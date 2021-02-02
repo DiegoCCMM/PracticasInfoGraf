@@ -87,37 +87,41 @@ void nextEstimation(Rayo &rayo, list<Punto> focos,
                     list<Sphere> figuras, bool& puntual) {
     // Los focos de luz puntuales tendrán la misma probabilidad
     int max = focos.size();
-    int e =  1 + rand()%max;
+    if(max > 0){
+        int e =  1 + rand()%max;
 
-    list<Punto>::iterator foco = focos.begin();
-    for(int i=1; i<e; i++){
-        foco++;
-    }
-
-    Punto origen = rayo.getOrigen();
-    Rayo r = Rayo(origen, *foco-origen);
-
-    // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
-    // algún otro objeto
-    list<Sphere>::iterator it = figuras.begin();
-    bool colisiona = false;
-    while(it != figuras.end()){
-        double res = (*it).interseccion(r);
-
-        if(res > 0 && res < max){
-            max = res;
-            colisiona = true;
+        list<Punto>::iterator foco = focos.begin();
+        for(int i=1; i<e; i++){
+            foco++;
         }
-        it++;
-    }
 
-    if(!colisiona) {
-        rayo = r;
-        puntual = true;
-    } else {
+        Punto origen = rayo.getOrigen();
+        Rayo r = Rayo(origen, *foco-origen);
+
+        // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
+        // algún otro objeto
+        list<Sphere>::iterator it = figuras.begin();
+        bool colisiona = false;
+        while(it != figuras.end()){
+            double res = (*it).interseccion(r);
+
+            if(res > 0 && res < max){
+                max = res;
+                colisiona = true;
+            }
+            it++;
+        }
+
+        if(!colisiona) {
+            rayo = r;
+            puntual = true;
+        } else {
+            puntual = false;
+        }
+    }
+    else {
         puntual = false;
     }
-    
 }
 
 

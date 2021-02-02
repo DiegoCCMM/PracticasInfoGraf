@@ -16,7 +16,8 @@ int main(int argc, char* argv[]){
     // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
     int pixelRes = 1024*1024; // Número de rayos (?) (1048576 = 1024x1024)
     ofstream ldrfile;
-    ldrfile.open(argv[2]);
+    // ldrfile.open(argv[2]);
+    ldrfile.open("figureLDR.ppm");
 
     int width = 1024,
         height = 1024;
@@ -24,9 +25,9 @@ int main(int argc, char* argv[]){
 
     // --------------------------------------------------Escena
     Sphere sphere1 = Sphere(Punto(0,0,2200), 20.0, 34, 153, 84);    // Verde
-    sphere1.esDifuso();
+    sphere1.esDielectrico();
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
-    sphere2.esDifuso();
+    sphere2.esDielectrico();
     Sphere planoFoco = Sphere(Punto(70,20,2300),20.0,255,255,255);     // Plano foco
     planoFoco.setFoco(true);
     planoFoco.esEspecular();
