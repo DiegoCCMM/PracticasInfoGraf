@@ -20,6 +20,7 @@ class Sphere : public geometryRGBFigures {
 
 public:
 
+    Sphere(){}
     Sphere(Punto center, double radius, int red, int green, int blue){
         this->center = center;
         this->radius = radius;

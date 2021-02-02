@@ -11,7 +11,7 @@
 #ifndef P4_MATERIAL_HPP
 #define P4_MATERIAL_HPP
 
-void ruletaRusa(geometryRGBFigures figure, RGB& kdColours ,double& kd, double& ks, double& kt, double &prAbs){
+void ruletaRusa(Sphere figure, RGB& kdColours ,double& kd, double& ks, double& kt, double &prAbs){
     srand(NULL);
 
     double e = ((double) rand() / (RAND_MAX));
@@ -59,7 +59,7 @@ void ruletaRusa(geometryRGBFigures figure, RGB& kdColours ,double& kd, double& k
     }
 }
 
-Vector muestreoCoseno(Rayo rayo, geometryRGBFigures figure) {
+Vector muestreoCoseno(Rayo rayo, Sphere figure) {
     srand(NULL);
 
     double Einclination, Eazimuth;
@@ -84,7 +84,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures figure) {
 }
 
 void nextEstimation(Rayo &rayo, list<Punto> focos, 
-                    list<geometryRGBFigures> figuras, bool& puntual) {
+                    list<Sphere> figuras, bool& puntual) {
     // Los focos de luz puntuales tendrán la misma probabilidad
     int max = focos.size();
     int e =  1 + rand()%max;
@@ -99,7 +99,7 @@ void nextEstimation(Rayo &rayo, list<Punto> focos,
 
     // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
     // algún otro objeto
-    list<geometryRGBFigures>::iterator it = figuras.begin();
+    list<Sphere>::iterator it = figuras.begin();
     bool colisiona = false;
     while(it != figuras.end()){
         double res = (*it).interseccion(r);
@@ -121,8 +121,8 @@ void nextEstimation(Rayo &rayo, list<Punto> focos,
 }
 
 
-void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<Punto> focos,
-                    list<geometryRGBFigures> figuras, double& rmax, double& gmax, 
+void reboteCamino(Rayo &rayo, Sphere figure, list<Punto> focos,
+                    list<Sphere> figuras, double& rmax, double& gmax, 
                     double& bmax, bool& puntual) {
 
     double kd, ks, kt, prAbs = rayo.getAbsorcion();

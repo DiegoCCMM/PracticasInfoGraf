@@ -30,7 +30,7 @@ int main(int argc, char* argv[]){
     planoFoco.setFoco(true);
     planoFoco.esEspecular();
 
-    list<geometryRGBFigures> figuras;
+    list<Sphere> figuras;
     figuras.push_back(sphere1);
     figuras.push_back(sphere2);
     figuras.push_back(planoFoco);
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]){
 
             int k=0;
             puntual = false;
-            geometryRGBFigures *fig;
+            Sphere fig;
             do {
                 k++;
 
@@ -118,8 +118,12 @@ int main(int argc, char* argv[]){
                 rmax = 0; gmax = 0; bmax = 0;
                 colisiona = false;
                 
-                list<geometryRGBFigures>::iterator it = figuras.begin();
+                list<Sphere>::iterator it = figuras.begin();
                 while(it != figuras.end()){
+                    // if(typeof(*it)){
+                        
+                    // }
+                    auto kjj = it;
                     double res = (*it).interseccion(r);
 
                     if(res > 0 && res < max){
@@ -127,7 +131,7 @@ int main(int argc, char* argv[]){
                         // rmax = (*it).getRed();
                         // gmax = (*it).getGreen();
                         // bmax = (*it).getBlue();
-                        *fig = *it;
+                        fig = (*it);
                         colisiona = true;
                     }
 
@@ -137,7 +141,7 @@ int main(int argc, char* argv[]){
                 if (colisiona) {
                     // if(!fig->soyFoco()){
                         // Modifica valor rayo r por el nuevo generado del rebote
-                        reboteCamino(r, *fig, focos, figuras, rmax, gmax, bmax, puntual);
+                        reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax, puntual);
                     // } else {
                     //     rmax = (*fig).getRed();
                     //     gmax = (*fig).getGreen();
@@ -149,7 +153,7 @@ int main(int argc, char* argv[]){
                     bThr *= bmax; 
                 }
 
-            } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco() && !puntual);
+            } while(!r.hayAbsorcion() && colisiona && !fig.soyFoco() && !puntual);
 
             if (!colisiona || r.hayAbsorcion()) {
                 ldrfile << 0 << " " << 0 << " " << 0;
