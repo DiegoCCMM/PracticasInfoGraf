@@ -30,10 +30,10 @@ class Rayo {
 
 public:
 
-    Rayo() : origen(Punto()), direccion(Vector()), absorcion(0.1) {}
+    Rayo() : origen(Punto()), direccion(Vector()), absorcion(0.0) {}
 
     Rayo(const Punto &origen, const Vector &direccion) : 
-                origen(origen), direccion(direccion), absorcion(0.1) {}
+                origen(origen), direccion(direccion), absorcion(0.0) {}
 
     Vector getDir ()   { return direccion; }
     Punto getOrigen () { return origen;    }

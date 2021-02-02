@@ -11,14 +11,14 @@
 #ifndef P4_MATERIAL_HPP
 #define P4_MATERIAL_HPP
 
-void ruletaRusa(Sphere figure, RGB& kdColours ,double& kd, double& ks, double& kt, double &prAbs){
+void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& ks, double& kt, double &prAbs){
     srand(NULL);
 
     double e = ((double) rand() / (RAND_MAX));
-    kdColours = figure.getKd();
-    kd = figure.getMaxKd();
-    ks = figure.getKs();
-    kt = figure.getKt();
+    kdColours = figure->getKd();
+    kd = figure->getMaxKd();
+    ks = figure->getKs();
+    kt = figure->getKt();
 
     // Normalizar para mejorar la probabilidad de no evento
     double pd = ((1-prAbs)*kd) / (kd+ks+kt);
@@ -59,7 +59,7 @@ void ruletaRusa(Sphere figure, RGB& kdColours ,double& kd, double& ks, double& k
     }
 }
 
-Vector muestreoCoseno(Rayo rayo, Sphere figure) {
+Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
     srand(NULL);
 
     double Einclination, Eazimuth;
@@ -75,7 +75,7 @@ Vector muestreoCoseno(Rayo rayo, Sphere figure) {
     angulo.setNum(1, 0, sin(inclinationi) * sin(azimuthi));
     angulo.setNum(2, 0, cos(inclinationi));
 
-    Matriz T = figure.ejeCoord(rayo);
+    Matriz T = figure->ejeCoord(rayo);
 
     Matriz matriz_wi = T * angulo;
     Vector wi = matriz_wi.vector();
@@ -84,7 +84,7 @@ Vector muestreoCoseno(Rayo rayo, Sphere figure) {
 }
 
 void nextEstimation(Rayo &rayo, list<Punto> focos, 
-                    list<Sphere> figuras, bool& puntual) {
+                    list<geometryRGBFigures*> figuras, bool& puntual) {
     // Los focos de luz puntuales tendrán la misma probabilidad
     int max = focos.size();
     if(max > 0){
@@ -100,10 +100,10 @@ void nextEstimation(Rayo &rayo, list<Punto> focos,
 
         // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
         // algún otro objeto
-        list<Sphere>::iterator it = figuras.begin();
+        auto it = figuras.begin();
         bool colisiona = false;
         while(it != figuras.end()){
-            double res = (*it).interseccion(r);
+            double res = (*it)->interseccion(r);
 
             if(res > 0 && res < max){
                 max = res;
@@ -125,12 +125,12 @@ void nextEstimation(Rayo &rayo, list<Punto> focos,
 }
 
 
-void reboteCamino(Rayo &rayo, Sphere figure, list<Punto> focos,
-                    list<Sphere> figuras, double& rmax, double& gmax, 
-                    double& bmax, bool& puntual) {
+void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
+                  list<geometryRGBFigures*> figuras, double& rmax, double& gmax,
+                  double& bmax, bool& puntual) {
 
     double kd, ks, kt, prAbs = rayo.getAbsorcion();
-    RGB tupleKd = figure.getKd();
+    RGB tupleKd = figure->getKd();
 
     ruletaRusa(figure, tupleKd, kd, ks, kt, prAbs);
 
@@ -145,14 +145,14 @@ void reboteCamino(Rayo &rayo, Sphere figure, list<Punto> focos,
         // vidrio 1,45 aire 1
 
         // Punto origen coord globales del rayo rebote
-        double distancia = figure.interseccion(rayo);
+        double distancia = figure->interseccion(rayo);
         Vector origen_a_inter = rayo.getOrigen().sum(rayo.getDir().mul(distancia));
         Punto inters = rayo.getOrigen()+origen_a_inter;
 
         Vector wi = muestreoCoseno(rayo, figure);
         if(ks != 0) { // especular
 
-            Vector n = figure.getNormal(inters);
+            Vector n = figure->getNormal(inters);
 
             wi = n.mul(2.0) ->* n ->* wi - wi;
             rmax = ks;
