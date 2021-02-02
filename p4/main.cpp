@@ -25,17 +25,19 @@ int main(int argc, char* argv[]){
 
     // --------------------------------------------------Escena
     Sphere sphere1 = Sphere(Punto(0,0,2200), 20.0, 34, 153, 84);    // Verde
-    sphere1.esDielectrico();
+    sphere1.esDifuso();
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
-    sphere2.esDielectrico();
-    Sphere planoFoco = Sphere(Punto(70,20,2300),20.0,255,255,255);     // Plano foco
+    sphere2.esDifuso();
+    sphere2.setFoco(true);
+    Plane planoFoco = Plane(Vector(70,20,2300),20.0,255,255,255);     // Plano foco
     planoFoco.setFoco(true);
     planoFoco.esEspecular();
 
-    list<Sphere> figuras;
-    figuras.push_back(sphere1);
-    figuras.push_back(sphere2);
-    figuras.push_back(planoFoco);
+    list<geometryRGBFigures*> figuras;
+
+    figuras.push_back(&sphere1);
+    figuras.push_back(&sphere2);
+    figuras.push_back(&planoFoco);
 
     list<Punto> focos; // puntuales
     focos.push_back(Punto(2,5,2220));
@@ -112,7 +114,7 @@ int main(int argc, char* argv[]){
 
             int k=0;
             puntual = false;
-            Sphere fig;
+            geometryRGBFigures* fig;
             do {
                 k++;
 
@@ -120,9 +122,9 @@ int main(int argc, char* argv[]){
                 rmax = 1, gmax = 1, bmax = 1;
                 colisiona = false;
                 
-                list<Sphere>::iterator it = figuras.begin();
+                auto it = figuras.begin();
                 while(it != figuras.end()){
-                    double res = (*it).interseccion(r);
+                    double res = (*it)->interseccion(r);
 
                     if(res > 0 && res < max){
                         max = res;
@@ -137,7 +139,7 @@ int main(int argc, char* argv[]){
                 }
 
                 if (colisiona) {
-                    if(!fig.soyFoco()){
+                    if(!fig->soyFoco()){
                         // Modifica valor rayo r por el nuevo generado del rebote
                         reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax, puntual);
                     } //else {
@@ -151,7 +153,7 @@ int main(int argc, char* argv[]){
                     bThr *= bmax; 
                 }
 
-            } while(!r.hayAbsorcion() && colisiona && !fig.soyFoco() && !puntual);
+            } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco() && !puntual);
 
             if (!colisiona || r.hayAbsorcion()) {
                 ldrfile << 0 << " " << 0 << " " << 0;
