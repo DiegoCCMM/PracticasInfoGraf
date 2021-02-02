@@ -43,24 +43,28 @@ public:
 				this->x*b.y - this->y*b.x};
 	}
     
-    Vector operator/(const int b) {
-        return {this->x / b, this->y / b, this->z / b};
+    Vector operator/(const double b) {
+        return Vector(this->x / b, this->y / b, this->z / b);
     }
 
-    Vector mul(const double a){
+    Vector mul(const double a) {
         return {this->x*a, this->y*a, this->z*a};
     }
 
-    Vector div(const double a){
+    Vector div(const double a) {
         return {this->x/a, this->y/a, this->z/a};
     }
 
-    Vector sin(){
+    Vector sinV() {
         return {sin(this->x), sin(this->y), sin(this->z)};
     }
 
-    Vector asin(){
+    Vector asinV() {
         return {asin(this->x), asin(this->y), asin(this->z)};
+    }
+
+    Vector normalizar() {
+        return *this/this->module();
     }
 
 };

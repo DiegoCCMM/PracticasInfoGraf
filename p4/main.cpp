@@ -1,29 +1,34 @@
 #include <string>
 #include <fstream>
 #include "Plane.hpp"
+#include "Camera.hpp"
 #include "Sphere.hpp"
 #include "Material.hpp"
 #include "../p1/Matriz.hpp"
 #include <list>
+#include <random>
 
 
 void fromDoubleToRGB(double thr, double thr1, double thr2, int &colour, int &colour1, int &colour2);
 
 int main(int argc, char* argv[]){
 
-    int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576)
+    int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
     ofstream ldrfile;
     ldrfile.open(argv[2]);
 
     int width = 1024,
-            height = 1024;
+        height = 1024;
 
 
     // --------------------------------------------------Escena
     Sphere sphere1 = Sphere(Punto(0,0,2200), 20.0, 34, 153, 84);    // Verde
+    sphere1.esDifuso();
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
-    Plane planoFoco = Plane(Vector(20,50,70),100.0,255,255,255);     // Plano foco
+    sphere2.esDifuso();
+    Sphere planoFoco = Sphere(Punto(40,20,2300),20.0,255,255,255);     // Plano foco
     planoFoco.setFoco(true);
+    planoFoco.esEspecular();
 
     list<geometryRGBFigures> figuras;
     figuras.push_back(sphere1);
@@ -31,7 +36,7 @@ int main(int argc, char* argv[]){
     figuras.push_back(planoFoco);
 
     list<Punto> focos; // puntuales
-    focos.push_back(Punto(2,5,6));
+    focos.push_back(Punto(2,5,2220));
 
     // --------------------------------------------------FIN Escena
 
@@ -52,10 +57,12 @@ int main(int argc, char* argv[]){
 
     //variables para el for
     Rayo r;
-    double xLocal, yLocal = height/2.0 - pixelUnit/2.0, max = -1;
+    double xInit, yInit = height/2.0, max,
+            xEnd, yEnd, xLocal, yLocal;
     double rmax, gmax, bmax;
     double rThr, gThr, bThr; // Throughput
     Vector dirLocal, dirGlobal;
+    double dist, posZ, normalized;
     bool colisiona, puntual;
 
     //cuantos pixeles tendrá cada lado
@@ -70,12 +77,25 @@ int main(int argc, char* argv[]){
     // Procedimiento: izq -> der, arriba -> abajo
     for (int j = 0; j < numPixAlto; j++) {
 
-        xLocal = -width/2.0 + pixelUnit/2.0;
+        xInit = -width/2.0;
 
         for (int i = 0; i < numPixAncho; i++) {
-            double dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
-            double posZ = sqrt(pow(dist,2) + pow(front,2));
-            double normalized = Vector(xLocal, yLocal, posZ).module();
+            xEnd = xInit + pixelUnit;
+            yEnd = yInit - pixelUnit;
+
+            //Antialiasing
+            int m;
+            xLocal = 0.0, yLocal = 0.0;
+            for(m=1.0; m<=6.0; m++){
+                xLocal += xInit + (double)(rand()) / ((double)(RAND_MAX/(xEnd - xInit)));
+                yLocal += yInit + (double)(rand()) / ((double)(RAND_MAX/(yEnd - yInit)));
+            }
+            xLocal /= m;
+            yLocal /= m;
+
+            dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
+            posZ = sqrt(pow(dist,2) + pow(front,2));
+            normalized = Vector(xLocal, yLocal, posZ).module();
             dirLocal = Vector(xLocal/normalized, yLocal/normalized, 1);
 
             //Vector con la dirección local a la matriz de proyección
@@ -88,11 +108,8 @@ int main(int argc, char* argv[]){
             r = Rayo(origen, Global.vector());
             rThr = 0, gThr = 0, bThr = 0; 
 
-            /* Nuevo atributo de un rayo que servirá para la ruleta rusa en caso
-                de elegir que el rayo generado (rebote) sea sin evento. Será
-                hayEvento=true en el constructor del rayo.
-            */
             int k=0;
+            puntual = false;
             geometryRGBFigures *fig;
             do {
                 k++;
@@ -118,22 +135,21 @@ int main(int argc, char* argv[]){
                 }
 
                 if (colisiona) {
-                    if(!fig->soyFoco()){
+                    // if(!fig->soyFoco()){
                         // Modifica valor rayo r por el nuevo generado del rebote
-                        reboteCamino(r, *fig, figuras, focos, rmax, gmax, bmax, puntual);
-                    } else {
-                        rmax = (*fig).getRed();
-                        gmax = (*fig).getGreen();
-                        bmax = (*fig).getBlue();
-                    }
+                        reboteCamino(r, *fig, focos, figuras, rmax, gmax, bmax, puntual);
+                    // } else {
+                    //     rmax = (*fig).getRed();
+                    //     gmax = (*fig).getGreen();
+                    //     bmax = (*fig).getBlue();
+                    // }
 
-                    // IMP: Seguro que es multiplicar y no sumar??
                     rThr *= rmax;
                     gThr *= gmax;
                     bThr *= bmax; 
                 }
 
-            } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco());
+            } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco() && !puntual);
 
             if (!colisiona || r.hayAbsorcion()) {
                 ldrfile << 0 << " " << 0 << " " << 0;
@@ -148,10 +164,10 @@ int main(int argc, char* argv[]){
             }
 
             //punto por el que queremos pasar
-            xLocal += pixelUnit;
+            xInit += pixelUnit;
         }
         ldrfile << endl;
-        yLocal -= pixelUnit;
+        yInit -= pixelUnit;
     }
 
     ldrfile.close();

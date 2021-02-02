@@ -140,16 +140,16 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<Punto> focos,
         // delta wt = arcsin((n0 * sin(w0)) / n1)
         // https://es.wikipedia.org/wiki/%C3%8Dndice_de_refracci%C3%B3n
         // vidrio 1,45 aire 1
+
         // Punto origen coord globales del rayo rebote
-        **********Punto origen = rayo.getOrigen()+rayo.getDir(); // MAL
+        double distancia = figure.interseccion(rayo);
+        Vector origen_a_inter = rayo.getOrigen().sum(rayo.getDir().mul(distancia));
+        Punto inters = rayo.getOrigen()+origen_a_inter;
 
         Vector wi = muestreoCoseno(rayo, figure);
         if(ks != 0) { // especular
 
-            // TODO
-            // 1. calcular plano a partir del punto origen (interseccion)
-            // 2. calcular normal al plano
-            ********Vector n;
+            Vector n = figure.getNormal(origen_a_inter);
 
             wi = n.mul(2.0) ->* n ->* wi - wi;
             rmax = ks;
@@ -158,8 +158,8 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<Punto> focos,
         }
         else if(kt != 0) { // dielectrico
             double aire = 1.0, vidrio = 1.45; // Medios
-            Vector aux = rayo.getDir().sin().mul(aire).div(vidrio);
-            wi = aux.asin();
+            Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio);
+            wi = aux.asinV();
             rmax = kt;
             gmax = kt;
             bmax = kt;
@@ -167,17 +167,16 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures figure, list<Punto> focos,
             rmax = tupleKd.r;
             gmax = tupleKd.g;
             bmax = tupleKd.b;
-
-            if(puntual){ // En caso de ser una luz puntual se divide por dist^2
-                // SE ASUME QUE LAS LUCES SON DIFUSAS
-                rmax /= rayo.getDir().module();
-                gmax /= rayo.getDir().module();
-                bmax /= rayo.getDir().module();
-            }
         }
 
-        rayo = Rayo(origen, wi);
+        rayo = Rayo(inters, wi);
         nextEstimation(rayo, focos, figuras, puntual);
+        if(puntual){ // En caso de ser una luz puntual se divide por dist^2
+            // SE ASUME QUE LAS LUCES SON DIFUSAS
+            rmax /= pow(rayo.getDir().module(),2);
+            gmax /= pow(rayo.getDir().module(),2);
+            bmax /= pow(rayo.getDir().module(),2);
+        }
     }
 
 

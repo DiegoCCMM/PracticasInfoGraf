@@ -50,6 +50,14 @@ public:
     Punto operator+(const Vector b) {
         return Punto(this->x + b.x, this->y + b.y, this->z + b.z);
     }
+
+    Vector sum(const Vector b) {
+        return Vector(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    Vector minus(const Vector b) {
+        return Vector(b.x - this->x, b.y - this->y, b.z - this->z);
+    }
 };
 
 #endif //PRACTICAS_PUNTO_HPP

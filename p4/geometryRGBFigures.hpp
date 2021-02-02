@@ -29,7 +29,7 @@ public:
 
     int red, green, blue;
 
-    RGB kdTuple;
+    RGB kdTuple = RGB(0,0,0);
     double kd=0.0, ks=0.0, kt=0.0;
 
     bool foco = false;
@@ -40,6 +40,7 @@ public:
 
     virtual double interseccion (Rayo ray) {}
     virtual Matriz ejeCoord (Rayo ray) {}
+    virtual Vector getNormal(Vector origen_a_inter){}
 
     void esDifuso(){
         kd = max(max(red, green), blue)/(double)(red + green + blue);

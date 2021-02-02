@@ -48,6 +48,10 @@ public:
         return secGradeEcuation(x, y, z);
     }
 
+    Vector getNormal(Vector origen_a_inter) override { 
+        return (this->center.minus(origen_a_inter)).normalizar(); 
+    }
+
     Matriz ejeCoord (Rayo ray) {
         Vector i = Punto(radius+center.getX(),center.getY(),center.getZ()) - this->center;
         Vector j = i ->* ray.getDir();
