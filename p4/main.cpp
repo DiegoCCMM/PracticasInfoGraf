@@ -26,20 +26,40 @@ int main(int argc, char* argv[]){
 
 
     // --------------------------------------------------Escena
-    Sphere sphere1 = Sphere(Punto(0,0,2200), 20.0, 34, 153, 84);    // Verde
+    // Sphere sphere1 = Sphere(Punto(0,0,2200), 20.0, 34, 153, 84);    // Verde
+    Sphere sphere1 = Sphere(Punto(0,0,4000), 1000.0, 34, 153, 84);    // Verde
     sphere1.esDifuso();
+    sphere1.setFoco(true);
+    Sphere sphere3 = Sphere(Punto(-2200,0,2200), 1000.0, 34, 153, 84);    // Verde
+    sphere1.esDifuso();
+    sphere1.setFoco(true);
+    Sphere sphere4 = Sphere(Punto(2200,0,2200), 1000.0, 34, 153, 84);    // Verde
+    sphere1.esDifuso();
+    sphere1.setFoco(true);
+    Sphere sphere5 = Sphere(Punto(0,-2200,2200), 1000.0, 34, 153, 84);    // Verde
+    sphere1.esDifuso();
+    sphere1.setFoco(true);
+    Sphere sphere6 = Sphere(Punto(0,2200,2200), 1000.0, 34, 153, 84);    // Verde
+    sphere1.esDifuso();
+    sphere1.setFoco(true);
+
+
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
     sphere2.esDifuso();
-    sphere2.setFoco(true);
-    Plane planoFoco = Plane(Vector(70,20,2300),20.0,255,255,255);     // Plano foco
+    // sphere2.setFoco(true);
+    /*Plane planoFoco = Plane(Vector(-200,300,1000),40.0,255,255,255);     // Plano foco
     planoFoco.setFoco(true);
-    planoFoco.esEspecular();
+    planoFoco.esEspecular();*/
 
     list<geometryRGBFigures*> figuras;
 
     figuras.push_back(&sphere1);
     figuras.push_back(&sphere2);
-    figuras.push_back(&planoFoco);
+    figuras.push_back(&sphere3);
+    figuras.push_back(&sphere4);
+    figuras.push_back(&sphere5);
+    figuras.push_back(&sphere6);
+    // figuras.push_back(&planoFoco);
 
     list<Punto> focos; // puntuales
     focos.push_back(Punto(2,5,2220));
@@ -100,8 +120,8 @@ int main(int argc, char* argv[]){
                     xLocal += xInit + (double)(rand()) / ((double)(RAND_MAX/(xEnd - xInit)));
                     yLocal += yInit + (double)(rand()) / ((double)(RAND_MAX/(yEnd - yInit)));
                 }
-                xLocal /= m;
-                yLocal /= m;
+                xLocal /= (m-1);
+                yLocal /= (m-1);
 
                 dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
                 posZ = sqrt(pow(dist,2) + pow(front,2));
@@ -145,10 +165,10 @@ int main(int argc, char* argv[]){
                     }
 
                     if (colisiona) {
-                        if(!fig->soyFoco()){
+                        // if(!fig->soyFoco()){
                             // Modifica valor rayo r por el nuevo generado del rebote
                             reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax, puntual);
-                        } //else {
+                        // } //else {
                         //     rmax = (*fig).getRed();
                         //     gmax = (*fig).getGreen();
                         //     bmax = (*fig).getBlue();
