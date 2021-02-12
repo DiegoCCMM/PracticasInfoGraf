@@ -14,9 +14,19 @@
 class Plane : public geometryRGBFigures{
 
     Vector normal;
+    Punto punto;
     double distance;
 
 public:
+
+    Plane(Vector normal, Punto punto, int red, int green, int blue){
+        this->normal = normal;
+        this->punto = punto;
+        this->distance = punto*normal;
+        this->red = red;
+        this->green = green;
+        this->blue = blue;
+    }
 
     Plane(Vector normal, double distance, int red, int green, int blue){
         this->normal = normal;
@@ -39,8 +49,7 @@ public:
         Punto o = ray.getOrigen();
         Vector  d = ray.getDir(),
                 n = normal;
-        
-        // Return t        
+        // Return t
         return -(c + o*n) / (d*n);
     }
 

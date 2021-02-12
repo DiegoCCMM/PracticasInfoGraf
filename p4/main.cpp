@@ -32,18 +32,24 @@ int main(int argc, char* argv[]){
     sphere1.setFoco(true);
 
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
-    sphere2.esDifuso();
+    sphere2.esDielectrico();
+    // sphere2.esDifuso();
+
+    Sphere sphere3 = Sphere(Punto(20,20,2300), 20.0, 0, 0, 255);  // Roja
+    sphere3.setFoco(true);
+    sphere3.esDifuso();
 
     // sphere2.setFoco(true);
-    /*Plane planoFoco = Plane(Vector(-200,300,1000),40.0,255,255,255);     // Plano foco
-    planoFoco.setFoco(true);
-    planoFoco.esEspecular();*/
+    // Plane planoFoco = Plane(Vector(0,0,-2220), Punto(0,0,2220), 34, 153, 84);  // Plano foco
+    // planoFoco.setFoco(true);
+    // planoFoco.esEspecular();
+    // planoFoco.esDifuso();
 
     list<geometryRGBFigures*> figuras;
 
     figuras.push_back(&sphere1);
     figuras.push_back(&sphere2);
-
+    figuras.push_back(&sphere3);
     // figuras.push_back(&planoFoco);
 
     list<Punto> focos; // puntuales
@@ -95,9 +101,6 @@ int main(int argc, char* argv[]){
             yEnd = yInit - pixelUnit;
 
 
-            double rThrMedia = 0, gThrMedia = 0, bThrMedia = 0;
-
-            for(int w=0; w<rperPixel; w++) {
                 //Antialiasing
                 int m;
                 xLocal = 0.0, yLocal = 0.0;
@@ -119,6 +122,10 @@ int main(int argc, char* argv[]){
 
                 //cambio de base, de salida tendremos la dirección del vector en coordenadas globales
                 Matriz Global = siscam * local;
+
+            double rThrMedia = 0, gThrMedia = 0, bThrMedia = 0;
+
+            for(int w=0; w<rperPixel; w++) {
 
                 r = Rayo(origen, Global.vector());
                 rThr = 1, gThr = 1, bThr = 1; 

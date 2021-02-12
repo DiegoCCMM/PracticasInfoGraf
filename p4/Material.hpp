@@ -146,14 +146,18 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
         // vidrio 1,45 aire 1
 
         // Punto origen coord globales del rayo rebote
-        double distancia = figure->interseccion(rayo);
-        Vector origen_a_inter = rayo.getOrigen().sum(rayo.getDir().mul(distancia));
-        Punto inters = rayo.getOrigen()+origen_a_inter;
+        // double distancia = figure->interseccion(rayo);
+        // Vector origen_a_inter = rayo.getOrigen().sum(rayo.getDir().mul(distancia));
+        // Punto inters = rayo.getOrigen()+origen_a_inter;
+        Punto o = rayo.getOrigen();
+        double t = figure->interseccion(rayo);
+        Vector d = rayo.getDir();
+        Punto p = o + d.mul(t);
 
         Vector wi = muestreoCoseno(rayo, figure);
         if(ks != 0) { // especular
 
-            Vector n = figure->getNormal(inters);
+            Vector n = figure->getNormal(p);
 
             wi = n.mul(2.0) ->* n ->* wi - wi;
             rmax = ks;
@@ -176,7 +180,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
             bmax = tupleKd.b;
         }
 
-        rayo = Rayo(inters, wi);
+        rayo = Rayo(p, wi);
         rayo.setAbsorcion(prAbs+0.05);
         //nextEstimation(rayo, focos, figuras, puntual);
         //if(puntual){ // En caso de ser una luz puntual se divide por dist^2
