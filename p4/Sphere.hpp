@@ -71,8 +71,13 @@ private:
             double primeraSol = (-b - sqrt(pow(b,2) - 4 * a * c)) / (2*a);
             double segundaSol = (-b + sqrt(pow(b,2) - 4 * a * c)) / (2*a);
 
-            if (primeraSol < segundaSol) return primeraSol;
-            else return segundaSol;
+            if (primeraSol >= 0 && segundaSol < 0){ return primeraSol;}
+            else if (primeraSol < 0 && segundaSol >= 0){ return segundaSol;}
+            else { //las dos son positivas, cogemos el minimo
+                   //las dos son negativas, nos da igual
+                return min(primeraSol, segundaSol);
+            }
+
         }
         return -1;
     }
