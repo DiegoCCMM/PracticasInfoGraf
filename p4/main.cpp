@@ -32,25 +32,53 @@ int main(int argc, char* argv[]){
     sphere1.setFoco(true);
 
     Sphere sphere2 = Sphere(Punto(20,20,2220), 20.0, 205, 92, 92);  // Roja
-    sphere2.esDielectrico();
-    // sphere2.esDifuso();
+    // sphere2.esDielectrico();
+    sphere2.esDifuso();
 
-    Sphere sphere3 = Sphere(Punto(20,20,2300), 20.0, 0, 0, 255);  // Roja
+    Sphere sphere3 = Sphere(Punto(-20,20,2220), 20.0, 0, 0, 255);  // Azul
     sphere3.setFoco(true);
     sphere3.esDifuso();
 
-    // sphere2.setFoco(true);
-    // Plane planoFoco = Plane(Vector(0,0,-2220), Punto(0,0,2220), 34, 153, 84);  // Plano foco
-    // planoFoco.setFoco(true);
+    // Plano - fondo
+    Plane planoFoco1 = Plane(Vector(0,0,-20), Punto(0,0,2300), 34, 153, 84);  // Plano foco
+    // planoFoco1.setFoco(true);
     // planoFoco.esEspecular();
-    // planoFoco.esDifuso();
+    planoFoco1.esDifuso();
+
+    // Plano - izquierda
+    Plane planoFoco2 = Plane(Vector(20,0,-20), Punto(-200,0,2220), 102, 212, 148);  // Plano foco
+    // planoFoco2.setFoco(true);
+    // planoFoco.esEspecular();
+    planoFoco2.esDifuso();
+
+    // Plano - derecha
+    Plane planoFoco3 = Plane(Vector(-20,0,-20), Punto(200,0,2220), 102, 212, 148);  // Plano foco
+    // planoFoco3.setFoco(true);
+    // planoFoco.esEspecular();
+    planoFoco3.esDifuso();
+
+    // Plano - techo
+    Plane planoFoco4 = Plane(Vector(0,-20,-20), Punto(0,200,2220), 255, 0, 0);  // Plano foco
+    planoFoco4.setFoco(true);
+    // planoFoco.esEspecular();
+    planoFoco4.esDifuso();
+
+    // Plano - suelo
+    Plane planoFoco5 = Plane(Vector(0,20,-20), Punto(0,-200,2220), 255, 0, 0);  // Plano foco
+    // planoFoco5.setFoco(true);
+    // planoFoco.esEspecular();
+    planoFoco5.esDifuso();
 
     list<geometryRGBFigures*> figuras;
 
     figuras.push_back(&sphere1);
     figuras.push_back(&sphere2);
     figuras.push_back(&sphere3);
-    // figuras.push_back(&planoFoco);
+    figuras.push_back(&planoFoco1);
+    figuras.push_back(&planoFoco2);
+    figuras.push_back(&planoFoco3);
+    figuras.push_back(&planoFoco4);
+    figuras.push_back(&planoFoco5);
 
     list<Punto> focos; // puntuales
     focos.push_back(Punto(2,5,2220));

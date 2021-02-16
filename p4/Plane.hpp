@@ -22,19 +22,19 @@ public:
     Plane(Vector normal, Punto punto, int red, int green, int blue){
         this->normal = normal;
         this->punto = punto;
-        this->distance = punto*normal;
+        this->distance = -(punto*normal);
         this->red = red;
         this->green = green;
         this->blue = blue;
     }
 
-    Plane(Vector normal, double distance, int red, int green, int blue){
-        this->normal = normal;
-        this->distance = distance;
-        this->red = red;
-        this->green = green;
-        this->blue = blue;
-    }
+    // Plane(Vector normal, double distance, int red, int green, int blue){
+    //     this->normal = normal;
+    //     this->distance = distance;
+    //     this->red = red;
+    //     this->green = green;
+    //     this->blue = blue;
+    // }
 
     Vector getNormal(Punto inters) override { return normal; }
 
@@ -44,6 +44,7 @@ public:
 
     void setDistance(double distance){ this->distance = distance; }
 
+    // cambiar
     double interseccion(Rayo ray) override {
         double c = distance;
         Punto o = ray.getOrigen();
