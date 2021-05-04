@@ -50,6 +50,10 @@ public:
         Punto o = ray.getOrigen();
         Vector  d = ray.getDir(),
                 n = normal;
+        
+        if(d*n > 0){
+            n = n.mul(-1);
+        }
         // Return t
         return -(c + o*n) / (d*n);
     }

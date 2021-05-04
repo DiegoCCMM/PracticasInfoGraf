@@ -151,37 +151,42 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
         // Punto inters = rayo.getOrigen()+origen_a_inter;
         Punto o = rayo.getOrigen();
         double t = figure->interseccion(rayo);
-        Vector d = rayo.getDir();
-        Punto p = o + d.mul(t);
+        if(t>0){
+            Vector d = rayo.getDir();
+            Punto p = o + d.mul(t);
 
-        Vector wi = muestreoCoseno(rayo, figure);
-        if(ks != 0) { // especular
+            Vector wi = muestreoCoseno(rayo, figure);
+            if(ks != 0) { // especular
 
-            Vector n = figure->getNormal(p);
+                Vector n = figure->getNormal(p);
 
-            wi = n.mul(2.0) ->* n ->* wi - wi;
-            rmax = ks;
-            gmax = ks;
-            bmax = ks;
-        }
-        else if(kt != 0) { // dielectrico
-            double aire = 1.0, vidrio = 1.45; // Medios
-            Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio);
-            wi = aux.asinV();
-            rmax = kt;
-            gmax = kt;
-            bmax = kt;
-        }else{  //difuso
-            if(!figure->soyFoco()) {
-                //cout << "he colisionado con la esfera difusa" << endl;
+                wi = n.mul(2.0) ->* n ->* wi - wi;
+                rmax = ks;
+                gmax = ks;
+                bmax = ks;
             }
-            rmax = tupleKd.r;
-            gmax = tupleKd.g;
-            bmax = tupleKd.b;
-        }
+            else if(kt != 0) { // dielectrico
+                double aire = 1.0, vidrio = 1.45; // Medios
+                Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio);
+                wi = aux.asinV();
+                rmax = kt;
+                gmax = kt;
+                bmax = kt;
+            }else{  //difuso
+                if(!figure->soyFoco()) {
+                    //cout << "he colisionado con la esfera difusa" << endl;
+                }
+                rmax = tupleKd.r;
+                gmax = tupleKd.g;
+                bmax = tupleKd.b;
+            }
 
-        rayo = Rayo(p, wi);
-        rayo.setAbsorcion(prAbs+0.05);
+            rayo = Rayo(p, wi);
+            rayo.setAbsorcion(prAbs+0.05);
+        } else {
+            rayo = Rayo();
+            rayo.setAbsorcion(1);
+        }
         //nextEstimation(rayo, focos, figuras, puntual);
         //if(puntual){ // En caso de ser una luz puntual se divide por dist^2
             // SE ASUME QUE LAS LUCES SON DIFUSAS

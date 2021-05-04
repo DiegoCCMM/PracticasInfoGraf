@@ -2,6 +2,7 @@
     "files.associations": {
         "cmath": "cpp",
         "random": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "limits": "cpp"
     }
 }
