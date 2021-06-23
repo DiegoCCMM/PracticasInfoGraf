@@ -13,7 +13,8 @@
 
 void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& ks, double& kt, double &prAbs){
 
-    double e = ((double) rand() / (RAND_MAX));
+    // Num aleatorio para la ruleta rusa
+    double e = ((double) rand() / (RAND_MAX)); 
     kdColours = figure->getKd();
     kd = figure->getMaxKd();
     ks = figure->getKs();
@@ -61,6 +62,7 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
 Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
     double Einclination, Eazimuth;
 
+    // TODO revisar que esten entre 0 y 1
     Einclination = ((double) rand() / (RAND_MAX));
     Eazimuth = ((double) rand() / (RAND_MAX));
 
@@ -70,9 +72,10 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
     }
     double inclinationi = acos(sqrt(1 - Einclination));
     double azimuthi = 2 * M_PI * Eazimuth;
-    auto primFila = sin(inclinationi) * cos(azimuthi);
+
+    // auto primFila = sin(inclinationi) * cos(azimuthi);
     Matriz angulo(3, 1);
-    angulo.setNum(0, 0, primFila);
+    angulo.setNum(0, 0, sin(inclinationi) * cos(azimuthi));
     angulo.setNum(1, 0, sin(inclinationi) * sin(azimuthi));
     angulo.setNum(2, 0, cos(inclinationi));
 
@@ -153,14 +156,14 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
         double t = figure->interseccion(rayo);
         if(t>0){
             Vector d = rayo.getDir();
-            Punto p = o + d.mul(t);
+            Punto p = o + d.mul(t); // TODO: verificar que el punto de interseccion esta bien calculado
 
             Vector wi = muestreoCoseno(rayo, figure);
             if(ks != 0) { // especular
 
                 Vector n = figure->getNormal(p);
 
-                wi = n.mul(2.0) ->* n ->* wi - wi;
+                wi = n.mul(2.0) ->* (n ->* wi) - wi;
                 rmax = ks;
                 gmax = ks;
                 bmax = ks;

@@ -54,7 +54,15 @@ public:
         if(d*n > 0){
             n = n.mul(-1);
         }
+
+        if(d*n == 0){
+            return -1.0;
+        }
+
         // Return t
+        // Si t negativo --> no intersecta
+        // si d*n == 0 --> no intersecta (en infinito)
+
         return -(c + o*n) / (d*n);
     }
 

@@ -73,9 +73,10 @@ private:
 
             if (primeraSol >= 10^(-3) && segundaSol < 10^(-3)){ return primeraSol;}
             else if (primeraSol < 10^(-3) && segundaSol >= 10^(-3)){ return segundaSol;}
-            else { //las dos son positivas, cogemos el minimo
-                   //las dos son negativas, nos da igual
-                return min(primeraSol, segundaSol);
+            else {
+                if(primeraSol< 10^(-3)) return -1.0; //las dos son negativas
+                //las dos son positivas, cogemos el minimo
+                else return min(primeraSol, segundaSol);
             }
 
         }

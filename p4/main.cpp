@@ -129,6 +129,9 @@ int main(int argc, char* argv[]){
             xEnd = xInit + pixelUnit;
             yEnd = yInit - pixelUnit;
 
+            double rThrMedia = 0, gThrMedia = 0, bThrMedia = 0;
+
+            for(int w=0; w<rperPixel; w++) { // Antialiasing
 
                 //Antialiasing
                 int m;
@@ -152,10 +155,6 @@ int main(int argc, char* argv[]){
                 //cambio de base, de salida tendremos la dirección del vector en coordenadas globales
                 Matriz Global = siscam * local;
 
-            double rThrMedia = 0, gThrMedia = 0, bThrMedia = 0;
-
-            for(int w=0; w<rperPixel; w++) {
-
                 r = Rayo(origen, Global.vector());
                 rThr = 1, gThr = 1, bThr = 1; 
 
@@ -175,6 +174,9 @@ int main(int argc, char* argv[]){
 
                         if(res > 0 && res < max){
                             max = res;
+                            // rThr = (*it)->getRed();
+                            // gThr = (*it)->getGreen();
+                            // bThr = (*it)->getBlue();
                             // rmax = (*it).getRed();
                             // gmax = (*it).getGreen();
                             // bmax = (*it).getBlue();
@@ -190,10 +192,14 @@ int main(int argc, char* argv[]){
                             // Modifica valor rayo r por el nuevo generado del rebote
                             reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax, puntual);
                         // } //else {
-                        //     rmax = (*fig).getRed();
-                        //     gmax = (*fig).getGreen();
-                        //     bmax = (*fig).getBlue();
+                        //     rmax = (*fig).getRed()/255;
+                        //     gmax = (*fig).getGreen()/255;
+                        //     bmax = (*fig).getBlue()/255;
                         // }
+
+                        // rmax = fig->getRed()*rmax;
+                        // gmax = fig->getGreen()*gmax;
+                        // bmax = fig->getBlue()*bmax;
 
                         rThr *= rmax;
                         gThr *= gmax;
