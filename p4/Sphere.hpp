@@ -51,14 +51,20 @@ public:
 
     Vector getNormal(Punto inters) override { 
         return (inters - this->center).normalizar(); 
+        // return (inters - this->center)/(inters - this->center).module(); 
     }
 
-    Matriz ejeCoord (Rayo ray) {
-        Vector i = Punto(radius+center.getX(),center.getY(),center.getZ()) - this->center;
-        Vector j = i ->* ray.getDir();
-        Vector k = i ->* j;
+    Matriz ejeCoord (Rayo ray, Punto inters) override {
+        // Y falta normalizar
+        // Vector normal = Punto(radius+center.getX(),center.getY(),center.getZ()) - this->center;
+        // normal = normal/normal.module();
+        // normal.normalizar();
+        Vector normal = this->getNormal(inters);
+        Vector i = ray.getDir() ->* normal;
+        Vector j = i ->* normal;
+        // Comprobar que ningun vector resultado es 0
 
-        Matriz resul(i, j, k);
+        Matriz resul(i, j, normal);
 
         return(resul);
     }
@@ -71,10 +77,10 @@ private:
             double primeraSol = (-b - sqrt(pow(b,2) - 4 * a * c)) / (2*a);
             double segundaSol = (-b + sqrt(pow(b,2) - 4 * a * c)) / (2*a);
 
-            if (primeraSol >= 10^(-3) && segundaSol < 10^(-3)){ return primeraSol;}
-            else if (primeraSol < 10^(-3) && segundaSol >= 10^(-3)){ return segundaSol;}
+            if (primeraSol >= 10^(-5) && segundaSol < 10^(-5)){ return primeraSol;}
+            else if (primeraSol < 10^(-5) && segundaSol >= 10^(-5)){ return segundaSol;}
             else {
-                if(primeraSol< 10^(-3)) return -1.0; //las dos son negativas
+                if(primeraSol< 10^(-5)) return -1.0; //las dos son negativas
                 //las dos son positivas, cogemos el minimo
                 else return min(primeraSol, segundaSol);
             }

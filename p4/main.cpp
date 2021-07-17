@@ -14,7 +14,8 @@ void fromDoubleToRGB(double thr, double thr1, double thr2, int &colour, int &col
 
 int main(int argc, char* argv[]){
     // int rperPixel = stoi(argv[1]);
-    int rperPixel = 4;
+    // int rperPixel = 4;
+    int rperPixel = 10;
 
     // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
     int pixelRes = 1024*1024; // Número de rayos (?) (1048576 = 1024x1024)
@@ -147,6 +148,7 @@ int main(int argc, char* argv[]){
                 posZ = sqrt(pow(dist,2) + pow(front,2));
                 normalized = Vector(xLocal, yLocal, posZ).module();
                 dirLocal = Vector(xLocal/normalized, yLocal/normalized, 1);
+                // dirLocal = dirLocal.normalizar();
 
                 //Vector con la dirección local a la matriz de proyección
                 //de tipo matriz para poder operar con la matriz de cambio de base

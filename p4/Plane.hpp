@@ -36,7 +36,10 @@ public:
     //     this->blue = blue;
     // }
 
-    Vector getNormal(Punto inters) override { return normal; }
+    Vector getNormal(Punto inters) override { 
+        // return normal/normal.module();
+        return normal.normalizar();
+    }
 
     void setNormal(const Vector &normal){ this->normal = normal; }
 
@@ -66,11 +69,11 @@ public:
         return -(c + o*n) / (d*n);
     }
 
-    Matriz ejeCoord (Rayo ray) {
-        Vector j = ray.getDir()->*normal;
-        Vector k = j->*normal;
+    Matriz ejeCoord (Rayo ray, Punto inters) override {
+        Vector i = ray.getDir()->*this->getNormal(inters);
+        Vector j = i->*normal;
 
-        Matriz resul(normal, j, k);
+        Matriz resul(i, j, normal);
 
         return resul;
     }

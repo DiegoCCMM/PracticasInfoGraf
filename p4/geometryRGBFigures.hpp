@@ -39,8 +39,8 @@ public:
     int getBlue()  const { return blue;  }
 
     virtual double interseccion (Rayo ray) {}
-    virtual Matriz ejeCoord (Rayo ray) {}
-    virtual Vector getNormal(Punto inters){}
+    virtual Matriz ejeCoord (Rayo ray, Punto inters) {}
+    virtual Vector getNormal(Punto inters) {}
 
     void esDifuso(){
         kd = max(max(red, green), blue)/(double)(red + green + blue);

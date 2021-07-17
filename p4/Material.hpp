@@ -59,7 +59,7 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
     }
 }
 
-Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
+Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
     double Einclination, Eazimuth;
 
     // TODO revisar que esten entre 0 y 1
@@ -79,7 +79,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
     angulo.setNum(1, 0, sin(inclinationi) * sin(azimuthi));
     angulo.setNum(2, 0, cos(inclinationi));
 
-    Matriz T = figure->ejeCoord(rayo);
+    Matriz T = figure->ejeCoord(rayo, inters);
 
     Matriz matriz_wi = T * angulo;
     Vector wi = matriz_wi.vector();
@@ -158,19 +158,19 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
             Vector d = rayo.getDir();
             Punto p = o + d.mul(t); // TODO: verificar que el punto de interseccion esta bien calculado
 
-            Vector wi = muestreoCoseno(rayo, figure);
+            Vector wi = muestreoCoseno(rayo, figure, p);
             if(ks != 0) { // especular
 
                 Vector n = figure->getNormal(p);
 
-                wi = n.mul(2.0) ->* (n ->* wi) - wi;
+                wi = (n.mul(2.0) ->* (n ->* wi)) - wi;
                 rmax = ks;
                 gmax = ks;
                 bmax = ks;
             }
             else if(kt != 0) { // dielectrico
                 double aire = 1.0, vidrio = 1.45; // Medios
-                Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio);
+                Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio); // TODO: revisar
                 wi = aux.asinV();
                 rmax = kt;
                 gmax = kt;
