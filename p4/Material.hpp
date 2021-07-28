@@ -21,13 +21,14 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
     kt = figure->getKt();
 
     // Normalizar para mejorar la probabilidad de no evento
-    double pd = ((1-prAbs)*kd) / (kd+ks+kt);
-    double ps = ((1-prAbs)*ks) / (kd+ks+kt);
-    double pt = ((1-prAbs)*kt) / (kd+ks+kt);
+    double pd = ((1.0-prAbs)*kd) / (kd+ks+kt);
+    double ps = ((1.0-prAbs)*ks) / (kd+ks+kt);
+    double pt = ((1.0-prAbs)*kt) / (kd+ks+kt);
 
     if(ks == 0.0 && kt == 0.0){//difuso
         if( e <= pd) {
             kdColours = kdColours/pd;
+            kdColours = kdColours;
         }else{
             prAbs = 1.0;
             kd = 0.0;
@@ -70,8 +71,8 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
 
         cout<<"numeros aleatorios inccorrects"<<endl;
     }
-    double inclinationi = acos(sqrt(1 - Einclination));
-    double azimuthi = 2 * M_PI * Eazimuth;
+    double inclinationi = acos(sqrt(1.0 - Einclination));
+    double azimuthi = 2.0 * M_PI * Eazimuth;
 
     // auto primFila = sin(inclinationi) * cos(azimuthi);
     Matriz angulo(3, 1);
@@ -83,6 +84,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
 
     Matriz matriz_wi = T * angulo;
     Vector wi = matriz_wi.vector();
+    wi.normalizar();
 
     return wi;
 }
@@ -186,9 +188,9 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
 
             rayo = Rayo(p, wi);
             rayo.setAbsorcion(prAbs+0.05);
-        } else {
+        } else { // para que sirve este if - else?
             rayo = Rayo();
-            rayo.setAbsorcion(1);
+            rayo.setAbsorcion(1.0);
         }
         //nextEstimation(rayo, focos, figuras, puntual);
         //if(puntual){ // En caso de ser una luz puntual se divide por dist^2

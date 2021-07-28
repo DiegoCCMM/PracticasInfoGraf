@@ -158,16 +158,13 @@ int main(int argc, char* argv[]){
                 Matriz Global = siscam * local;
 
                 r = Rayo(origen, Global.vector());
-                rThr = 1, gThr = 1, bThr = 1; 
+                rThr = 1.0, gThr = 1.0, bThr = 1.0; 
 
-                int k=0;
                 puntual = false;
                 geometryRGBFigures* fig;
                 do {
-                    k++;
-
                     max = INT_MAX;
-                    rmax = 1, gmax = 1, bmax = 1;
+                    rmax = 1.0, gmax = 1.0, bmax = 1.0;
                     colisiona = false;
                     
                     auto it = figuras.begin();
@@ -212,9 +209,9 @@ int main(int argc, char* argv[]){
 
                 if (!colisiona || r.hayAbsorcion()) {
                     // ldrfile << 0 << " " << 0 << " " << 0;
-                    rThr = 0;
-                    gThr = 0;
-                    bThr = 0;
+                    rThr = 0.0;
+                    gThr = 0.0;
+                    bThr = 0.0;
                 } 
 
                 rThrMedia += rThr, gThrMedia += gThr, bThrMedia += bThr;
