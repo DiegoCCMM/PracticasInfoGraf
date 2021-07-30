@@ -61,6 +61,7 @@ public:
         // normal.normalizar();
         Vector normal = this->getNormal(inters);
         Vector i = ray.getDir() ->* normal;
+        i.normalizar();
         Vector j = i ->* normal;
         // Comprobar que ningun vector resultado es 0
 
