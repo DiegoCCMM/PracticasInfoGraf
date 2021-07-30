@@ -38,7 +38,7 @@ public:
 
     Vector getNormal(Punto inters) override { 
         // return normal/normal.module();
-        return normal.normalizar();
+        return normal;
     }
 
     void setNormal(const Vector &normal){ this->normal = normal; }
@@ -72,9 +72,9 @@ public:
     Matriz ejeCoord (Rayo ray, Punto inters) override {
         Vector i = ray.getDir()->*this->getNormal(inters);
         i.normalizar();
-        Vector j = i->*normal;
+        Vector j = i->*this->getNormal(inters).normalizar();
 
-        Matriz resul(i, j, normal);
+        Matriz resul(i, j, this->getNormal(inters).normalizar());
 
         return resul;
     }

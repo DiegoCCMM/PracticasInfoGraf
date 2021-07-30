@@ -28,7 +28,7 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
     if(ks == 0.0 && kt == 0.0){//difuso
         if( e <= pd) {
             kdColours = kdColours/pd;
-            kdColours = kdColours;
+            //kdColours = kdColours;
         }else{
             prAbs = 1.0;
             kd = 0.0;

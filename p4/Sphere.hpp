@@ -50,7 +50,7 @@ public:
     }
 
     Vector getNormal(Punto inters) override { 
-        return (inters - this->center).normalizar(); 
+        return (inters - this->center); 
         // return (inters - this->center)/(inters - this->center).module(); 
     }
 
@@ -62,10 +62,10 @@ public:
         Vector normal = this->getNormal(inters);
         Vector i = ray.getDir() ->* normal;
         i.normalizar();
-        Vector j = i ->* normal;
+        Vector j = i ->* normal.normalizar();
         // Comprobar que ningun vector resultado es 0
 
-        Matriz resul(i, j, normal);
+        Matriz resul(i, j, normal.normalizar());
 
         return(resul);
     }
