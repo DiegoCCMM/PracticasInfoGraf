@@ -73,6 +73,7 @@ public:
 private:
 
     double secGradeEcuation(double a, double b, double c) {
+        a = 1.0;
         if(pow(b,2) - 4 * a * c >= 0) {
 
             double primeraSol = (-b - sqrt(pow(b,2) - 4 * a * c)) / (2*a);
