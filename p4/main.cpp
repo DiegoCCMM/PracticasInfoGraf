@@ -13,18 +13,20 @@
 void fromDoubleToRGB(double thr, double thr1, double thr2, int &colour, int &colour1, int &colour2);
 
 int main(int argc, char* argv[]){
+    // El tamanyo de la imagen ha de ser cuadrado
+    int width = 1024,
+        height = 1024;
+
     // int rperPixel = stoi(argv[1]);
     int rperPixel = 4;
     //int rperPixel = 10;
 
     // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
-    int pixelRes = 1024*1024; // Número de rayos (?) (1048576 = 1024x1024)
+    int pixelRes = width*height; // Número de rayos (?) (1048576 = 1024x1024)
     ofstream ldrfile;
     // ldrfile.open(argv[2]);
     ldrfile.open("figureLDR.ppm");
 
-    int width = 1024,
-        height = 1024;
 
 
     // --------------------------------------------------Escena
@@ -37,37 +39,37 @@ int main(int argc, char* argv[]){
     // sphere2.esDielectrico();
     sphere2.esDifuso();
 
-    // Sphere sphere3 = Sphere(Punto(-20,20,2220), 20.0, 0, 0, 255);  // Azul
-    // sphere3.setFoco(true);
-    // sphere3.esDifuso();
+    Sphere sphere3 = Sphere(Punto(-20,10,250), 10.0, 255, 255, 255);
+    sphere3.setFoco(true);
+    sphere3.esDifuso();
 
     // Plano - fondo
-    Plane planoFoco1 = Plane(Vector(0,0,-20), Punto(0,0,2300), 255, 255, 255);  // Plano foco
+    Plane planoFoco1 = Plane(Vector(0,0,-1), Punto(0,0,2300), 255, 255, 255);  // Plano foco
     //planoFoco1.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco1.esDifuso();
 
     // Plano - izquierda
-    Plane planoFoco2 = Plane(Vector(30,0,-30), Punto(-170,0,2220), 255, 0, 0);  // Plano foco
+    Plane planoFoco2 = Plane(Vector(1,0,-1), Punto(-170,0,2220), 255, 0, 0);  // Plano foco
     //planoFoco2.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco2.esDifuso();
 
     // Plano - derecha
-    Plane planoFoco3 = Plane(Vector(-30,0,-30), Punto(170,0,2220), 0, 255, 0);  // Plano foco
+    Plane planoFoco3 = Plane(Vector(-1,0,-1), Punto(170,0,2220), 0, 255, 0);  // Plano foco
     //planoFoco3.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco3.esDifuso();
 
     // Plano - techo
     //Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 0, 255, 0);  // Plano foco
-    Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 255, 255,255);  // Plano foco
+    Plane planoFoco4 = Plane(Vector(0,-1,-1), Punto(0,170,2220), 255, 255,255);  // Plano foco
     planoFoco4.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco4.esDifuso();
 
     // Plano - suelo
-    Plane planoFoco5 = Plane(Vector(0,30,-30), Punto(0,-170,2220), 255, 255, 255);  // Plano foco
+    Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,-170,2220), 255, 255, 255);  // Plano foco
     //planoFoco5.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco5.esDifuso();
@@ -76,7 +78,7 @@ int main(int argc, char* argv[]){
 
     // figuras.push_back(&sphere1);
     figuras.push_back(&sphere2);
-    // figuras.push_back(&sphere3);
+    figuras.push_back(&sphere3);
     figuras.push_back(&planoFoco1);
     figuras.push_back(&planoFoco2);
     figuras.push_back(&planoFoco3);
@@ -91,7 +93,7 @@ int main(int argc, char* argv[]){
     // Sistema de coordenadas de la cámara
     int front = 2000;
     Vector  x = Vector(width/2.0,0,0),
-            y = Vector(0,width/2.0,0),
+            y = Vector(0,height/2.0,0),
             z = Vector(0,0,front);
 
 
