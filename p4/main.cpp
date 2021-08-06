@@ -39,7 +39,11 @@ int main(int argc, char* argv[]){
     // sphere2.esDielectrico();
     sphere2.esDifuso();
 
-    Sphere sphere3 = Sphere(Punto(-20,10,1750), 10.0, 255, 255, 255);
+    /*Sphere sphere3 = Sphere(Punto(-20,10,1750), 10.0, 255, 255, 255); // Pelota delante
+    sphere3.setFoco(true);
+    sphere3.esDifuso();*/
+
+    Sphere sphere3 = Sphere(Punto(-20,10,1950), 10.0, 255, 255, 255); // Pelota detrás
     sphere3.setFoco(true);
     sphere3.esDifuso();
 
@@ -78,7 +82,7 @@ int main(int argc, char* argv[]){
 
     // figuras.push_back(&sphere1);
     figuras.push_back(&sphere2);
-    figuras.push_back(&sphere3);
+    //figuras.push_back(&sphere3);
     figuras.push_back(&planoFoco1);
     figuras.push_back(&planoFoco2);
     figuras.push_back(&planoFoco3);

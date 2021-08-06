@@ -158,7 +158,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
         double t = figure->interseccion(rayo);
         if(t>0){
             Vector d = rayo.getDir();
-            Punto p = o + d.mul(t); // TODO: verificar que el punto de interseccion esta bien calculado
+            Punto p = o + d.mul(t);
 
             Vector wi = muestreoCoseno(rayo, figure, p);
             if(ks != 0) { // especular

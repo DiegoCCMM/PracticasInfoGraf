@@ -42,9 +42,9 @@ public:
         Vector d = ray.getDir();
         double r = radius;
 
-        double  x = pow(d.module(), 2),
-                y = 2 * (d * (o-c)),
-                z = pow((o-c).module(), 2) - pow(r, 2);
+        double  x = pow((d.module()), 2),
+                y = d.mul(2) * (o-c),
+                z = pow(((o-c).module()), 2) - pow(r, 2);
 
         return secGradeEcuation(x, y, z);
     }
@@ -78,10 +78,10 @@ private:
             double primeraSol = (-b - sqrt(pow(b,2) - 4 * a * c)) / (2*a);
             double segundaSol = (-b + sqrt(pow(b,2) - 4 * a * c)) / (2*a);
 
-            if (primeraSol >= 10^(-5) && segundaSol < 10^(-5)){ return primeraSol;}
-            else if (primeraSol < 10^(-5) && segundaSol >= 10^(-5)){ return segundaSol;}
+            if (primeraSol >= 10^(-3) && segundaSol < 10^(-3)){ return primeraSol;}
+            else if (primeraSol < 10^(-3) && segundaSol >= 10^(-3)){ return segundaSol;}
             else {
-                if(primeraSol< 10^(-5)) return -1.0; //las dos son negativas
+                if(primeraSol< 10^(-3)) return -1.0; //las dos son negativas
                 //las dos son positivas, cogemos el minimo
                 else return min(primeraSol, segundaSol);
             }
