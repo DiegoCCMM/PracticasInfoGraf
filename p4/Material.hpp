@@ -84,7 +84,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
 
     Matriz matriz_wi = T * angulo;
     Vector wi = matriz_wi.vector();
-    wi.normalizar();
+    // wi.normalizar();
 
     return wi;
 }
@@ -156,7 +156,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
         // Punto inters = rayo.getOrigen()+origen_a_inter;
         Punto o = rayo.getOrigen();
         double t = figure->interseccion(rayo);
-        if(t>0){
+        if(t>=0){
             Vector d = rayo.getDir();
             Punto p = o + d.mul(t);
 
@@ -184,7 +184,15 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 rmax = tupleKd.r;
                 gmax = tupleKd.g;
                 bmax = tupleKd.b;
+
+                // rmax = tupleKd.r/M_PI;
+                // gmax = tupleKd.g/M_PI;
+                // bmax = tupleKd.b/M_PI;
             }
+
+            // rmax *= abs(wi*figure->getNormal(p).normalizar());
+            // gmax *= abs(wi*figure->getNormal(p).normalizar());
+            // bmax *= abs(wi*figure->getNormal(p).normalizar());
 
             rayo = Rayo(p, wi);
             rayo.setAbsorcion(prAbs+0.05);

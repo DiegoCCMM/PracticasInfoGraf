@@ -14,12 +14,13 @@ void fromDoubleToRGB(double thr, double thr1, double thr2, int &colour, int &col
 
 int main(int argc, char* argv[]){
     // El tamanyo de la imagen ha de ser cuadrado
-    int width = 1024,
-        height = 1024;
+    int width = 480,
+    // int width = 640,
+        height = 480;
 
     // int rperPixel = stoi(argv[1]);
     int rperPixel = 4;
-    //int rperPixel = 10;
+    // int rperPixel = 10;
 
     // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
     int pixelRes = width*height; // Número de rayos (?) (1048576 = 1024x1024)
@@ -35,7 +36,7 @@ int main(int argc, char* argv[]){
     // sphere1.esDifuso();
     // sphere1.setFoco(true);
 
-    Sphere sphere2 = Sphere(Punto(0,0,1820), 20.0, 0, 0, 255);  // Roja
+    Sphere sphere2 = Sphere(Punto(0,0,2000), 5.0, 235, 23, 181);  // Roja
     // sphere2.esDielectrico();
     sphere2.esDifuso();
 
@@ -48,33 +49,33 @@ int main(int argc, char* argv[]){
     sphere3.esDifuso();
 
     // Plano - fondo
-    Plane planoFoco1 = Plane(Vector(0,0,-1), Punto(0,0,2300), 255, 255, 255);  // Plano foco
+    Plane planoFoco1 = Plane(Vector(0,0,-1), Punto(0,0,2200), 255, 255, 255);  // Plano foco
     //planoFoco1.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco1.esDifuso();
 
     // Plano - izquierda
-    Plane planoFoco2 = Plane(Vector(1,0,-1), Punto(-170,0,2220), 255, 0, 0);  // Plano foco
+    Plane planoFoco2 = Plane(Vector(1,0,-1), Punto(0,0,2220), 255, 0, 0);  // Plano foco
     //planoFoco2.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco2.esDifuso();
 
     // Plano - derecha
-    Plane planoFoco3 = Plane(Vector(-1,0,-1), Punto(170,0,2220), 0, 255, 0);  // Plano foco
-    //planoFoco3.setFoco(true);
+    Plane planoFoco3 = Plane(Vector(-1,0,-1), Punto(0,0,2220), 0, 255, 0);  // Plano foco
+    // planoFoco3.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco3.esDifuso();
 
     // Plano - techo
     //Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 0, 255, 0);  // Plano foco
-    Plane planoFoco4 = Plane(Vector(0,-1,-1), Punto(0,170,2220), 255, 255,255);  // Plano foco
+    Plane planoFoco4 = Plane(Vector(0,-1,-1), Punto(0,0,2220), 255, 255,255);  // Plano foco
     planoFoco4.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco4.esDifuso();
 
     // Plano - suelo
-    Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,-170,2220), 255, 255, 255);  // Plano foco
-    //planoFoco5.setFoco(true);
+    Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,0,2220), 255, 255, 255);  // Plano foco
+    planoFoco5.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco5.esDifuso();
 
@@ -96,14 +97,20 @@ int main(int argc, char* argv[]){
 
     // Sistema de coordenadas de la cámara
     int front = 2000;
+    // int front = (width/2.0) / (tan(0.26 * M_PI)); // Evitar el ojo de pez
     Vector  x = Vector(width/2.0,0,0),
             y = Vector(0,height/2.0,0),
             z = Vector(0,0,front);
+            // TODO: Deberian estar normalizados?
 
 
     Punto origen = Punto(0,0,0);
     //Sistemas de coordenadas en matriz para hacer el cambio de sistemas
     Matriz siscam = Matriz(x,y,z,origen);
+    // Matriz pixel_resol = Matriz();
+    // pixel_resol.resolution(width,height);
+    // Matriz perspective = Matriz();
+    // perspective.perspectiva();
 
     //plano de proyección
     double area = width*height;
@@ -163,6 +170,8 @@ int main(int argc, char* argv[]){
 
                 //cambio de base, de salida tendremos la dirección del vector en coordenadas globales
                 Matriz Global = siscam * local;
+                // Matriz Global = ((pixel_resol * perspective) * siscam) * local;
+                // Matriz Global = (pixel_resol * siscam) * local;
 
                 r = Rayo(origen, Global.vector());
                 rThr = 1.0, gThr = 1.0, bThr = 1.0; 
@@ -178,9 +187,12 @@ int main(int argc, char* argv[]){
                     
                     auto it = figuras.begin();
                     while(it != figuras.end()){
+                        if(typeid(it)==typeid(Sphere)){
+                            std::cout << "hey" << std::endl;
+                        }
                         double res = (*it)->interseccion(r);
 
-                        if(res > 0 && res < max){
+                        if(res >= 0 && res < max){
                             max = res;
                             // rThr = (*it)->getRed();
                             // gThr = (*it)->getGreen();
@@ -214,6 +226,15 @@ int main(int argc, char* argv[]){
                         rThr *= rmax;
                         gThr *= gmax;
                         bThr *= bmax;
+
+                        // if(numRebotes==1){
+                        //     rThr = rmax, gThr = gmax, bThr = bmax; 
+                        // }
+                        // else {
+                        //     rThr *= rmax;
+                        //     gThr *= gmax;
+                        //     bThr *= bmax;
+                        // }
 
                         /*if(numRebotes==1){
                             rThr = rmax, gThr = gmax, bThr = bmax; 
