@@ -14,7 +14,7 @@
 void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& ks, double& kt, double &prAbs){
 
     // Num aleatorio para la ruleta rusa
-    double e = ((double) rand() / (RAND_MAX)); 
+    double e = ((double) rand() / (RAND_MAX)); // Probabilidad no evento
     kdColours = figure->getKd();
     kd = figure->getMaxKd();
     ks = figure->getKs();
@@ -80,6 +80,8 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
     angulo.setNum(1, 0, sin(inclinationi) * sin(azimuthi));
     angulo.setNum(2, 0, cos(inclinationi));
 
+    // Al usar solo direcciones se pueden omitir el punto origen y la
+    // ultima fila de la matriz de transformacion, porque no se pueden desplazar
     Matriz T = figure->ejeCoord(rayo, inters);
 
     Matriz matriz_wi = T * angulo;
@@ -189,6 +191,10 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 // gmax = tupleKd.g/M_PI;
                 // bmax = tupleKd.b/M_PI;
             }
+
+            // rmax = tupleKd.r*M_PI;
+            // gmax = tupleKd.g*M_PI;
+            // bmax = tupleKd.b*M_PI;
 
             // rmax *= abs(wi*figure->getNormal(p).normalizar());
             // gmax *= abs(wi*figure->getNormal(p).normalizar());

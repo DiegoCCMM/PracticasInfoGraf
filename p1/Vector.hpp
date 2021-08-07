@@ -19,8 +19,12 @@ public:
         z = coordz;
     }
 
+    void setZ(double coordz){
+        z = coordz;
+    }
+
     double module() {
-        return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+        return sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(z, 2.0));
     }
 
     Vector operator+(const Vector b) {

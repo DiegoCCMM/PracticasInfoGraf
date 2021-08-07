@@ -19,7 +19,7 @@ int main(int argc, char* argv[]){
         height = 480;
 
     // int rperPixel = stoi(argv[1]);
-    int rperPixel = 4;
+    int rperPixel = 4; // Antialiasing
     // int rperPixel = 10;
 
     // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]){
 
     // Plano - izquierda
     Plane planoFoco2 = Plane(Vector(1,0,-1), Punto(0,0,2220), 255, 0, 0);  // Plano foco
-    //planoFoco2.setFoco(true);
+    // planoFoco2.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco2.esDifuso();
 
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]){
 
     // Plano - suelo
     Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,0,2220), 255, 255, 255);  // Plano foco
-    planoFoco5.setFoco(true);
+    // planoFoco5.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco5.esDifuso();
 
@@ -96,12 +96,12 @@ int main(int argc, char* argv[]){
     // --------------------------------------------------FIN Escena
 
     // Sistema de coordenadas de la cámara
-    int front = 2000;
+    int front = (double)height/tan(M_PI/12.0);
     // int front = (width/2.0) / (tan(0.26 * M_PI)); // Evitar el ojo de pez
     Vector  x = Vector(width/2.0,0,0),
             y = Vector(0,height/2.0,0),
             z = Vector(0,0,front);
-            // TODO: Deberian estar normalizados?
+            // NO HACE FALTA QUE ESTEN NORMALIZADOS
 
 
     Punto origen = Punto(0,0,0);
@@ -123,10 +123,10 @@ int main(int argc, char* argv[]){
     double rmax, gmax, bmax;
     double rThr, gThr, bThr; // Throughput
     Vector dirLocal, dirGlobal;
-    double dist, posZ, normalized;
+    double dist, dirZ, normalized;
     bool colisiona, puntual;
 
-    //cuantos pixeles tendrá cada lado
+    //cuantos pixeles tendra cada lado
     int numPixAncho = width/pixelUnit;
     int numPixAlto = height/pixelUnit;
 
@@ -134,8 +134,8 @@ int main(int argc, char* argv[]){
     ldrfile << "#MAX=255" << endl;
     ldrfile << numPixAncho << " " << numPixAlto << endl;
     ldrfile << 255 << endl;
-
-    // Procedimiento: izq -> der, arriba -> abajo
+// int numRebotes = 0;
+    // Procedimiento pixeles en imagen: izq -> der, arriba -> abajo
     for (int j = 0; j < numPixAlto; j++) {
 
         xInit = -width/2.0;
@@ -145,10 +145,10 @@ int main(int argc, char* argv[]){
             yEnd = yInit - pixelUnit;
 
             double rThrMedia = 0, gThrMedia = 0, bThrMedia = 0;
+            // double rThrMedia = 1, gThrMedia = 1, bThrMedia = 1;
 
             for(int w=0; w<rperPixel; w++) { // Antialiasing
 
-                //Antialiasing
                 int m;
                 xLocal = 0.0, yLocal = 0.0;
                 for(m=1.0; m<=6.0; m++){
@@ -159,10 +159,14 @@ int main(int argc, char* argv[]){
                 yLocal /= (m-1);
 
                 dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
-                posZ = sqrt(pow(dist,2) + pow(front,2));
-                normalized = Vector(xLocal, yLocal, posZ).module();
-                dirLocal = Vector(xLocal/normalized, yLocal/normalized, 1);
+                dirZ = sqrt(pow(dist,2) + pow(front,2));
+                // normalized = Vector(xLocal, yLocal, dirZ).module();
+                // dirLocal = Vector(xLocal/normalized, yLocal/normalized, 1);
+                dirLocal = Vector(xLocal, yLocal, dirZ).normalizar();
+                // dirLocal.setZ(1);
+                // dirLocal = x.mul(yLocal) + y.mul(xLocal) + z;
                 // dirLocal = dirLocal.normalizar();
+                // dirLocal.setZ(1);
 
                 //Vector con la dirección local a la matriz de proyección
                 //de tipo matriz para poder operar con la matriz de cambio de base
@@ -170,12 +174,10 @@ int main(int argc, char* argv[]){
 
                 //cambio de base, de salida tendremos la dirección del vector en coordenadas globales
                 Matriz Global = siscam * local;
-                // Matriz Global = ((pixel_resol * perspective) * siscam) * local;
-                // Matriz Global = (pixel_resol * siscam) * local;
 
                 r = Rayo(origen, Global.vector());
-                rThr = 1.0, gThr = 1.0, bThr = 1.0; 
-                //rThr = 0.0, gThr = 0.0, bThr = 0.0; 
+                // rThr = 1.0, gThr = 1.0, bThr = 1.0; 
+                rThr = 0.0, gThr = 0.0, bThr = 0.0; 
                 int numRebotes = 0;
 
                 puntual = false;
@@ -223,18 +225,18 @@ int main(int argc, char* argv[]){
                         // gmax = fig->getGreen()*gmax;
                         // bmax = fig->getBlue()*bmax;
 
-                        rThr *= rmax;
-                        gThr *= gmax;
-                        bThr *= bmax;
+                        // rThr *= rmax;
+                        // gThr *= gmax;
+                        // bThr *= bmax;
 
-                        // if(numRebotes==1){
-                        //     rThr = rmax, gThr = gmax, bThr = bmax; 
-                        // }
-                        // else {
-                        //     rThr *= rmax;
-                        //     gThr *= gmax;
-                        //     bThr *= bmax;
-                        // }
+                        if(numRebotes==1){
+                            rThr = rmax, gThr = gmax, bThr = bmax; 
+                        }
+                        else {
+                            rThr *= rmax;
+                            gThr *= gmax;
+                            bThr *= bmax;
+                        }
 
                         /*if(numRebotes==1){
                             rThr = rmax, gThr = gmax, bThr = bmax; 
@@ -264,9 +266,13 @@ int main(int argc, char* argv[]){
                         }*/
 
 
-                        /*rThr += rmax;
-                        gThr += gmax;
-                        bThr += bmax;*/
+                        // rThr += rmax;
+                        // gThr += gmax;
+                        // bThr += bmax;
+
+                        // rThr += rmax/numRebotes;
+                        // gThr += gmax/numRebotes;
+                        // bThr += bmax/numRebotes;
                     }
 
                 } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco() && !puntual);
@@ -281,13 +287,18 @@ int main(int argc, char* argv[]){
                 } 
 
                 rThrMedia += rThr, gThrMedia += gThr, bThrMedia += bThr;
-                //rThrMedia += rThr/numRebotes, gThrMedia += gThr/numRebotes, bThrMedia += bThr/numRebotes;
+                // rThrMedia *= rThr/numRebotes, gThrMedia *= gThr/numRebotes, bThrMedia *= bThr/numRebotes;
+                // rThrMedia += rThr/numRebotes, gThrMedia += gThr/numRebotes, bThrMedia += bThr/numRebotes;
             }
 
             int rColour, gColour, bColour;
 
             fromDoubleToRGB(rThrMedia/rperPixel, gThrMedia/rperPixel, 
                             bThrMedia/rperPixel, rColour, gColour, bColour);
+            // fromDoubleToRGB(rThrMedia*pow(M_PI,2)/rperPixel, gThrMedia*pow(M_PI,2)/rperPixel, 
+            //                 bThrMedia*pow(M_PI,2)/rperPixel, rColour, gColour, bColour);
+            // fromDoubleToRGB(rThrMedia*pow(M_PI,2)/numRebotes, gThrMedia*pow(M_PI,2)/numRebotes, 
+            //                 bThrMedia*pow(M_PI,2)/numRebotes, rColour, gColour, bColour);
             ldrfile << rColour << " " << gColour << " " << bColour;
 
             if (i < numPixAncho-1) {
