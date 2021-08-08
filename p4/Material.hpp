@@ -15,7 +15,7 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
 
     // Num aleatorio para la ruleta rusa
     double e = ((double) rand() / (RAND_MAX)); // Probabilidad no evento
-    kdColours = figure->getKd();
+    // kdColours = figure->getKd();
     kd = figure->getMaxKd();
     ks = figure->getKs();
     kt = figure->getKt();
@@ -187,18 +187,13 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 gmax = tupleKd.g;
                 bmax = tupleKd.b;
 
-                // rmax = tupleKd.r/M_PI;
-                // gmax = tupleKd.g/M_PI;
-                // bmax = tupleKd.b/M_PI;
+                // rmax = tupleKd.r*abs(figure->getNormal(p)*wi)
+                //             / ((1.0-prAbs)*kd) / (kd+ks+kt);
+                // gmax = tupleKd.g*abs(figure->getNormal(p)*wi)
+                //             /((1.0-prAbs)*kd) / (kd+ks+kt);
+                // bmax = tupleKd.b*abs(figure->getNormal(p)*wi)
+                //             /((1.0-prAbs)*kd) / (kd+ks+kt);
             }
-
-            // rmax = tupleKd.r*M_PI;
-            // gmax = tupleKd.g*M_PI;
-            // bmax = tupleKd.b*M_PI;
-
-            // rmax *= abs(wi*figure->getNormal(p).normalizar());
-            // gmax *= abs(wi*figure->getNormal(p).normalizar());
-            // bmax *= abs(wi*figure->getNormal(p).normalizar());
 
             rayo = Rayo(p, wi);
             rayo.setAbsorcion(prAbs+0.05);

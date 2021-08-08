@@ -182,6 +182,8 @@ int main(int argc, char* argv[]){
 
                 puntual = false;
                 geometryRGBFigures* fig;
+
+/* TODO: INICIO Funcion recursiva rebote camino en material */
                 do {
                     max = INT_MAX;
                     rmax = 1.0, gmax = 1.0, bmax = 1.0;
@@ -228,6 +230,7 @@ int main(int argc, char* argv[]){
                         // rThr *= rmax;
                         // gThr *= gmax;
                         // bThr *= bmax;
+                        // double kd, ks, kt, prAbs = rayo.getAbsorcion();
 
                         if(numRebotes==1){
                             rThr = rmax, gThr = gmax, bThr = bmax; 
@@ -284,7 +287,9 @@ int main(int argc, char* argv[]){
                     rThr = 0.0;
                     gThr = 0.0;
                     bThr = 0.0;
-                } 
+                }
+/* FIN  Funcion recursiva rebote camino en material */
+
 
                 rThrMedia += rThr, gThrMedia += gThr, bThrMedia += bThr;
                 // rThrMedia *= rThr/numRebotes, gThrMedia *= gThr/numRebotes, bThrMedia *= bThr/numRebotes;
