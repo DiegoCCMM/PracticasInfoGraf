@@ -72,7 +72,8 @@ public:
     Matriz ejeCoord (Rayo ray, Punto inters) override {
         Vector i = ray.getDir()->*this->getNormal(inters);
         i.normalizar();
-        Vector j = i->*this->getNormal(inters).normalizar();
+        Vector j = i->*this->getNormal(inters);
+        j.normalizar();
 
         Matriz resul(i, j, this->getNormal(inters).normalizar());
 

@@ -19,8 +19,8 @@ int main(int argc, char* argv[]){
         height = 480;
 
     // int rperPixel = stoi(argv[1]);
-    int rperPixel = 4; // Antialiasing
-    // int rperPixel = 10;
+    // int rperPixel = 4; // Antialiasing
+    int rperPixel = 10;
 
     // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
     int pixelRes = width*height; // Número de rayos (?) (1048576 = 1024x1024)
@@ -31,22 +31,24 @@ int main(int argc, char* argv[]){
 
 
     // --------------------------------------------------Escena
-    // Sphere sphere1 = Sphere(Punto(0,0,2200), 20.0, 34, 153, 84);    // Verde
+    Sphere sphere1 = Sphere(Punto(10,0,2000), 10.0, 235, 23, 181);    // Verde
     // Sphere sphere1 = Sphere(Punto(0,0,0), 7000.0, 255, 255, 255);    // luz normal
-    // sphere1.esDifuso();
+    sphere1.esDifuso();
     // sphere1.setFoco(true);
 
-    Sphere sphere2 = Sphere(Punto(0,0,2000), 5.0, 235, 23, 181);  // Roja
-    // sphere2.esDielectrico();
-    sphere2.esDifuso();
+    Sphere sphere2 = Sphere(Punto(0,-15,1900), 10.0, 235, 23, 181);  // Roja
+    sphere2.esDielectrico();
+    // sphere2.esEspecular();
+    // sphere2.esDifuso();
 
     /*Sphere sphere3 = Sphere(Punto(-20,10,1750), 10.0, 255, 255, 255); // Pelota delante
     sphere3.setFoco(true);
     sphere3.esDifuso();*/
 
-    Sphere sphere3 = Sphere(Punto(-20,10,1950), 10.0, 255, 255, 255); // Pelota detrás
-    sphere3.setFoco(true);
-    sphere3.esDifuso();
+    Sphere sphere3 = Sphere(Punto(-10,0,2000), 10.0, 235, 23, 181); // Pelota detrás
+    // sphere3.setFoco(true);
+    sphere3.esEspecular();
+    // sphere3.esDifuso();
 
     // Plano - fondo
     Plane planoFoco1 = Plane(Vector(0,0,-1), Punto(0,0,2200), 255, 255, 255);  // Plano foco
@@ -81,9 +83,9 @@ int main(int argc, char* argv[]){
 
     list<geometryRGBFigures*> figuras;
 
-    // figuras.push_back(&sphere1);
-    figuras.push_back(&sphere2);
-    //figuras.push_back(&sphere3);
+    figuras.push_back(&sphere1);
+    // figuras.push_back(&sphere2);
+    // figuras.push_back(&sphere3);
     figuras.push_back(&planoFoco1);
     figuras.push_back(&planoFoco2);
     figuras.push_back(&planoFoco3);
@@ -96,7 +98,7 @@ int main(int argc, char* argv[]){
     // --------------------------------------------------FIN Escena
 
     // Sistema de coordenadas de la cámara
-    int front = (double)height/tan(M_PI/12.0);
+    int front = (double)height/(1.0*tan(M_PI/12.0));
     // int front = (width/2.0) / (tan(0.26 * M_PI)); // Evitar el ojo de pez
     Vector  x = Vector(width/2.0,0,0),
             y = Vector(0,height/2.0,0),
@@ -191,9 +193,9 @@ int main(int argc, char* argv[]){
                     
                     auto it = figuras.begin();
                     while(it != figuras.end()){
-                        if(typeid(it)==typeid(Sphere)){
+                        /*if(typeid(it)==typeid(Sphere)){
                             std::cout << "hey" << std::endl;
-                        }
+                        }*/
                         double res = (*it)->interseccion(r);
 
                         if(res >= 0 && res < max){
@@ -326,4 +328,7 @@ void fromDoubleToRGB(double thr, double thr1, double thr2,
     colour1 = (thr1 * 255.0);
     colour2 = (thr2 * 255.0);
 
+    if (colour > 255) colour = 255;
+    if (colour1 > 255) colour1 = 255;
+    if (colour2 > 255) colour2 = 255;
 }

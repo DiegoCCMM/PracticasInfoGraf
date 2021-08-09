@@ -62,7 +62,8 @@ public:
         Vector normal = this->getNormal(inters);
         Vector i = ray.getDir() ->* normal;
         i.normalizar();
-        Vector j = i ->* normal.normalizar(); 
+        Vector j = i ->* normal;
+        j.normalizar();
         // Comprobar que ningun producto vectorial el resultado es 0
 
         Matriz resul(i, j, normal.normalizar());

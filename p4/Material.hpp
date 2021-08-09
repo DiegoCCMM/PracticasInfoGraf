@@ -180,19 +180,33 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 gmax = kt;
                 bmax = kt;
             }else{  //difuso
-                if(!figure->soyFoco()) {
-                    //cout << "he colisionado con la esfera difusa" << endl;
-                }
+                // if(figure->soyFoco()) {
+                //     //cout << "he colisionado con la esfera difusa" << endl;
+                //     rmax = tupleKd.r;
+                //     gmax = tupleKd.g;
+                //     bmax = tupleKd.b;
+                // }
                 rmax = tupleKd.r;
                 gmax = tupleKd.g;
                 bmax = tupleKd.b;
+                // else {
+                //     rmax = tupleKd.r*abs(figure->getNormal(p)*wi);
+                //     gmax = tupleKd.g*abs(figure->getNormal(p)*wi);
+                //     bmax = tupleKd.b*abs(figure->getNormal(p)*wi);
 
-                // rmax = tupleKd.r*abs(figure->getNormal(p)*wi)
-                //             / ((1.0-prAbs)*kd) / (kd+ks+kt);
-                // gmax = tupleKd.g*abs(figure->getNormal(p)*wi)
-                //             /((1.0-prAbs)*kd) / (kd+ks+kt);
-                // bmax = tupleKd.b*abs(figure->getNormal(p)*wi)
-                //             /((1.0-prAbs)*kd) / (kd+ks+kt);
+                //     // rmax = tupleKd.r*abs(figure->getNormal(p)*wi)
+                //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
+                //     // gmax = tupleKd.g*abs(figure->getNormal(p)*wi)
+                //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
+                //     // bmax = tupleKd.b*abs(figure->getNormal(p)*wi)
+                //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
+                // }
+            }
+
+            if(!figure->soyFoco()) {
+                    rmax *= abs(figure->getNormal(p)*wi);
+                    gmax *= abs(figure->getNormal(p)*wi);
+                    bmax *= abs(figure->getNormal(p)*wi);
             }
 
             rayo = Rayo(p, wi);
