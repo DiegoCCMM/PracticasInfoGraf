@@ -86,7 +86,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
 
     Matriz matriz_wi = T * angulo;
     Vector wi = matriz_wi.vector();
-    // wi.normalizar();
+    wi = wi.normalizar();
 
     return wi;
 }
@@ -163,19 +163,29 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
             Punto p = o + d.mul(t);
 
             Vector wi = muestreoCoseno(rayo, figure, p);
-            if(ks != 0) { // especular
+            Vector n = figure->getNormal(p); // normal de la fig
 
-                Vector n = figure->getNormal(p);
+            if(ks != 0) { // especular - reflection
 
-                wi = (n.mul(2.0) ->* (n ->* wi)) - wi;
+                // wi.normalizar();
+                wi = (n.mul(2.0)).mul(n*wi) - wi; // diapositiva 16 - pathtracing
+                wi = wi.normalizar();
+                // rmax = ks/(n*wi);
+                // gmax = ks/(n*wi);
+                // bmax = ks/(n*wi);
                 rmax = ks;
                 gmax = ks;
                 bmax = ks;
             }
-            else if(kt != 0) { // dielectrico
-                double aire = 1.0, vidrio = 1.45; // Medios
-                Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio); // TODO: revisar
-                wi = aux.asinV();
+            else if(kt != 0) { // dielectrico - refraction
+                // double aire = 1.0, vidrio = 1.45; // Medios
+                // Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio); // TODO: revisar
+                // wi = aux.asinV();
+                wi = wi - (n.mul(2.0)).mul(wi*n);
+                wi = wi.normalizar();
+                // rmax = kt/(n*wi);
+                // gmax = kt/(n*wi);
+                // bmax = kt/(n*wi);
                 rmax = kt;
                 gmax = kt;
                 bmax = kt;
@@ -189,6 +199,12 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 rmax = tupleKd.r;
                 gmax = tupleKd.g;
                 bmax = tupleKd.b;
+
+                if(!figure->soyFoco()) {
+                    rmax *= abs(n*wi);
+                    gmax *= abs(n*wi);
+                    bmax *= abs(n*wi);
+                }
                 // else {
                 //     rmax = tupleKd.r*abs(figure->getNormal(p)*wi);
                 //     gmax = tupleKd.g*abs(figure->getNormal(p)*wi);
@@ -203,11 +219,13 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 // }
             }
 
-            if(!figure->soyFoco()) {
-                    rmax *= abs(figure->getNormal(p)*wi);
-                    gmax *= abs(figure->getNormal(p)*wi);
-                    bmax *= abs(figure->getNormal(p)*wi);
-            }
+            // wi.normalizar();
+
+            // if(!figure->soyFoco()) {
+                    // rmax *= abs(n*wi);
+                    // gmax *= abs(n*wi);
+                    // bmax *= abs(n*wi);
+            // }
 
             rayo = Rayo(p, wi);
             rayo.setAbsorcion(prAbs+0.05);

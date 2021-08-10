@@ -38,7 +38,7 @@ public:
 
     Vector getNormal(Punto inters) override { 
         // return normal/normal.module();
-        return normal;
+        return normal.normalizar();
     }
 
     void setNormal(const Vector &normal){ this->normal = normal; }
@@ -67,17 +67,6 @@ public:
         // si d*n == 0 --> no intersecta (en infinito)
 
         return -(c + o*n) / (d*n);
-    }
-
-    Matriz ejeCoord (Rayo ray, Punto inters) override {
-        Vector i = ray.getDir()->*this->getNormal(inters);
-        i.normalizar();
-        Vector j = i->*this->getNormal(inters);
-        j.normalizar();
-
-        Matriz resul(i, j, this->getNormal(inters).normalizar());
-
-        return resul;
     }
 
 };

@@ -39,8 +39,36 @@ public:
     int getBlue()  const { return blue;  }
 
     virtual double interseccion (Rayo ray) {}
-    virtual Matriz ejeCoord (Rayo ray, Punto inters) {}
     virtual Vector getNormal(Punto inters) {}
+    
+    Matriz ejeCoord (Rayo ray, Punto inters) {
+        // Vector i = ray.getDir().normalizar()->*this->getNormal(inters).normalizar();
+        // // i.normalizar();
+        // Vector j = i->*this->getNormal(inters).normalizar();
+        // // j.normalizar();
+
+        // Matriz resul(i, j, this->getNormal(inters).normalizar());
+
+        // return resul;
+
+        // Vector i = ray.getDir()->*this->getNormal(inters);
+        // i.normalizar();
+        // Vector j = i->*this->getNormal(inters).normalizar();
+
+        // Matriz resul(i, j, this->getNormal(inters).normalizar());
+        Vector k = this->getNormal(inters); // normal
+
+        Vector j = (k ->* ray.getDir().normalizar()).normalizar();
+        if((k ->* ray.getDir()).module()<0.99){
+            int p = 0;
+        }
+        // i.normalizar();
+        Vector i = (j ->* k).normalizar();
+
+        Matriz resul(i, j, k);
+
+        return resul;
+    }
 
     void esDifuso(){
         kd = max(max(red, green), blue)/(double)(red + green + blue);

@@ -31,53 +31,66 @@ int main(int argc, char* argv[]){
 
 
     // --------------------------------------------------Escena
-    Sphere sphere1 = Sphere(Punto(10,0,2000), 10.0, 235, 23, 181);    // Verde
-    // Sphere sphere1 = Sphere(Punto(0,0,0), 7000.0, 255, 255, 255);    // luz normal
-    sphere1.esDifuso();
+    Sphere sphere1 = Sphere(Punto(-5,0,450), 2.0, 235, 23, 181);    // Rosa
+    // Sphere sphere1 = Sphere(Punto(10,0,2000), 10.0, 255, 255, 255);   // blanca
+    // sphere1.esDifuso();
+    sphere1.esEspecular();
     // sphere1.setFoco(true);
+    // sphere1.esDielectrico();
 
-    Sphere sphere2 = Sphere(Punto(0,-15,1900), 10.0, 235, 23, 181);  // Roja
-    sphere2.esDielectrico();
+    Sphere sphere2 = Sphere(Punto(0,-20,2000), 10.0, 0, 0, 255);  // Azul
+    // sphere2.esDielectrico();
     // sphere2.esEspecular();
-    // sphere2.esDifuso();
+    sphere2.esDifuso();
+    // sphere2.setFoco(true);
 
-    /*Sphere sphere3 = Sphere(Punto(-20,10,1750), 10.0, 255, 255, 255); // Pelota delante
-    sphere3.setFoco(true);
-    sphere3.esDifuso();*/
-
-    Sphere sphere3 = Sphere(Punto(-10,0,2000), 10.0, 235, 23, 181); // Pelota detrás
+    Sphere sphere3 = Sphere(Punto(-1,0,460), 2.0, 235, 23, 181); // Pelota detrás
     // sphere3.setFoco(true);
-    sphere3.esEspecular();
+    // sphere3.esEspecular();
     // sphere3.esDifuso();
+    sphere3.esDielectrico();
+
+    Sphere sphere4 = Sphere(Punto(-10,0,2100), 8.0, 200, 200, 200); // Pelota detrás
+    sphere4.setFoco(true);
+    // sphere4.esEspecular();
+    sphere4.esDifuso();
+    // sphere4.esDielectrico();
+
+    // Esfera foco grande en medio que intenta iluminar la sala
+    Sphere sphere5 = Sphere(Punto(0,0,470), 2.0, 0, 0, 255);
+    // sphere5.setFoco(true);
+    // sphere5.esEspecular();
+    sphere5.esDifuso();
+    // sphere5.esDielectrico();
 
     // Plano - fondo
-    Plane planoFoco1 = Plane(Vector(0,0,-1), Punto(0,0,2200), 255, 255, 255);  // Plano foco
-    //planoFoco1.setFoco(true);
+    Plane planoFoco1 = Plane(Vector(0,0,-1), Punto(0,0,475), 255, 255, 255);  // Plano foco
+    planoFoco1.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco1.esDifuso();
 
     // Plano - izquierda
-    Plane planoFoco2 = Plane(Vector(1,0,-1), Punto(0,0,2220), 255, 0, 0);  // Plano foco
-    // planoFoco2.setFoco(true);
+    Plane planoFoco2 = Plane(Vector(1,0,-1), Punto(-width,0,0), 255, 0, 0);  // Plano foco
+    planoFoco2.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco2.esDifuso();
 
     // Plano - derecha
-    Plane planoFoco3 = Plane(Vector(-1,0,-1), Punto(0,0,2220), 0, 255, 0);  // Plano foco
-    // planoFoco3.setFoco(true);
+    Plane planoFoco3 = Plane(Vector(-1,0,-1), Punto(width,0,0), 0, 255, 0);  // Plano foco
+    planoFoco3.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco3.esDifuso();
 
     // Plano - techo
     //Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 0, 255, 0);  // Plano foco
-    Plane planoFoco4 = Plane(Vector(0,-1,-1), Punto(0,0,2220), 255, 255,255);  // Plano foco
+    Plane planoFoco4 = Plane(Vector(0,-1,-1), Punto(0,height,0), 255, 255,255);  // Plano foco
     planoFoco4.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco4.esDifuso();
 
     // Plano - suelo
-    Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,0,2220), 255, 255, 255);  // Plano foco
-    // planoFoco5.setFoco(true);
+    Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,-height,0), 255, 255, 255);  // Plano foco
+    planoFoco5.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco5.esDifuso();
 
@@ -86,6 +99,8 @@ int main(int argc, char* argv[]){
     figuras.push_back(&sphere1);
     // figuras.push_back(&sphere2);
     // figuras.push_back(&sphere3);
+    // figuras.push_back(&sphere4);
+    figuras.push_back(&sphere5);
     figuras.push_back(&planoFoco1);
     figuras.push_back(&planoFoco2);
     figuras.push_back(&planoFoco3);

@@ -50,25 +50,8 @@ public:
     }
 
     Vector getNormal(Punto inters) override { 
-        return (inters - this->center); 
+        return (inters - this->center).normalizar(); 
         // return (inters - this->center)/(inters - this->center).module(); 
-    }
-
-    Matriz ejeCoord (Rayo ray, Punto inters) override {
-        // Y falta normalizar
-        // Vector normal = Punto(radius+center.getX(),center.getY(),center.getZ()) - this->center;
-        // normal = normal/normal.module();
-        // normal.normalizar();
-        Vector normal = this->getNormal(inters);
-        Vector i = ray.getDir() ->* normal;
-        i.normalizar();
-        Vector j = i ->* normal;
-        j.normalizar();
-        // Comprobar que ningun producto vectorial el resultado es 0
-
-        Matriz resul(i, j, normal.normalizar());
-
-        return(resul);
     }
 
 private:
