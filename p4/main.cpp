@@ -41,8 +41,8 @@ int main(int argc, char* argv[]){
     // sphere3.esDifuso();
 
     // Plano - fondo
-    Plane planoFoco1 = Plane(Vector(0,0,-20), Punto(0,0,2300), 255, 0, 127);  // Plano foco
-    planoFoco1.setFoco(true);
+    Plane planoFoco1 = Plane(Vector(0,0,-20), Punto(0,0,2300), 0, 250, 0);  // Plano foco
+    //planoFoco1.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco1.esDifuso();
 
@@ -53,20 +53,20 @@ int main(int argc, char* argv[]){
     planoFoco2.esDifuso();
 
     // Plano - derecha
-    Plane planoFoco3 = Plane(Vector(-30,0,-30), Punto(170,0,2220), 255, 255, 0);  // Plano foco
+    Plane planoFoco3 = Plane(Vector(-30,0,-30), Punto(170,0,2220), 255, 0, 0);  // Plano foco
     planoFoco3.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco3.esDifuso();
 
     // Plano - techo
-    Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 0, 255, 0);  // Plano foco
+    Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 230, 230, 230);  // Plano foco
     planoFoco4.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco4.esDifuso();
 
     // Plano - suelo
-    Plane planoFoco5 = Plane(Vector(0,30,-30), Punto(0,-170,2220), 0, 0, 255);  // Plano foco
-    planoFoco5.setFoco(true);
+    Plane planoFoco5 = Plane(Vector(0,30,-30), Punto(0,-170,2220), 0, 0, 250);  // Plano foco
+    //planoFoco5.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco5.esDifuso();
 
@@ -157,6 +157,8 @@ int main(int argc, char* argv[]){
 
                 r = Rayo(origen, Global.vector());
                 rThr = 1, gThr = 1, bThr = 1; 
+
+                //FINAL PRIMER PASO, LANZAMIENTO DE RAYOS A TRAVES DE MATRIZ DE PROYECCION CON COORD GLOB
 
                 int k=0;
                 puntual = false;
