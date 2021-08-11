@@ -66,7 +66,7 @@ public:
         return -(c + o*n) / (d*n);
     }
 
-    Matriz ejeCoord (Rayo ray) {
+    Matriz ejeCoord (Rayo ray) override {
         Vector j = ray.getDir()->*normal;
         Vector k = j->*normal;
 

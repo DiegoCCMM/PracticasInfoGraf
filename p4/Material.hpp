@@ -67,8 +67,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
     Eazimuth = ((double) rand() / (RAND_MAX));
 
     if(Einclination < 0 || Einclination > 1  || Eazimuth < 0 || Eazimuth > 1 ){
-
-        cout<<"numeros aleatorios inccorrects"<<endl;
+        cout<<"numeros aleatorios inccorrectos"<<endl;
     }
     double inclinationi = acos(sqrt(1 - Einclination));
     double azimuthi = 2 * M_PI * Eazimuth;
@@ -83,6 +82,8 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
 
     Matriz matriz_wi = T * angulo;
     Vector wi = matriz_wi.vector();
+
+    //std::cout << wi.x << " " << wi.y << " " << wi.z << std::endl;
 
     return wi;
 }

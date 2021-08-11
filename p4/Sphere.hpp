@@ -53,7 +53,7 @@ public:
         return (inters - this->center).normalizar(); 
     }
 
-    Matriz ejeCoord (Rayo ray) {
+    Matriz ejeCoord (Rayo ray) override {
         Vector i = Punto(radius+center.getX(),center.getY(),center.getZ()) - this->center;
         Vector j = i ->* ray.getDir();
         Vector k = i ->* j;

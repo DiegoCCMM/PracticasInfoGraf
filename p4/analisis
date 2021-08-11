@@ -1,0 +1,26 @@
+ANALISIS DEL CÓDIGO PARA ENCONTRAR LOS POSIBLES ERRORES
+-------------------------------------------------------
+
+Primer paso:
+    Lanzar rayos a traves de la matriz (en un principio está bien )
+Segundo paso:
+    Se itera sobre todas las figuras para saber si ha colisionado
+        Se escoge la figura más cercana al origen y se crea el rebote del camino
+        Mientras no hayAbsorcion() && colisiona con algo && !fig->soyFoco() && !puntual (estos dos ultimos es que no termina el camino)
+
+HASTA AQUÍ BIEN
+
+En reboteCamino:
+    Se ejecuta la ruleta rusa, que elige las probabilidades de absorción, en el caso de difuso se hace el muestreoCoseo y se guardan los valores difusos
+
+En muestreoCoseno:
+    Fact-chekeado con el vídeo montecarlo parte 2. Minuto 36:48 está bien
+    La parte de generar los azimuth e inclinación aleatorios, la creación del wi (o la matriz de 3x1)
+    Después, y se podría preguntar al profesor, del rayo con la figura sacamos su eje de coordenadas para cambiar su direccion
+    por la nueva dirección aleatoria calculada
+
+
+
+
+Problema, las luces laterales no se perciben en la pelota difusa.
+Los rayos no rebotan hacia la izquierda o derecha, sólo hacia adelante, arriba y abajo

@@ -1,0 +1,10 @@
+/opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - Unix Makefiles" /home/diego/Desktop/info/4-1/InfoGraf/PracticasInfoGraf/p4
+CMake Error at /opt/clion/bin/cmake/linux/share/cmake-3.20/Modules/CMakeSystemSpecificInitialize.cmake:1:
+  Parse error.  Expected a command name, got bad character with text "".
+Call Stack (most recent call first):
+  CMakeLists.txt:1 (project)
+
+
+CMake Error: Could not find cmake module file: CMakeSystemSpecificInitialize.cmake
+-- Configuring incomplete, errors occurred!
+See also "/home/diego/Desktop/info/4-1/InfoGraf/PracticasInfoGraf/p4/cmake-build-debug/CMakeFiles/CMakeOutput.log".

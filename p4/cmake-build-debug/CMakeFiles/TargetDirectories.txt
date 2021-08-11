@@ -1,0 +1,4 @@
+/home/diego/Desktop/info/4-1/InfoGraf/PracticasInfoGraf/p4/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/diego/Desktop/info/4-1/InfoGraf/PracticasInfoGraf/p4/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/diego/Desktop/info/4-1/InfoGraf/PracticasInfoGraf/p4/cmake-build-debug/CMakeFiles/p3.dir
+/home/diego/Desktop/info/4-1/InfoGraf/PracticasInfoGraf/p4/cmake-build-debug/CMakeFiles/p4.dir

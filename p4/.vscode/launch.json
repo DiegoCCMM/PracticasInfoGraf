@@ -1,37 +1,27 @@
-/*
- *    Author:         Patricia Briones Yus, 735576
- *    Creation Date:  Thursday, November 12th 2020
- *    File: launch.json
- */
- {
-    // Use IntelliSense para saber los atributos posibles.
-    // Mantenga el puntero para ver las descripciones de los existentes atributos.
-    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "g++.exe - Compilar y depurar el archivo activo",
+            "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
-            "args": [
-                "1048576",
-                "${workspaceFolder}/figureLDR.ppm"
-            ],
+            "program": "enter program name, for example ${workspaceFolder}/a.out",
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
             "setupCommands": [
                 {
-                    "description": "Habilitar la impresión con sangría para gdb",
+                    "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ],
-            "preLaunchTask": "C/C++: g++.exe build active file"
+            ]
         }
     ]
 }
