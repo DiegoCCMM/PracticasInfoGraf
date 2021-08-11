@@ -64,7 +64,8 @@ public:
     }
 
     Vector normalizar() {
-        return *this/this->module();
+        Vector v(this->x, this->y, this->z);
+        return v/v.module();
     }
 
 };

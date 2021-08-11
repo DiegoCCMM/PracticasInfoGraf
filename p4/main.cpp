@@ -15,6 +15,7 @@ void fromDoubleToRGB(double thr, double thr1, double thr2, int &colour, int &col
 int main(int argc, char* argv[]){
     // int rperPixel = stoi(argv[1]);
     int rperPixel = 4;
+    //int rperPixel = 10;
 
     // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
     int pixelRes = 1024*1024; // Número de rayos (?) (1048576 = 1024x1024)
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]){
     // sphere1.esDifuso();
     // sphere1.setFoco(true);
 
-    Sphere sphere2 = Sphere(Punto(0,0,1820), 20.0, 245, 245, 245);  // Roja
+    Sphere sphere2 = Sphere(Punto(0,0,1820), 20.0, 0, 0, 255);  // Roja
     // sphere2.esDielectrico();
     sphere2.esDifuso();
 
@@ -41,31 +42,32 @@ int main(int argc, char* argv[]){
     // sphere3.esDifuso();
 
     // Plano - fondo
-    Plane planoFoco1 = Plane(Vector(0,0,-20), Punto(0,0,2300), 0, 250, 0);  // Plano foco
+    Plane planoFoco1 = Plane(Vector(0,0,-20), Punto(0,0,2300), 255, 255, 255);  // Plano foco
     //planoFoco1.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco1.esDifuso();
 
     // Plano - izquierda
     Plane planoFoco2 = Plane(Vector(30,0,-30), Punto(-170,0,2220), 255, 0, 0);  // Plano foco
-    planoFoco2.setFoco(true);
+    //planoFoco2.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco2.esDifuso();
 
     // Plano - derecha
-    Plane planoFoco3 = Plane(Vector(-30,0,-30), Punto(170,0,2220), 255, 0, 0);  // Plano foco
-    planoFoco3.setFoco(true);
+    Plane planoFoco3 = Plane(Vector(-30,0,-30), Punto(170,0,2220), 0, 255, 0);  // Plano foco
+    //planoFoco3.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco3.esDifuso();
 
     // Plano - techo
-    Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 230, 230, 230);  // Plano foco
+    //Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 0, 255, 0);  // Plano foco
+    Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 255, 255,255);  // Plano foco
     planoFoco4.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco4.esDifuso();
 
     // Plano - suelo
-    Plane planoFoco5 = Plane(Vector(0,30,-30), Punto(0,-170,2220), 0, 0, 250);  // Plano foco
+    Plane planoFoco5 = Plane(Vector(0,30,-30), Punto(0,-170,2220), 255, 255, 255);  // Plano foco
     //planoFoco5.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco5.esDifuso();
@@ -147,6 +149,7 @@ int main(int argc, char* argv[]){
                 posZ = sqrt(pow(dist,2) + pow(front,2));
                 normalized = Vector(xLocal, yLocal, posZ).module();
                 dirLocal = Vector(xLocal/normalized, yLocal/normalized, 1);
+                // dirLocal = dirLocal.normalizar();
 
                 //Vector con la dirección local a la matriz de proyección
                 //de tipo matriz para poder operar con la matriz de cambio de base
@@ -156,18 +159,15 @@ int main(int argc, char* argv[]){
                 Matriz Global = siscam * local;
 
                 r = Rayo(origen, Global.vector());
-                rThr = 1, gThr = 1, bThr = 1; 
+                rThr = 1.0, gThr = 1.0, bThr = 1.0; 
+                //rThr = 0.0, gThr = 0.0, bThr = 0.0; 
+                int numRebotes = 0;
 
-                //FINAL PRIMER PASO, LANZAMIENTO DE RAYOS A TRAVES DE MATRIZ DE PROYECCION CON COORD GLOB
-
-                int k=0;
                 puntual = false;
                 geometryRGBFigures* fig;
                 do {
-                    k++;
-
                     max = INT_MAX;
-                    rmax = 1, gmax = 1, bmax = 1;
+                    rmax = 1.0, gmax = 1.0, bmax = 1.0;
                     colisiona = false;
                     
                     auto it = figuras.begin();
@@ -190,9 +190,11 @@ int main(int argc, char* argv[]){
                     }
 
                     if (colisiona) {
+                        
                         // if(!fig->soyFoco()){
                             // Modifica valor rayo r por el nuevo generado del rebote
                             reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax, puntual);
+                            numRebotes++;
                         // } //else {
                         //     rmax = (*fig).getRed()/255;
                         //     gmax = (*fig).getGreen()/255;
@@ -205,26 +207,60 @@ int main(int argc, char* argv[]){
 
                         rThr *= rmax;
                         gThr *= gmax;
-                        bThr *= bmax; 
+                        bThr *= bmax;
+
+                        /*if(numRebotes==1){
+                            rThr = rmax, gThr = gmax, bThr = bmax; 
+                        }
+                        else {
+                            //TODO SI LA LUZ ES 0 0 255 PERDEMOS INFORMACIÓN
+
+                            if(rmax != 0) rThr *= rmax;
+                            if(gmax != 0) gThr *= gmax;
+                            if(bmax != 0) bThr *= bmax; 
+                        }*/
+
+                        /*if(numRebotes==1){
+                            rThr = rmax, gThr = gmax, bThr = bmax; 
+                        }
+                        else {
+
+                            rThr = rThr + rThr*rmax;
+                            if(rThr==0) {
+                                rThr = rThr + rThr*rmax;
+                            }
+                            else {
+                                rThr = rThr + rThr*rmax;
+                            }
+                            gThr = gThr + gThr*gmax;
+                            bThr = bThr + bThr*bmax;
+                        }*/
+
+
+                        /*rThr += rmax;
+                        gThr += gmax;
+                        bThr += bmax;*/
                     }
 
                 } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco() && !puntual);
 
+
+
                 if (!colisiona || r.hayAbsorcion()) {
                     // ldrfile << 0 << " " << 0 << " " << 0;
-                    rThr = 0;
-                    gThr = 0;
-                    bThr = 0;
+                    rThr = 0.0;
+                    gThr = 0.0;
+                    bThr = 0.0;
                 } 
 
                 rThrMedia += rThr, gThrMedia += gThr, bThrMedia += bThr;
+                //rThrMedia += rThr/numRebotes, gThrMedia += gThr/numRebotes, bThrMedia += bThr/numRebotes;
             }
 
             int rColour, gColour, bColour;
 
             fromDoubleToRGB(rThrMedia/rperPixel, gThrMedia/rperPixel, 
                             bThrMedia/rperPixel, rColour, gColour, bColour);
-            // TODO si se pasan de 255 acotar
             ldrfile << rColour << " " << gColour << " " << bColour;
 
             if (i < numPixAncho-1) {

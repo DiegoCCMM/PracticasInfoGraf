@@ -21,13 +21,14 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
     kt = figure->getKt();
 
     // Normalizar para mejorar la probabilidad de no evento
-    double pd = ((1-prAbs)*kd) / (kd+ks+kt);
-    double ps = ((1-prAbs)*ks) / (kd+ks+kt);
-    double pt = ((1-prAbs)*kt) / (kd+ks+kt);
+    double pd = ((1.0-prAbs)*kd) / (kd+ks+kt);
+    double ps = ((1.0-prAbs)*ks) / (kd+ks+kt);
+    double pt = ((1.0-prAbs)*kt) / (kd+ks+kt);
 
     if(ks == 0.0 && kt == 0.0){//difuso
         if( e <= pd) {
             kdColours = kdColours/pd;
+            //kdColours = kdColours;
         }else{
             prAbs = 1.0;
             kd = 0.0;
@@ -59,7 +60,7 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
     }
 }
 
-Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
+Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
     double Einclination, Eazimuth;
 
     // TODO revisar que esten entre 0 y 1
@@ -69,8 +70,8 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
     if(Einclination < 0 || Einclination > 1  || Eazimuth < 0 || Eazimuth > 1 ){
         cout<<"numeros aleatorios inccorrectos"<<endl;
     }
-    double inclinationi = acos(sqrt(1 - Einclination));
-    double azimuthi = 2 * M_PI * Eazimuth;
+    double inclinationi = acos(sqrt(1.0 - Einclination));
+    double azimuthi = 2.0 * M_PI * Eazimuth;
 
     // auto primFila = sin(inclinationi) * cos(azimuthi);
     Matriz angulo(3, 1);
@@ -78,10 +79,11 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure) {
     angulo.setNum(1, 0, sin(inclinationi) * sin(azimuthi));
     angulo.setNum(2, 0, cos(inclinationi));
 
-    Matriz T = figure->ejeCoord(rayo);
+    Matriz T = figure->ejeCoord(rayo, inters);
 
     Matriz matriz_wi = T * angulo;
     Vector wi = matriz_wi.vector();
+    wi.normalizar();
 
     //std::cout << wi.x << " " << wi.y << " " << wi.z << std::endl;
 
@@ -159,19 +161,19 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
             Vector d = rayo.getDir();
             Punto p = o + d.mul(t); // TODO: verificar que el punto de interseccion esta bien calculado
 
-            Vector wi = muestreoCoseno(rayo, figure);
+            Vector wi = muestreoCoseno(rayo, figure, p);
             if(ks != 0) { // especular
 
                 Vector n = figure->getNormal(p);
 
-                wi = n.mul(2.0) ->* (n ->* wi) - wi;
+                wi = (n.mul(2.0) ->* (n ->* wi)) - wi;
                 rmax = ks;
                 gmax = ks;
                 bmax = ks;
             }
             else if(kt != 0) { // dielectrico
                 double aire = 1.0, vidrio = 1.45; // Medios
-                Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio);
+                Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio); // TODO: revisar
                 wi = aux.asinV();
                 rmax = kt;
                 gmax = kt;
@@ -187,9 +189,9 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
 
             rayo = Rayo(p, wi);
             rayo.setAbsorcion(prAbs+0.05);
-        } else {
+        } else { // para que sirve este if - else?
             rayo = Rayo();
-            rayo.setAbsorcion(1);
+            rayo.setAbsorcion(1.0);
         }
         //nextEstimation(rayo, focos, figuras, puntual);
         //if(puntual){ // En caso de ser una luz puntual se divide por dist^2
