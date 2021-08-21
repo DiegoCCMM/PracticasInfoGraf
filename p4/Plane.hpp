@@ -19,7 +19,7 @@ class Plane : public geometryRGBFigures{
 
 public:
 
-    Plane(Vector normal, Punto punto, int red, int green, int blue){
+    Plane(Vector normal, Punto punto, int red = 0, int green = 0, int blue = 0){
         this->normal = normal;
         this->punto = punto;
         this->distance = -(punto*normal);

@@ -59,9 +59,6 @@ public:
         Vector k = this->getNormal(inters); // normal
 
         Vector j = (k ->* ray.getDir().normalizar()).normalizar();
-        if((k ->* ray.getDir()).module()<0.99){
-            int p = 0;
-        }
         // i.normalizar();
         Vector i = (j ->* k).normalizar();
 
@@ -76,6 +73,7 @@ public:
     }
 
     void esDielectrico(){
+        red = 0, green = 0, blue = 0;
         ks = 0.4;
         kt = 0.6;
     }

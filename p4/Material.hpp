@@ -25,7 +25,7 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
     double ps = ((1.0-prAbs)*ks) / (kd+ks+kt);
     double pt = ((1.0-prAbs)*kt) / (kd+ks+kt);
 
-    if(ks == 0.0 && kt == 0.0){//difuso
+    if(ks == 0.0 && kt == 0.0){//difuso KD y no tiene KS ni KT
         if( e <= pd) {
             kdColours = kdColours/pd;
             //kdColours = kdColours;
@@ -33,7 +33,7 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
             prAbs = 1.0;
             kd = 0.0;
         }
-    }else if(kt == 0.0){//plastico
+    }else if(kt == 0.0){//plastico  KD y KS y no tiene KT
         if( e <= pd ){//difuso
             kdColours = kdColours/pd;
             ks = 0.0;
@@ -45,8 +45,8 @@ void ruletaRusa(geometryRGBFigures* figure, RGB& kdColours ,double& kd, double& 
             ks = 0.0;
             kd = 0.0;
         }
-    }else if(kd == 0.0){//dielectrico
-        if( e <= pt ){//difuso
+    }else if(kd == 0.0){//dielectrico   KS Y KT y no tiene KD
+        if( e <= pt ){//transparente
             kt = kt/pt;
             ks = 0.0;
         }else if( e > pt && e <= pt+ps){  //especular
@@ -131,7 +131,19 @@ void nextEstimation(Rayo &rayo, list<Punto> focos,
         puntual = false;
     }
 }
-
+//clamp the value between min and max
+double clamp ( double min, double max, double val){
+    if(val>max)
+     return max;
+    else if(val < min)
+     return min;
+    else
+     return val;
+}
+//invert the direction of the vector
+Vector invert(Vector invertable){
+    return(Vector(-invertable.x, -invertable.y, -invertable.z));
+}
 
 void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                   list<geometryRGBFigures*> figuras, double& rmax, double& gmax,
@@ -142,7 +154,6 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
 
     ruletaRusa(figure, tupleKd, kd, ks, kt, prAbs);
 
-    
     if (prAbs==1.0) {
         rayo.setAbsorcion(1.0);
     } else{
@@ -168,7 +179,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
             if(ks != 0) { // especular - reflection
 
                 // wi.normalizar();
-                wi = (n.mul(2.0)).mul(n*wi) - wi; // diapositiva 16 - pathtracing
+                wi = (n.mul(2.0)).mul(n*rayo.getDir()) - rayo.getDir(); // diapositiva 16 - pathtracing
                 wi = wi.normalizar();
                 // rmax = ks/(n*wi);
                 // gmax = ks/(n*wi);
@@ -178,11 +189,19 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 bmax = ks;
             }
             else if(kt != 0) { // dielectrico - refraction
-                // double aire = 1.0, vidrio = 1.45; // Medios
-                // Vector aux = rayo.getDir().sinV().mul(aire).div(vidrio); // TODO: revisar
-                // wi = aux.asinV();
-                wi = wi - (n.mul(2.0)).mul(wi*n);
-                wi = wi.normalizar();
+                double aire = 1.0, vidrio = 1.45; // Medios
+
+                double cosi = clamp(-1, 1, rayo.getDir()*n); 
+                Vector N = n; 
+                if (cosi < 0) { cosi = -cosi; } else { std::swap(aire, vidrio); N = invert(n); } 
+                double eta = aire / vidrio; 
+                double k = 1 - eta * eta * (1 - cosi * cosi); 
+                k < 0 ? wi = Vector(0,0,0) : wi = (rayo.getDir().mul(eta) + 
+                N.mul(eta * cosi - (double)sqrtf(k))); 
+                /*Vector aux = rayo.getDir().normalizar().sinV().mul(aire).div(vidrio); 
+                wi = aux.asinV().normalizar();*/
+                /*wi = wi - (n.mul(2.0)).mul(wi*n);
+                wi = wi.normalizar();*/
                 // rmax = kt/(n*wi);
                 // gmax = kt/(n*wi);
                 // bmax = kt/(n*wi);
