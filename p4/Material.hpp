@@ -179,7 +179,9 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
             if(ks != 0) { // especular - reflection
 
                 // wi.normalizar();
-                wi = (n.mul(2.0)).mul(n*rayo.getDir()) - rayo.getDir(); // diapositiva 16 - pathtracing
+                // wi = (n.mul(2.0)).mul(n*wi) - wi; // diapositiva 16 - pathtracing
+                // wi = (n.mul(2.0)).mul(n*rayo.getDir()) - rayo.getDir(); // diapositiva 16 - pathtracing
+                wi = rayo.getDir() - (n.mul(2.0)).mul(n*rayo.getDir());
                 wi = wi.normalizar();
                 // rmax = ks/(n*wi);
                 // gmax = ks/(n*wi);
@@ -187,6 +189,10 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 rmax = ks;
                 gmax = ks;
                 bmax = ks;
+
+                rmax *= abs(n*wi);
+                gmax *= abs(n*wi);
+                bmax *= abs(n*wi);
             }
             else if(kt != 0) { // dielectrico - refraction
                 double aire = 1.0, vidrio = 1.45; // Medios
@@ -219,11 +225,11 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 gmax = tupleKd.g;
                 bmax = tupleKd.b;
 
-                if(!figure->soyFoco()) {
+                // if(!figure->soyFoco()) {
                     rmax *= abs(n*wi);
                     gmax *= abs(n*wi);
                     bmax *= abs(n*wi);
-                }
+                // }
                 // else {
                 //     rmax = tupleKd.r*abs(figure->getNormal(p)*wi);
                 //     gmax = tupleKd.g*abs(figure->getNormal(p)*wi);

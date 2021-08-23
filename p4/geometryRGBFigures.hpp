@@ -68,7 +68,7 @@ public:
     }
 
     void esDifuso(){
-        kd = max(max(red, green), blue)/(double)(red + green + blue);
+        kd = getMaxKd();
         kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
     }
 
@@ -79,9 +79,12 @@ public:
     }
 
     void esEspecular(){
-        kd = max(max(red, green), blue)/(double)(red + green + blue);
-        kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
-        ks = 1-kd;
+        // kd = getMaxKd();
+        // kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
+        // ks = 1-kd;
+        red = 0, green = 0, blue = 0;
+        ks = 1.0;
+        kt = 0;
     }
 
     RGB getKd() const {
@@ -89,7 +92,8 @@ public:
     }
 
     double getMaxKd() const{
-        return max(max(red, green), blue)/(double)(red + green + blue);
+        return (red + green + blue) == 0 ? 0 :
+                max(max(red, green), blue)/(double)(red + green + blue);
     }
 
     double getKs() const {

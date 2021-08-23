@@ -20,7 +20,7 @@ int main(int argc, char* argv[]){
 
     // int rperPixel = stoi(argv[1]);
     // int rperPixel = 4; // Antialiasing
-    int rperPixel = 40;
+    int rperPixel = 10;
 
     // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
     int pixelRes = width*height; // Número de rayos (?) (1048576 = 1024x1024)
@@ -31,24 +31,24 @@ int main(int argc, char* argv[]){
 
 
     // --------------------------------------------------Escena
-    Sphere sphere1 = Sphere(Punto(-5,0,460), 2.0, 235, 23, 181);    // Rosa
+    Sphere sphere1 = Sphere(Punto(-5,0,460), 2.0);
     // Sphere sphere1 = Sphere(Punto(10,0,2000), 10.0, 255, 255, 255);   // blanca
     // sphere1.esDifuso();
     sphere1.esEspecular();
     // sphere1.setFoco(true);
     // sphere1.esDielectrico();*/
 
-    Sphere sphere2 = Sphere(Punto(0,-5,460), 2.0, 0, 0, 255);  // Azul
-    // sphere2.esDielectrico();
+    Sphere sphere2 = Sphere(Punto(0,-5,460), 2.0);
+    sphere2.esDielectrico();
     // sphere2.esEspecular();
-    //sphere2.esDifuso();
+    // sphere2.esDifuso();
     // sphere2.setFoco(true);
 
-    Sphere sphere3 = Sphere(Punto(5,0,460), 2.0, 0, 0, 0); // Pelota detrás
+    Sphere sphere3 = Sphere(Punto(5,0,460), 2.0, 235, 23, 181); // rosa
     // sphere3.setFoco(true);
     // sphere3.esEspecular();
-     sphere3.esEspecular();
-    //sphere3.esDielectrico();
+    sphere3.esDifuso();
+    // sphere3.esDielectrico();
 
    /* Sphere sphere4 = Sphere(Punto(-10,0,2100), 8.0, 200, 200, 200); // Pelota detrás
     sphere4.setFoco(true);
@@ -90,15 +90,15 @@ int main(int argc, char* argv[]){
 
     // Plano - suelo
     Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,-height,0), 255, 255, 255);  // Plano foco
-    // planoFoco5.setFoco(true);
+    planoFoco5.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco5.esDifuso();
 
     // Plano - pared trasera
-    Plane planoFoco6 = Plane(Vector(0,0,1), Punto(0,0,100), 255, 255, 255);  // Plano foco
-    //planoFoco1.setFoco(true);
-    // planoFoco.esEspecular();
-    planoFoco1.esDifuso();
+    Plane planoFoco6 = Plane(Vector(0,0,1), Punto(0,0,300), 255, 255, 255);  // Plano foco
+    //planoFoco6.setFoco(true);
+    // planoFoco6.esEspecular();
+    planoFoco6.esDifuso();
 
     list<geometryRGBFigures*> figuras;
 
@@ -112,6 +112,7 @@ int main(int argc, char* argv[]){
     figuras.push_back(&planoFoco3);
     figuras.push_back(&planoFoco4);
     figuras.push_back(&planoFoco5);
+    figuras.push_back(&planoFoco6);
 
     list<Punto> focos; // puntuales
     focos.push_back(Punto(2,5,2220));
