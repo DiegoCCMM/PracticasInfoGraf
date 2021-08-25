@@ -199,11 +199,12 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
 
                 double cosi = clamp(-1, 1, rayo.getDir()*n); 
                 Vector N = n; 
-                if (cosi < 0) { cosi = -cosi; } else { std::swap(aire, vidrio); N = invert(n); } 
+                if (cosi < 0 && rayo.estoyEnAire()) { cosi = -cosi; rayo.cambiarMedio();} 
+                else { std::swap(aire, vidrio); N = invert(n); rayo.cambiarMedio();} 
                 double eta = aire / vidrio; 
                 double k = 1 - eta * eta * (1 - cosi * cosi); 
-                k < 0 ? wi = Vector(0,0,0) : wi = (rayo.getDir().mul(eta) + 
-                N.mul(eta * cosi - (double)sqrtf(k))); 
+                k < 0 ? wi = Vector(0,0,0) : 
+                        wi = ((rayo.getDir().mul(eta)) + (N.mul(eta * cosi - (double)sqrtf(k)))); 
                 /*Vector aux = rayo.getDir().normalizar().sinV().mul(aire).div(vidrio); 
                 wi = aux.asinV().normalizar();*/
                 /*wi = wi - (n.mul(2.0)).mul(wi*n);
@@ -252,8 +253,11 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                     // bmax *= abs(n*wi);
             // }
 
+            bool medio = rayo.estoyEnAire();
+
             rayo = Rayo(p, wi);
             rayo.setAbsorcion(prAbs+0.05);
+            rayo.setMedio(medio);
         } else { // para que sirve este if - else?
             rayo = Rayo();
             rayo.setAbsorcion(1.0);
