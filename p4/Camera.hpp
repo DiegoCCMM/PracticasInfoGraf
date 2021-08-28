@@ -27,7 +27,7 @@ class Rayo {
     Punto origen;
     Vector direccion;
     double absorcion;
-    bool medio = true;  //true aire, false cristal
+    bool medio = true; //true estoy en aire, false no
 
 public:
 
@@ -57,6 +57,18 @@ public:
 
     bool hayAbsorcion() const {
         return absorcion==1.0;
+    }
+
+    bool estoyEnAire(){
+        return(medio);
+    }
+
+    void cambiarMedio(){
+        medio = !medio;
+    }
+
+    void setMedio(bool _medio){
+        medio = _medio;
     }
 
 };
