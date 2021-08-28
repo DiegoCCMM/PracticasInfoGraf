@@ -74,8 +74,8 @@ public:
 
     void esDielectrico(){
         red = 0, green = 0, blue = 0;
-        ks = 0.4;
-        kt = 0.6;
+        ks = 0;         //0.4
+        kt = 1.0;       //0.6
     }
 
     void esEspecular(){

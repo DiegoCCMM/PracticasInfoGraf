@@ -181,7 +181,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                 // wi.normalizar();
                 // wi = (n.mul(2.0)).mul(n*wi) - wi; // diapositiva 16 - pathtracing
                 // wi = (n.mul(2.0)).mul(n*rayo.getDir()) - rayo.getDir(); // diapositiva 16 - pathtracing
-                wi = rayo.getDir() - (n.mul(2.0)).mul(n*rayo.getDir());
+                wi = rayo.getDir().normalizar() - (n.mul(2.0)).mul(n*rayo.getDir().normalizar());
                 wi = wi.normalizar();
                 // rmax = ks/(n*wi);
                 // gmax = ks/(n*wi);
@@ -196,14 +196,18 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
             }
             else if(kt != 0) { // dielectrico - refraction
                 double aire = 1.0, vidrio = 1.45; // Medios
+                double cosenoAnguloIncidencia = clamp(-1, 1, rayo.getDir().normalizar()*n);
 
-                double cosi = clamp(-1, 1, rayo.getDir()*n); 
                 Vector N = n; 
-                if (cosi < 0) { cosi = -cosi; } else { std::swap(aire, vidrio); N = invert(n); } 
-                double eta = aire / vidrio; 
-                double k = 1 - eta * eta * (1 - cosi * cosi); 
-                k < 0 ? wi = Vector(0,0,0) : wi = (rayo.getDir().mul(eta) + 
-                N.mul(eta * cosi - (double)sqrtf(k))); 
+                
+                if (cosenoAnguloIncidencia < 0 && rayo.estoyEnAire()) 
+                { cosenoAnguloIncidencia = -cosenoAnguloIncidencia; } else { std::swap(aire, vidrio); N = invert(n); 
+                rayo.cambioDeMedio();} 
+
+                double relacionMedios = aire / vidrio; 
+                double k = 1 - relacionMedios * relacionMedios * (1 - cosenoAnguloIncidencia * cosenoAnguloIncidencia); 
+                k < 0 ? wi = Vector(0,0,0) : wi = (rayo.getDir().normalizar().mul(relacionMedios) + 
+                N.mul(relacionMedios * cosenoAnguloIncidencia - (double)sqrtf(k))); 
                 /*Vector aux = rayo.getDir().normalizar().sinV().mul(aire).div(vidrio); 
                 wi = aux.asinV().normalizar();*/
                 /*wi = wi - (n.mul(2.0)).mul(wi*n);
