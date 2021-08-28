@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
     // sphere1.setFoco(true);
     // sphere1.esDielectrico();*/
 
-    Sphere sphere2 = Sphere(Punto(0,-5,460), 2.0);
+    Sphere sphere2 = Sphere(Punto(5,0,460), 2.0);
     sphere2.esDielectrico();
     // sphere2.esEspecular();
     // sphere2.esDifuso();
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]){
 
     figuras.push_back(&sphere1);
     figuras.push_back(&sphere2);
-    figuras.push_back(&sphere3);
+    //figuras.push_back(&sphere3);
     // figuras.push_back(&sphere4);
     // figuras.push_back(&sphere5);
     figuras.push_back(&planoFoco1);

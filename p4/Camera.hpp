@@ -47,28 +47,8 @@ public:
         return absorcion;
     }
 
-    bool estoyEnAire(){
-        return(medio);
-    }
-
-    void cambioDeMedio(){
-        medio = !medio;
-    }
-
     bool hayAbsorcion() const {
         return absorcion==1.0;
-    }
-
-    bool estoyEnAire(){
-        return(medio);
-    }
-
-    void cambiarMedio(){
-        medio = !medio;
-    }
-
-    void setMedio(bool _medio){
-        medio = _medio;
     }
 
 };

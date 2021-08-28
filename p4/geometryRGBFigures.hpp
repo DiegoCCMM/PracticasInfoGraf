@@ -74,14 +74,22 @@ public:
 
     void esDielectrico(){
         red = 0, green = 0, blue = 0;
-        ks = 0;         //0.4
-        kt = 1.0;       //0.6
+        ks = 0.3;
+        kt = 0.7;
+    }
+    void esRefractario(){
+        kt = 1.0;
+        ks = 0;
+        red = 0, green = 0, blue = 0;
     }
 
     void esEspecular(){
-        // kd = getMaxKd();
-        // kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
-        // ks = 1-kd;
+        kd = getMaxKd();
+        kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
+        ks = 1-kd;
+        
+    }
+    void esEspejo(){
         red = 0, green = 0, blue = 0;
         ks = 1.0;
         kt = 0;

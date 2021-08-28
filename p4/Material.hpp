@@ -200,9 +200,8 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
 
                 Vector N = n; 
                 
-                if (cosenoAnguloIncidencia < 0 && rayo.estoyEnAire()) 
-                { cosenoAnguloIncidencia = -cosenoAnguloIncidencia; } else { std::swap(aire, vidrio); N = invert(n); 
-                rayo.cambioDeMedio();} 
+                if (cosenoAnguloIncidencia < 0 ) 
+                { cosenoAnguloIncidencia = -cosenoAnguloIncidencia; } else { std::swap(aire, vidrio); N = invert(n); } 
 
                 double relacionMedios = aire / vidrio; 
                 double k = 1 - relacionMedios * relacionMedios * (1 - cosenoAnguloIncidencia * cosenoAnguloIncidencia); 
@@ -256,11 +255,9 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
                     // bmax *= abs(n*wi);
             // }
 
-            bool medio = rayo.estoyEnAire();
 
             rayo = Rayo(p, wi);
             rayo.setAbsorcion(prAbs+0.05);
-            rayo.setMedio(medio);
         } else { // para que sirve este if - else?
             rayo = Rayo();
             rayo.setAbsorcion(1.0);
