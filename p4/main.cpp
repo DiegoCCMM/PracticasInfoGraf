@@ -4,6 +4,7 @@
 #include "Camera.hpp"
 #include "Sphere.hpp"
 #include "Material.hpp"
+#include "FocoPuntual.hpp"
 #include "../p1/Matriz.hpp"
 #include <list>
 #include <limits.h>
@@ -90,7 +91,7 @@ int main(int argc, char* argv[]){
 
     // Plano - suelo
     Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,-height,0), 255, 255, 255);  // Plano foco
-    planoFoco5.setFoco(true);
+    //planoFoco5.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco5.esDifuso();
 
@@ -114,8 +115,8 @@ int main(int argc, char* argv[]){
     figuras.push_back(&planoFoco5);
     figuras.push_back(&planoFoco6);
 
-    list<Punto> focos; // puntuales
-    focos.push_back(Punto(2,5,2220));
+    list<FocoPuntual> focos; // puntuales
+    focos.push_back(FocoPuntual(Punto(0,0,450), 255, 255, 255));
 
     // --------------------------------------------------FIN Escena
 
@@ -148,7 +149,7 @@ int main(int argc, char* argv[]){
     double rThr, gThr, bThr; // Throughput
     Vector dirLocal, dirGlobal;
     double dist, dirZ, normalized;
-    bool colisiona, puntual;
+    bool colisiona;
 
     //cuantos pixeles tendra cada lado
     int numPixAncho = width/pixelUnit;
@@ -204,7 +205,6 @@ int main(int argc, char* argv[]){
                 rThr = 0.0, gThr = 0.0, bThr = 0.0; 
                 int numRebotes = 0;
 
-                puntual = false;
                 geometryRGBFigures* fig;
 
 /* TODO: INICIO Funcion recursiva rebote camino en material */
@@ -239,7 +239,7 @@ int main(int argc, char* argv[]){
                         
                         // if(!fig->soyFoco()){
                             // Modifica valor rayo r por el nuevo generado del rebote
-                            reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax, puntual);
+                            reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax);
                             numRebotes++;
                         // } //else {
                         //     rmax = (*fig).getRed()/255;
@@ -302,7 +302,7 @@ int main(int argc, char* argv[]){
                         // bThr += bmax/numRebotes;
                     }
 
-                } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco() && !puntual);
+                } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco());
 
 
 

@@ -6,6 +6,7 @@
 #include <cmath>
 #include "Camera.hpp"
 #include "geometryRGBFigures.hpp"
+#include "FocoPuntual.hpp"
 #include <list>
 
 #ifndef P4_MATERIAL_HPP
@@ -91,44 +92,46 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
     return wi;
 }
 
-void nextEstimation(Rayo &rayo, list<Punto> focos, 
-                    list<geometryRGBFigures*> figuras, bool& puntual) {
+bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures *figure,
+                    list<geometryRGBFigures*> figuras, 
+                    double& red, double& green, double& blue) {
     // Los focos de luz puntuales tendrán la misma probabilidad
     int max = focos.size();
     if(max > 0){
-        int e =  1 + rand()%max;
 
-        list<Punto>::iterator foco = focos.begin();
-        for(int i=1; i<e; i++){
-            foco++;
-        }
+        auto foco = focos.begin();
+        for(int i=0; i<max; i++){
+        
+            Punto origen = rayo.getOrigen();
+            Punto posicion_foco = foco->getPosition();
+            Rayo r = Rayo(origen, posicion_foco-origen);   
 
-        Punto origen = rayo.getOrigen();
-        Rayo r = Rayo(origen, *foco-origen);
+            // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
+            // algún otro objeto
+            auto it = figuras.begin();
+            bool colisiona = false;
+            while(it != figuras.end() && figure != *it){
+                double res = (*it)->interseccion(r);
 
-        // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
-        // algún otro objeto
-        auto it = figuras.begin();
-        bool colisiona = false;
-        while(it != figuras.end()){
-            double res = (*it)->interseccion(r);
-
-            if(res > 0 && res < max){
-                max = res;
-                colisiona = true;
+                if(res >= 0 && res < max){
+                    max = res;
+                    colisiona = true;
+                }
+                it++;
             }
-            it++;
-        }
 
-        if(!colisiona) {
-            rayo = r;
-            puntual = true;
-        } else {
-            puntual = false;
+            if(!colisiona) {
+                
+                red *= foco->getRed()/255.0 / pow(rayo.getDir().module(),2);
+                green *= foco->getGreen()/255.0 / pow(rayo.getDir().module(),2);
+                blue *= foco->getBlue()/255.0 / pow(rayo.getDir().module(),2);
+                //std::cout<<"aporto"<<std::endl;
+            }
+            foco++;
         }
     }
     else {
-        puntual = false;
+        return( false);
     }
 }
 //clamp the value between min and max
@@ -145,9 +148,9 @@ Vector invert(Vector invertable){
     return(Vector(-invertable.x, -invertable.y, -invertable.z));
 }
 
-void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
+void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> focos,
                   list<geometryRGBFigures*> figuras, double& rmax, double& gmax,
-                  double& bmax, bool& puntual) {
+                  double& bmax) {
 
     double kd, ks, kt, prAbs = rayo.getAbsorcion();
     RGB tupleKd = figure->getKd();
@@ -258,17 +261,11 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<Punto> focos,
 
             rayo = Rayo(p, wi);
             rayo.setAbsorcion(prAbs+0.05);
-        } else { // para que sirve este if - else?
+        } else { //si no interesecta con nada y va al infinito, se absorbe
             rayo = Rayo();
             rayo.setAbsorcion(1.0);
         }
-        //nextEstimation(rayo, focos, figuras, puntual);
-        //if(puntual){ // En caso de ser una luz puntual se divide por dist^2
-            // SE ASUME QUE LAS LUCES SON DIFUSAS
-        //    rmax /= pow(rayo.getDir().module(),2);
-        //    gmax /= pow(rayo.getDir().module(),2);
-        //    bmax /= pow(rayo.getDir().module(),2);
-        //}
+        nextEstimation(rayo, focos, figure, figuras, rmax, gmax, bmax);
     }
 
 
