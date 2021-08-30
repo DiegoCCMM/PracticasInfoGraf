@@ -8,6 +8,7 @@
 #include "geometryRGBFigures.hpp"
 #include "FocoPuntual.hpp"
 #include <list>
+#include <limits.h>
 
 #ifndef P4_MATERIAL_HPP
 #define P4_MATERIAL_HPP
@@ -95,45 +96,40 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
 bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures *figure,
                     list<geometryRGBFigures*> figuras, 
                     double& red, double& green, double& blue) {
+    bool hayLuzPuntual = false;
     // Los focos de luz puntuales tendrán la misma probabilidad
-    int max = focos.size();
-    if(max > 0){
-
-        auto foco = focos.begin();
-        for(int i=0; i<max; i++){
+    if(focos.size() > 0){
+        Punto origen = rayo.getOrigen();
+        for(auto foco = focos.begin(); foco != focos.end(); foco++){
         
-            Punto origen = rayo.getOrigen();
             Punto posicion_foco = foco->getPosition();
-            Rayo r = Rayo(origen, posicion_foco-origen);   
+            Rayo r = Rayo(origen, (posicion_foco-origen).normalizar());
 
             // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
             // algún otro objeto
-            auto it = figuras.begin();
             bool colisiona = false;
-            while(it != figuras.end() && figure != *it){
+
+            for(auto it = figuras.begin(); it != figuras.end() && figure != *it; it++){
                 double res = (*it)->interseccion(r);
 
-                if(res >= 0 && res < max){
-                    max = res;
+                if(res >= 0){ // Solo nos importa si intersecta con alguna fig por el camino
                     colisiona = true;
+                    break;
                 }
-                it++;
             }
 
-            if(!colisiona) {
-                
-                red *= foco->getRed()/255.0 / pow(rayo.getDir().module(),2);
-                green *= foco->getGreen()/255.0 / pow(rayo.getDir().module(),2);
-                blue *= foco->getBlue()/255.0 / pow(rayo.getDir().module(),2);
+            if(!colisiona) {             
+                red *= foco->getRed()/255.0 / pow(r.getDir().module(),2);
+                green *= foco->getGreen()/255.0 / pow(r.getDir().module(),2);
+                blue *= foco->getBlue()/255.0 / pow(r.getDir().module(),2);
+                hayLuzPuntual = true;
                 //std::cout<<"aporto"<<std::endl;
             }
-            foco++;
         }
     }
-    else {
-        return( false);
-    }
+    return hayLuzPuntual;
 }
+
 //clamp the value between min and max
 double clamp ( double min, double max, double val){
     if(val>max)
@@ -159,6 +155,8 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
 
     if (prAbs==1.0) {
         rayo.setAbsorcion(1.0);
+        // rayo.setLuzPuntual(false);
+        // si se absorbe no hay next event estimation
     } else{
         // fr(x, wi, w0) = kd/pi + ks(x, w0)(delta wr(wi) / n*wi) + kt(x,w0)(delta wt(wi)/n*wi)
         // delta wr = 2n(n*wi) - wi
@@ -172,106 +170,102 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
         // Punto inters = rayo.getOrigen()+origen_a_inter;
         Punto o = rayo.getOrigen();
         double t = figure->interseccion(rayo);
-        if(t>=0){
-            Vector d = rayo.getDir();
-            Punto p = o + d.mul(t);
 
-            Vector wi = muestreoCoseno(rayo, figure, p);
-            Vector n = figure->getNormal(p); // normal de la fig
+        Vector d = rayo.getDir();
+        Punto p = o + d.mul(t);
 
-            if(ks != 0) { // especular - reflection
+        Vector wi = muestreoCoseno(rayo, figure, p);
+        Vector n = figure->getNormal(p); // normal de la fig
 
-                // wi.normalizar();
-                // wi = (n.mul(2.0)).mul(n*wi) - wi; // diapositiva 16 - pathtracing
-                // wi = (n.mul(2.0)).mul(n*rayo.getDir()) - rayo.getDir(); // diapositiva 16 - pathtracing
-                wi = rayo.getDir().normalizar() - (n.mul(2.0)).mul(n*rayo.getDir().normalizar());
-                wi = wi.normalizar();
-                // rmax = ks/(n*wi);
-                // gmax = ks/(n*wi);
-                // bmax = ks/(n*wi);
-                rmax = ks;
-                gmax = ks;
-                bmax = ks;
+        if(ks != 0) { // especular - reflection
 
+            // wi.normalizar();
+            // wi = (n.mul(2.0)).mul(n*wi) - wi; // diapositiva 16 - pathtracing
+            // wi = (n.mul(2.0)).mul(n*rayo.getDir()) - rayo.getDir(); // diapositiva 16 - pathtracing
+            wi = rayo.getDir().normalizar() - (n.mul(2.0)).mul(n*rayo.getDir().normalizar());
+            wi = wi.normalizar();
+            // rmax = ks/(n*wi);
+            // gmax = ks/(n*wi);
+            // bmax = ks/(n*wi);
+            rmax = ks;
+            gmax = ks;
+            bmax = ks;
+
+            rmax *= abs(n*wi);
+            gmax *= abs(n*wi);
+            bmax *= abs(n*wi);
+        }
+        else if(kt != 0) { // dielectrico - refraction
+            double aire = 1.0, vidrio = 1.45; // Medios
+            double cosenoAnguloIncidencia = clamp(-1, 1, rayo.getDir().normalizar()*n);
+
+            Vector N = n; 
+            
+            if (cosenoAnguloIncidencia < 0 ) 
+            { cosenoAnguloIncidencia = -cosenoAnguloIncidencia; } else { std::swap(aire, vidrio); N = invert(n); } 
+
+            double relacionMedios = aire / vidrio; 
+            double k = 1 - relacionMedios * relacionMedios * (1 - cosenoAnguloIncidencia * cosenoAnguloIncidencia); 
+            k < 0 ? wi = Vector(0,0,0) : wi = (rayo.getDir().normalizar().mul(relacionMedios) + 
+            N.mul(relacionMedios * cosenoAnguloIncidencia - (double)sqrtf(k))); 
+            /*Vector aux = rayo.getDir().normalizar().sinV().mul(aire).div(vidrio); 
+            wi = aux.asinV().normalizar();*/
+            /*wi = wi - (n.mul(2.0)).mul(wi*n);
+            wi = wi.normalizar();*/
+            // rmax = kt/(n*wi);
+            // gmax = kt/(n*wi);
+            // bmax = kt/(n*wi);
+            rmax = kt;
+            gmax = kt;
+            bmax = kt;
+        }else{  //difuso
+            // if(figure->soyFoco()) {
+            //     //cout << "he colisionado con la esfera difusa" << endl;
+            //     rmax = tupleKd.r;
+            //     gmax = tupleKd.g;
+            //     bmax = tupleKd.b;
+            // }
+            rmax = tupleKd.r;
+            gmax = tupleKd.g;
+            bmax = tupleKd.b;
+
+            // if(!figure->soyFoco()) {
                 rmax *= abs(n*wi);
                 gmax *= abs(n*wi);
                 bmax *= abs(n*wi);
-            }
-            else if(kt != 0) { // dielectrico - refraction
-                double aire = 1.0, vidrio = 1.45; // Medios
-                double cosenoAnguloIncidencia = clamp(-1, 1, rayo.getDir().normalizar()*n);
-
-                Vector N = n; 
-                
-                if (cosenoAnguloIncidencia < 0 ) 
-                { cosenoAnguloIncidencia = -cosenoAnguloIncidencia; } else { std::swap(aire, vidrio); N = invert(n); } 
-
-                double relacionMedios = aire / vidrio; 
-                double k = 1 - relacionMedios * relacionMedios * (1 - cosenoAnguloIncidencia * cosenoAnguloIncidencia); 
-                k < 0 ? wi = Vector(0,0,0) : wi = (rayo.getDir().normalizar().mul(relacionMedios) + 
-                N.mul(relacionMedios * cosenoAnguloIncidencia - (double)sqrtf(k))); 
-                /*Vector aux = rayo.getDir().normalizar().sinV().mul(aire).div(vidrio); 
-                wi = aux.asinV().normalizar();*/
-                /*wi = wi - (n.mul(2.0)).mul(wi*n);
-                wi = wi.normalizar();*/
-                // rmax = kt/(n*wi);
-                // gmax = kt/(n*wi);
-                // bmax = kt/(n*wi);
-                rmax = kt;
-                gmax = kt;
-                bmax = kt;
-            }else{  //difuso
-                // if(figure->soyFoco()) {
-                //     //cout << "he colisionado con la esfera difusa" << endl;
-                //     rmax = tupleKd.r;
-                //     gmax = tupleKd.g;
-                //     bmax = tupleKd.b;
-                // }
-                rmax = tupleKd.r;
-                gmax = tupleKd.g;
-                bmax = tupleKd.b;
-
-                // if(!figure->soyFoco()) {
-                    rmax *= abs(n*wi);
-                    gmax *= abs(n*wi);
-                    bmax *= abs(n*wi);
-                // }
-                // else {
-                //     rmax = tupleKd.r*abs(figure->getNormal(p)*wi);
-                //     gmax = tupleKd.g*abs(figure->getNormal(p)*wi);
-                //     bmax = tupleKd.b*abs(figure->getNormal(p)*wi);
-
-                //     // rmax = tupleKd.r*abs(figure->getNormal(p)*wi)
-                //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
-                //     // gmax = tupleKd.g*abs(figure->getNormal(p)*wi)
-                //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
-                //     // bmax = tupleKd.b*abs(figure->getNormal(p)*wi)
-                //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
-                // }
-            }
-
-            // wi.normalizar();
-
-            // if(!figure->soyFoco()) {
-                    // rmax *= abs(n*wi);
-                    // gmax *= abs(n*wi);
-                    // bmax *= abs(n*wi);
             // }
+            // else {
+            //     rmax = tupleKd.r*abs(figure->getNormal(p)*wi);
+            //     gmax = tupleKd.g*abs(figure->getNormal(p)*wi);
+            //     bmax = tupleKd.b*abs(figure->getNormal(p)*wi);
 
-
-            rayo = Rayo(p, wi);
-            rayo.setAbsorcion(prAbs+0.05);
-        } else { //si no interesecta con nada y va al infinito, se absorbe
-            rayo = Rayo();
-            rayo.setAbsorcion(1.0);
+            //     // rmax = tupleKd.r*abs(figure->getNormal(p)*wi)
+            //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
+            //     // gmax = tupleKd.g*abs(figure->getNormal(p)*wi)
+            //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
+            //     // bmax = tupleKd.b*abs(figure->getNormal(p)*wi)
+            //     //             / (((1.0-prAbs)*kd) / (kd+ks+kt));
+            // }
         }
-        nextEstimation(rayo, focos, figure, figuras, rmax, gmax, bmax);
+
+        // wi.normalizar();
+
+        // if(!figure->soyFoco()) {
+                // rmax *= abs(n*wi);
+                // gmax *= abs(n*wi);
+                // bmax *= abs(n*wi);
+        // }
+
+
+        rayo = Rayo(p, wi);
+        rayo.setAbsorcion(prAbs+0.05);
+        // ahora mismo nextEstimation se aplica también a las areas de luz
+        bool hayLuzPuntual = nextEstimation(rayo, focos, figure, figuras, rmax, gmax, bmax);
+        if(!rayo.hayLuzPuntual()){
+            rayo.setLuzPuntual(hayLuzPuntual);
+        }
     }
-
-
-
 }
-
 
 
 #endif //P4_MATERIAL_HPP

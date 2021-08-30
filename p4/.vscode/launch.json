@@ -13,10 +13,10 @@
             "name": "g++.exe - Compilar y depurar el archivo activo",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "program": "C:\\UNI\\inf_grafica\\p4\\main.exe",
             "args": [
-                "1048576",
-                "${workspaceFolder}/figureLDR.ppm"
+                /*"1048576",
+                "${workspaceFolder}/figureLDR.ppm"*/
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

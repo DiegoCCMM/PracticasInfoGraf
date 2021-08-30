@@ -12,9 +12,9 @@
 			"command": "C:\\MinGW\\bin\\g++.exe",
 			"args": [
 				"-g",
-				"${file}",
+				"C:\\UNI\\inf_grafica\\p4\\main.cpp",
 				"-o",
-				"${fileDirname}\\${fileBasenameNoExtension}.exe"
+				"C:\\UNI\\inf_grafica\\p4\\main.exe"
 			],
 			"options": {
 				"cwd": "C:\\MinGW\\bin"
