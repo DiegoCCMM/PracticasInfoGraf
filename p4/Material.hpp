@@ -256,11 +256,12 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
                 // bmax *= abs(n*wi);
         // }
 
-
+        bool hayLuzPuntual = rayo.hayLuzPuntual();
         rayo = Rayo(p, wi);
         rayo.setAbsorcion(prAbs+0.05);
+        rayo.setLuzPuntual(hayLuzPuntual);
         // ahora mismo nextEstimation se aplica también a las areas de luz
-        bool hayLuzPuntual = nextEstimation(rayo, focos, figure, figuras, rmax, gmax, bmax);
+        hayLuzPuntual = nextEstimation(rayo, focos, figure, figuras, rmax, gmax, bmax);
         if(!rayo.hayLuzPuntual()){
             rayo.setLuzPuntual(hayLuzPuntual);
         }
