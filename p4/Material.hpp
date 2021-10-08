@@ -111,8 +111,8 @@ bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures
 
             for(auto it = figuras.begin(); it != figuras.end() && figure != *it; it++){
                 double res = (*it)->interseccion(r);
-
-                if(res >= 0){ // Solo nos importa si intersecta con alguna fig por el camino
+                // Solo nos importa si intersecta con alguna fig por el camino
+                if(res >= 0){ 
                     colisiona = true;
                     break;
                 }
@@ -123,6 +123,9 @@ bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures
                 green *= foco->getGreen()/255.0 / pow(r.getDir().module(),2);
                 blue *= foco->getBlue()/255.0 / pow(r.getDir().module(),2);
                 hayLuzPuntual = true;
+                // Se sale porque ya se ha encontrado una luz puntual sin
+                // sin intersectar con ningun otro objeto
+                break;
                 //std::cout<<"aporto"<<std::endl;
             }
         }
@@ -262,8 +265,8 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
         rayo.setLuzPuntual(hayLuzPuntual);
         // ahora mismo nextEstimation se aplica también a las areas de luz
         hayLuzPuntual = nextEstimation(rayo, focos, figure, figuras, rmax, gmax, bmax);
-        if(!rayo.hayLuzPuntual()){
-            rayo.setLuzPuntual(hayLuzPuntual);
+        if(!rayo.hayLuzPuntual() && hayLuzPuntual){
+            rayo.setLuzPuntual(true);
         }
     }
 }

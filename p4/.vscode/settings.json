@@ -3,6 +3,11 @@
         "cmath": "cpp",
         "random": "cpp",
         "string": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp"
     }
 }

@@ -103,9 +103,9 @@ int main(int argc, char* argv[]){
 
     list<geometryRGBFigures*> figuras;
 
-    figuras.push_back(&sphere1);
-    figuras.push_back(&sphere2);
-    //figuras.push_back(&sphere3);
+    // figuras.push_back(&sphere1);
+    // figuras.push_back(&sphere2);
+    figuras.push_back(&sphere3);
     // figuras.push_back(&sphere4);
     // figuras.push_back(&sphere5);
     figuras.push_back(&planoFoco1);
@@ -116,8 +116,8 @@ int main(int argc, char* argv[]){
     figuras.push_back(&planoFoco6);
 
     list<FocoPuntual> focos; // puntuales
-    focos.push_back(FocoPuntual(Punto(0,5,450), 255, 255, 255));
-    focos.push_back(FocoPuntual(Punto(5,5,450), 255, 255, 255));
+    focos.push_back(FocoPuntual(Punto(6,2,465), 255, 255, 255));
+    // focos.push_back(FocoPuntual(Punto(5,5,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(10,10,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(0,-5,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(5,-5,450), 255, 255, 255));
