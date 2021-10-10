@@ -150,7 +150,7 @@ int main(int argc, char* argv[]){
     Rayo r;
     double xInit, yInit = height/2.0, max,
             xEnd, yEnd, xLocal, yLocal;
-    double rmax, gmax, bmax;
+    RGB Throughput, Radiance;
     double rThr, gThr, bThr; // Throughput
     Vector dirLocal, dirGlobal;
     double dist, dirZ, normalized;
@@ -215,7 +215,8 @@ int main(int argc, char* argv[]){
 /* TODO: INICIO Funcion recursiva rebote camino en material */
                 do {
                     max = INT_MAX;
-                    rmax = 1.0, gmax = 1.0, bmax = 1.0;
+                    Throughput = RGB(1.0);
+                    Radiance = RGB(0.0);
                     colisiona = false;
                     
                     auto it = figuras.begin();
@@ -244,7 +245,7 @@ int main(int argc, char* argv[]){
                         
                         // if(!fig->soyFoco()){
                             // Modifica valor rayo r por el nuevo generado del rebote
-                            reboteCamino(r, fig, focos, figuras, rmax, gmax, bmax);
+                            reboteCamino(r, fig, focos, figuras, Throughput, Radiance);
                             numRebotes++;
                         // } //else {
                         //     rmax = (*fig).getRed()/255;
@@ -262,12 +263,12 @@ int main(int argc, char* argv[]){
                         // double kd, ks, kt, prAbs = rayo.getAbsorcion();
 
                         if(numRebotes==1){
-                            rThr = rmax, gThr = gmax, bThr = bmax; 
+                            rThr = Throughput.r, gThr = Throughput.g, bThr = Throughput.b; 
                         }
                         else {
-                            rThr *= rmax;
-                            gThr *= gmax;
-                            bThr *= bmax;
+                            rThr *= Throughput.r;
+                            gThr *= Throughput.g;
+                            bThr *= Throughput.b;
                         }
 
                         /*if(numRebotes==1){
@@ -309,20 +310,27 @@ int main(int argc, char* argv[]){
 
                 } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco());
 
-
-
-                if (!colisiona || (r.hayAbsorcion() && !r.hayLuzPuntual())) {
-                    // ldrfile << 0 << " " << 0 << " " << 0;
+                if(fig->soyFoco()){
+                    //cogemos Radiance + Throughput
+                    rThr += Radiance.r;
+                    gThr += Radiance.g;
+                    bThr += Radiance.b;
+                }else if (!colisiona || (r.hayAbsorcion() && !r.hayLuzPuntual())) {
                     rThr = 0.0;
                     gThr = 0.0;
                     bThr = 0.0;
+                }else{
+                    //cogemos Radiance
+                    rThr = Radiance.r;
+                    gThr = Radiance.g;
+                    bThr = Radiance.b;
                 }
+
+                
 /* FIN  Funcion recursiva rebote camino en material */
 
 
                 rThrMedia += rThr, gThrMedia += gThr, bThrMedia += bThr;
-                // rThrMedia *= rThr/numRebotes, gThrMedia *= gThr/numRebotes, bThrMedia *= bThr/numRebotes;
-                // rThrMedia += rThr/numRebotes, gThrMedia += gThr/numRebotes, bThrMedia += bThr/numRebotes;
             }
 
             int rColour, gColour, bColour;

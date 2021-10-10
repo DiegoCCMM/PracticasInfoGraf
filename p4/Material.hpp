@@ -95,7 +95,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
 
 bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures *figure,
                     list<geometryRGBFigures*> figuras, 
-                    double& red, double& green, double& blue) {
+                    RGB& Throughput, RGB& Radiance) {
     bool hayLuzPuntual = false;
     // Los focos de luz puntuales tendrán la misma probabilidad
     if(focos.size() > 0){
@@ -119,9 +119,9 @@ bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures
             }
 
             if(!colisiona) {             
-                red *= foco->getRed()/255.0 / pow(r.getDir().module(),2);
-                green *= foco->getGreen()/255.0 / pow(r.getDir().module(),2);
-                blue *= foco->getBlue()/255.0 / pow(r.getDir().module(),2);
+                Radiance.r += Throughput.r * foco->getRed()/255.0 / pow(r.getDir().module(),2);
+                Radiance.g += Throughput.g * foco->getGreen()/255.0 / pow(r.getDir().module(),2);
+                Radiance.b += Throughput.b * foco->getBlue()/255.0 / pow(r.getDir().module(),2);
                 hayLuzPuntual = true;
                 // Se sale porque ya se ha encontrado una luz puntual sin
                 // sin intersectar con ningun otro objeto
@@ -148,8 +148,7 @@ Vector invert(Vector invertable){
 }
 
 void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> focos,
-                  list<geometryRGBFigures*> figuras, double& rmax, double& gmax,
-                  double& bmax) {
+                  list<geometryRGBFigures*> figuras, RGB &Throughput, RGB &Radiance) {
 
     double kd, ks, kt, prAbs = rayo.getAbsorcion();
     RGB tupleKd = figure->getKd();
@@ -190,13 +189,13 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
             // rmax = ks/(n*wi);
             // gmax = ks/(n*wi);
             // bmax = ks/(n*wi);
-            rmax = ks;
-            gmax = ks;
-            bmax = ks;
+            Throughput.r = ks;
+            Throughput.g = ks;
+            Throughput.b = ks;
 
-            rmax *= abs(n*wi);
-            gmax *= abs(n*wi);
-            bmax *= abs(n*wi);
+            Throughput.r *= abs(n*wi);
+            Throughput.g *= abs(n*wi);
+            Throughput.b *= abs(n*wi);
         }
         else if(kt != 0) { // dielectrico - refraction
             double aire = 1.0, vidrio = 1.45; // Medios
@@ -218,9 +217,9 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
             // rmax = kt/(n*wi);
             // gmax = kt/(n*wi);
             // bmax = kt/(n*wi);
-            rmax = kt;
-            gmax = kt;
-            bmax = kt;
+            Throughput.r = kt;
+            Throughput.g = kt;
+            Throughput.b = kt;
         }else{  //difuso
             // if(figure->soyFoco()) {
             //     //cout << "he colisionado con la esfera difusa" << endl;
@@ -228,14 +227,14 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
             //     gmax = tupleKd.g;
             //     bmax = tupleKd.b;
             // }
-            rmax = tupleKd.r;
-            gmax = tupleKd.g;
-            bmax = tupleKd.b;
+            Throughput.r = tupleKd.r;
+            Throughput.g = tupleKd.g;
+            Throughput.b = tupleKd.b;
 
             // if(!figure->soyFoco()) {
-                rmax *= abs(n*wi);
-                gmax *= abs(n*wi);
-                bmax *= abs(n*wi);
+                Throughput.r *= abs(n*wi);
+                Throughput.g *= abs(n*wi);
+                Throughput.b *= abs(n*wi);
             // }
             // else {
             //     rmax = tupleKd.r*abs(figure->getNormal(p)*wi);
@@ -264,7 +263,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
         rayo.setAbsorcion(prAbs+0.05);
         rayo.setLuzPuntual(hayLuzPuntual);
         // ahora mismo nextEstimation se aplica también a las areas de luz
-        hayLuzPuntual = nextEstimation(rayo, focos, figure, figuras, rmax, gmax, bmax);
+        hayLuzPuntual = nextEstimation(rayo, focos, figure, figuras, Throughput, Radiance);
         if(!rayo.hayLuzPuntual() && hayLuzPuntual){
             rayo.setLuzPuntual(true);
         }

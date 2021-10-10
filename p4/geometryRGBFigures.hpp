@@ -10,7 +10,8 @@
 
 struct RGB{
     double r, g, b;
-
+    RGB():r(0.0), g(0.0), b(0.0){}
+    RGB(double initialVal) : r(initialVal), g(initialVal), b(initialVal) {}
     RGB(double r, double g, double b) : r(r), g(g), b(b) {}
 
     RGB operator*(double i) const{
