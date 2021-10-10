@@ -109,6 +109,7 @@ bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures
             // algún otro objeto
             bool colisiona = false;
 
+            // for(auto it = figuras.begin(); it != figuras.end(); it++){
             for(auto it = figuras.begin(); it != figuras.end() && figure != *it; it++){
                 double res = (*it)->interseccion(r);
                 // Solo nos importa si intersecta con alguna fig por el camino
@@ -122,6 +123,10 @@ bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures
                 Radiance.r += Throughput.r * foco->getRed()/255.0 / pow(r.getDir().module(),2);
                 Radiance.g += Throughput.g * foco->getGreen()/255.0 / pow(r.getDir().module(),2);
                 Radiance.b += Throughput.b * foco->getBlue()/255.0 / pow(r.getDir().module(),2);
+                const int intensity = 1;
+                // Radiance.r += Throughput.r * (foco->getRed()/255.0) * intensity * figure.getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
+                // Radiance.g += Throughput.g * (foco->getGreen()/255.0) * intensity * figure.getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
+                // Radiance.b += Throughput.b * (foco->getBlue()/255.0) * intensity * figure.getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
                 hayLuzPuntual = true;
                 // Se sale porque ya se ha encontrado una luz puntual sin
                 // sin intersectar con ningun otro objeto
@@ -264,9 +269,9 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
         rayo.setLuzPuntual(hayLuzPuntual);
         // ahora mismo nextEstimation se aplica también a las areas de luz
         hayLuzPuntual = nextEstimation(rayo, focos, figure, figuras, Throughput, Radiance);
-        if(!rayo.hayLuzPuntual() && hayLuzPuntual){
-            rayo.setLuzPuntual(true);
-        }
+        // if(!rayo.hayLuzPuntual() && hayLuzPuntual){
+            rayo.setLuzPuntual(hayLuzPuntual);
+        // }
     }
 }
 

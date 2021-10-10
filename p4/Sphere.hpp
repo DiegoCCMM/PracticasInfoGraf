@@ -54,6 +54,10 @@ public:
         // return (inters - this->center)/(inters - this->center).module(); 
     }
 
+    double getFacingRatio(Rayo rayo){
+        return (((rayo.getOrigen() - this->center).normalizar()) * rayo.getDir());
+    }
+
 private:
 
     double secGradeEcuation(double a, double b, double c) {

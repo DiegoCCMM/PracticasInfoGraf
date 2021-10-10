@@ -206,17 +206,17 @@ int main(int argc, char* argv[]){
                 Matriz Global = siscam * local;
 
                 r = Rayo(origen, Global.vector());
-                // rThr = 1.0, gThr = 1.0, bThr = 1.0; 
-                rThr = 0.0, gThr = 0.0, bThr = 0.0; 
-                int numRebotes = 0;
+                rThr = 1.0, gThr = 1.0, bThr = 1.0;
+                // rThr = 0.0, gThr = 0.0, bThr = 0.0; 
+                // int numRebotes = 0;
 
                 geometryRGBFigures* fig;
 
 /* TODO: INICIO Funcion recursiva rebote camino en material */
+                Radiance = RGB(0.0);
                 do {
                     max = INT_MAX;
-                    Throughput = RGB(1.0);
-                    Radiance = RGB(0.0);
+                    // Throughput = RGB(1.0);
                     colisiona = false;
                     
                     auto it = figuras.begin();
@@ -246,7 +246,7 @@ int main(int argc, char* argv[]){
                         // if(!fig->soyFoco()){
                             // Modifica valor rayo r por el nuevo generado del rebote
                             reboteCamino(r, fig, focos, figuras, Throughput, Radiance);
-                            numRebotes++;
+                            // numRebotes++;
                         // } //else {
                         //     rmax = (*fig).getRed()/255;
                         //     gmax = (*fig).getGreen()/255;
@@ -262,14 +262,14 @@ int main(int argc, char* argv[]){
                         // bThr *= bmax;
                         // double kd, ks, kt, prAbs = rayo.getAbsorcion();
 
-                        if(numRebotes==1){
-                            rThr = Throughput.r, gThr = Throughput.g, bThr = Throughput.b; 
-                        }
-                        else {
+                        // if(numRebotes==1){
+                        //     rThr = Throughput.r, gThr = Throughput.g, bThr = Throughput.b; 
+                        // }
+                        // else {
                             rThr *= Throughput.r;
                             gThr *= Throughput.g;
                             bThr *= Throughput.b;
-                        }
+                        // }
 
                         /*if(numRebotes==1){
                             rThr = rmax, gThr = gmax, bThr = bmax; 
@@ -315,7 +315,7 @@ int main(int argc, char* argv[]){
                     rThr += Radiance.r;
                     gThr += Radiance.g;
                     bThr += Radiance.b;
-                }else if (!colisiona || (r.hayAbsorcion() && !r.hayLuzPuntual())) {
+                }else if (!colisiona || (r.hayAbsorcion() && Radiance==0.0)) {
                     rThr = 0.0;
                     gThr = 0.0;
                     bThr = 0.0;

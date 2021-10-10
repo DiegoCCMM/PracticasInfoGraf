@@ -69,6 +69,10 @@ public:
         return -(c + o*n) / (d*n);
     }
 
+    double getFacingRatio(Rayo rayo){
+        return (getNormal(rayo.getOrigen()) * rayo.getDir());
+    }
+
 };
 
 
