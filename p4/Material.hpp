@@ -91,7 +91,7 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
 
 void nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures *figure,
                     list<geometryRGBFigures*> figuras, 
-                    RGB& Radiance, RGB Throughput) {
+                    RGB& Radiance, RGB Throughput, RGB Rebote) {
     // Los focos de luz puntuales tendrán la misma probabilidad
     if(focos.size() > 0){
         Punto origen = rayo.getOrigen();
@@ -113,8 +113,10 @@ void nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures
                 }
             }
 
-            if(!colisiona) {     
-                Radiance = Radiance * Throughput * foco->getRed()/255.0 / pow(r.getDir().module(),2);
+            if(!colisiona) {
+                // RGB rgb(foco->getRed()/255.0, );
+                int intensity = 1;
+                Radiance = Radiance + Throughput * (intensity / pow(r.getDir().module(),2)) * Rebote;
                 return;
                 // Se sale porque ya se ha encontrado una luz puntual sin
                 // intersectar con ningun otro objeto
@@ -194,7 +196,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
 
         rayo = Rayo(p, wi);
         rayo.setAbsorcion(prAbs+0.05);
-        nextEstimation(rayo, focos, figure, figuras, Radiance, Throughput);
+        nextEstimation(rayo, focos, figure, figuras, Radiance, Throughput, Rebote);
         
         Throughput = Throughput * Rebote;
     }

@@ -247,7 +247,7 @@ int main(int argc, char* argv[]){
             RGB rgb;
 
             fromDoubleToRGB(MediaAntialiasing/rperPixel, rgb);
-            ldrfile << rgb.r << " " << rgb.g << " " << rgb.b;
+            ldrfile << (int)rgb.r << " " << (int)rgb.g << " " << (int)rgb.b;
 
             if (i < numPixAncho-1) {
                 ldrfile << "    ";
