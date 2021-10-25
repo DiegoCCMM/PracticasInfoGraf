@@ -51,7 +51,6 @@ public:
 
     Vector getNormal(Punto inters) override { 
         return (inters - this->center).normalizar(); 
-        // return (inters - this->center)/(inters - this->center).module(); 
     }
 
     double getFacingRatio(Rayo rayo) override {

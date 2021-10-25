@@ -57,24 +57,10 @@ public:
     virtual double getFacingRatio(Rayo ray) {}
     
     Matriz ejeCoord (Rayo ray, Punto inters) {
-        // Vector i = ray.getDir().normalizar()->*this->getNormal(inters).normalizar();
-        // // i.normalizar();
-        // Vector j = i->*this->getNormal(inters).normalizar();
-        // // j.normalizar();
-
-        // Matriz resul(i, j, this->getNormal(inters).normalizar());
-
-        // return resul;
-
-        // Vector i = ray.getDir()->*this->getNormal(inters);
-        // i.normalizar();
-        // Vector j = i->*this->getNormal(inters).normalizar();
-
-        // Matriz resul(i, j, this->getNormal(inters).normalizar());
+        
         Vector k = this->getNormal(inters); // normal
 
         Vector j = (k ->* ray.getDir().normalizar()).normalizar();
-        // i.normalizar();
         Vector i = (j ->* k).normalizar();
 
         Matriz resul(i, j, k);

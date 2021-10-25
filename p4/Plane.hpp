@@ -28,16 +28,7 @@ public:
         this->blue = blue;
     }
 
-    // Plane(Vector normal, double distance, int red, int green, int blue){
-    //     this->normal = normal;
-    //     this->distance = distance;
-    //     this->red = red;
-    //     this->green = green;
-    //     this->blue = blue;
-    // }
-
     Vector getNormal(Punto inters) override { 
-        // return normal/normal.module();
         return normal.normalizar();
     }
 

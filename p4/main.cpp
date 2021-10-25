@@ -11,22 +11,25 @@
 #include <random>
 
 
-void fromDoubleToRGB(double thr, double thr1, double thr2, int &colour, int &colour1, int &colour2);
+void fromDoubleToRGB(RGB thr, RGB &rgb) {
+
+    rgb = thr * 255.0;
+
+    if (rgb.r > 255) rgb.r = 255;
+    if (rgb.g > 255) rgb.g = 255;
+    if (rgb.b > 255) rgb.b = 255;
+}
 
 int main(int argc, char* argv[]){
     // El tamanyo de la imagen ha de ser cuadrado
     int width = 480,
-    // int width = 640,
         height = 480;
+    // Antialiasing
+    int rperPixel = 10.0;
 
-    // int rperPixel = stoi(argv[1]);
-    // int rperPixel = 4; // Antialiasing
-    int rperPixel = 10;
-
-    // int pixelRes = stoi(argv[1]); // Número de rayos (?) (1048576 = 1024x1024)
+    
     int pixelRes = width*height; // Número de rayos (?) (1048576 = 1024x1024)
     ofstream ldrfile;
-    // ldrfile.open(argv[2]);
     ldrfile.open("figureLDR.ppm");
 
 
@@ -127,20 +130,15 @@ int main(int argc, char* argv[]){
 
     // Sistema de coordenadas de la cámara
     int front = (double)height/(1.0*tan(M_PI/12.0));
-    // int front = (width/2.0) / (tan(0.26 * M_PI)); // Evitar el ojo de pez
     Vector  x = Vector(width/2.0,0,0),
             y = Vector(0,height/2.0,0),
             z = Vector(0,0,front);
-            // NO HACE FALTA QUE ESTEN NORMALIZADOS
 
 
     Punto origen = Punto(0,0,0);
     //Sistemas de coordenadas en matriz para hacer el cambio de sistemas
     Matriz siscam = Matriz(x,y,z,origen);
-    // Matriz pixel_resol = Matriz();
-    // pixel_resol.resolution(width,height);
-    // Matriz perspective = Matriz();
-    // perspective.perspectiva();
+    
 
     //plano de proyección
     double area = width*height;
@@ -164,7 +162,6 @@ int main(int argc, char* argv[]){
     ldrfile << "#MAX=255" << endl;
     ldrfile << numPixAncho << " " << numPixAlto << endl;
     ldrfile << 255 << endl;
-// int numRebotes = 0;
     // Procedimiento pixeles en imagen: izq -> der, arriba -> abajo
     for (int j = 0; j < numPixAlto; j++) {
 
@@ -174,7 +171,6 @@ int main(int argc, char* argv[]){
             xEnd = xInit + pixelUnit;
             yEnd = yInit - pixelUnit;
 
-            // double rThrMedia = 0, gThrMedia = 0, bThrMedia = 0;
             RGB MediaAntialiasing(0.0);
 
             for(int w=0; w<rperPixel; w++) { // Antialiasing
@@ -190,13 +186,9 @@ int main(int argc, char* argv[]){
 
                 dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
                 dirZ = sqrt(pow(dist,2) + pow(front,2));
-                // normalized = Vector(xLocal, yLocal, dirZ).module();
-                // dirLocal = Vector(xLocal/normalized, yLocal/normalized, 1);
+            
                 dirLocal = Vector(xLocal, yLocal, dirZ).normalizar();
-                // dirLocal.setZ(1);
-                // dirLocal = x.mul(yLocal) + y.mul(xLocal) + z;
-                // dirLocal = dirLocal.normalizar();
-                // dirLocal.setZ(1);
+                
 
                 //Vector con la dirección local a la matriz de proyección
                 //de tipo matriz para poder operar con la matriz de cambio de base
@@ -207,22 +199,17 @@ int main(int argc, char* argv[]){
 
                 r = Rayo(origen, Global.vector());
                 Throughput = RGB(1.0);
-                // rThr = 1.0, gThr = 1.0, bThr = 1.0;
-                // rThr = 0.0, gThr = 0.0, bThr = 0.0; 
-                // int numRebotes = 0;
+                
 
                 geometryRGBFigures* fig;
                 Radiance = RGB(0.0);
                 do {
                     max = INT_MAX;
-                    // Throughput = RGB(1.0);
                     colisiona = false;
                     
                     auto it = figuras.begin();
                     while(it != figuras.end()){
-                        /*if(typeid(it)==typeid(Sphere)){
-                            std::cout << "hey" << std::endl;
-                        }*/
+                        
                         double res = (*it)->interseccion(r);
 
                         if(res >= 0 && res < max){
@@ -235,71 +222,8 @@ int main(int argc, char* argv[]){
                     }
 
                     if (colisiona) {
+                        reboteCamino(r, fig, focos, figuras, Radiance, Throughput);
                         
-                        // if(!fig->soyFoco()){
-                            // Modifica valor rayo r por el nuevo generado del rebote
-                            reboteCamino(r, fig, focos, figuras, Radiance, Throughput);
-                            // numRebotes++;
-                        // } //else {
-                        //     rmax = (*fig).getRed()/255;
-                        //     gmax = (*fig).getGreen()/255;
-                        //     bmax = (*fig).getBlue()/255;
-                        // }
-
-                        // rmax = fig->getRed()*rmax;
-                        // gmax = fig->getGreen()*gmax;
-                        // bmax = fig->getBlue()*bmax;
-
-                        // rThr *= rmax;
-                        // gThr *= gmax;
-                        // bThr *= bmax;
-                        // double kd, ks, kt, prAbs = rayo.getAbsorcion();
-
-                        // if(numRebotes==1){
-                        //     rThr = Throughput.r, gThr = Throughput.g, bThr = Throughput.b; 
-                        // }
-                        // else {
-                        // Throughput = Throughput * Rebote;
-                            // rThr *= Rebote.r;
-                            // gThr *= Rebote.g;
-                            // bThr *= Rebote.b;
-                        // }
-
-                        /*if(numRebotes==1){
-                            rThr = rmax, gThr = gmax, bThr = bmax; 
-                        }
-                        else {
-                            //TODO SI LA LUZ ES 0 0 255 PERDEMOS INFORMACIÓN
-
-                            if(rmax != 0) rThr *= rmax;
-                            if(gmax != 0) gThr *= gmax;
-                            if(bmax != 0) bThr *= bmax; 
-                        }*/
-
-                        /*if(numRebotes==1){
-                            rThr = rmax, gThr = gmax, bThr = bmax; 
-                        }
-                        else {
-
-                            rThr = rThr + rThr*rmax;
-                            if(rThr==0) {
-                                rThr = rThr + rThr*rmax;
-                            }
-                            else {
-                                rThr = rThr + rThr*rmax;
-                            }
-                            gThr = gThr + gThr*gmax;
-                            bThr = bThr + bThr*bmax;
-                        }*/
-
-
-                        // rThr += rmax;
-                        // gThr += gmax;
-                        // bThr += bmax;
-
-                        // rThr += rmax/numRebotes;
-                        // gThr += gmax/numRebotes;
-                        // bThr += bmax/numRebotes;
                     }
 
                 } while(!r.hayAbsorcion() && colisiona && !fig->soyFoco());
@@ -307,30 +231,22 @@ int main(int argc, char* argv[]){
                 if(fig->soyFoco()){
                     //cogemos Radiance + Throughput
                     Throughput = Throughput + Radiance;
-                    // rThr += Radiance.r;
-                    // gThr += Radiance.g;
-                    // bThr += Radiance.b;
+                    
                 }else if (!colisiona || (r.hayAbsorcion() && Radiance==0.0)) {
                     Throughput = RGB(0.0);
-                    // rThr = 0.0;
-                    // gThr = 0.0;
-                    // bThr = 0.0;
+                    
                 }else {
                     //cogemos Radiance
                     Throughput = Radiance;
-                    // rThr = Radiance.r;
-                    // gThr = Radiance.g;
-                    // bThr = Radiance.b;
+                    
                 }
                 
                 MediaAntialiasing = MediaAntialiasing + Throughput;
-                // rThrMedia += rThr, gThrMedia += gThr, bThrMedia += bThr;
             }
 
-            // int rColour, gColour, bColour;
             RGB rgb;
 
-            fromDoubleToRGB(MediaAntialiasing/(double)rperPixel, rgb);
+            fromDoubleToRGB(MediaAntialiasing/rperPixel, rgb);
             ldrfile << rgb.r << " " << rgb.g << " " << rgb.b;
 
             if (i < numPixAncho-1) {
@@ -347,10 +263,4 @@ int main(int argc, char* argv[]){
     ldrfile.close();
 }
 
-void fromDoubleToRGB(RGB thr, RGB &rgb) {
-    rgb = thr * 255.0;
 
-    if (rgb.r > 255) rgb.r = 255;
-    if (rgb.g > 255) rgb.g = 255;
-    if (rgb.b > 255) rgb.b = 255;
-}
