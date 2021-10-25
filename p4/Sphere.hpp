@@ -54,7 +54,7 @@ public:
         // return (inters - this->center)/(inters - this->center).module(); 
     }
 
-    double getFacingRatio(Rayo rayo){
+    double getFacingRatio(Rayo rayo) override {
         return (((rayo.getOrigen() - this->center).normalizar()) * rayo.getDir());
     }
 

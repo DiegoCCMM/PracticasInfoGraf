@@ -116,7 +116,7 @@ int main(int argc, char* argv[]){
     figuras.push_back(&planoFoco6);
 
     list<FocoPuntual> focos; // puntuales
-    focos.push_back(FocoPuntual(Punto(6,2,465), 255, 255, 255));
+    focos.push_back(FocoPuntual(Punto(6,2,475), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(5,5,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(10,10,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(0,-5,450), 255, 255, 255));
@@ -150,7 +150,7 @@ int main(int argc, char* argv[]){
     Rayo r;
     double xInit, yInit = height/2.0, max,
             xEnd, yEnd, xLocal, yLocal;
-    RGB Throughput, Radiance;
+    RGB Rebote, Radiance, Throughput;
     double rThr, gThr, bThr; // Throughput
     Vector dirLocal, dirGlobal;
     double dist, dirZ, normalized;
@@ -174,8 +174,8 @@ int main(int argc, char* argv[]){
             xEnd = xInit + pixelUnit;
             yEnd = yInit - pixelUnit;
 
-            double rThrMedia = 0, gThrMedia = 0, bThrMedia = 0;
-            // double rThrMedia = 1, gThrMedia = 1, bThrMedia = 1;
+            // double rThrMedia = 0, gThrMedia = 0, bThrMedia = 0;
+            RGB MediaAntialiasing(0.0);
 
             for(int w=0; w<rperPixel; w++) { // Antialiasing
 
@@ -206,13 +206,12 @@ int main(int argc, char* argv[]){
                 Matriz Global = siscam * local;
 
                 r = Rayo(origen, Global.vector());
-                rThr = 1.0, gThr = 1.0, bThr = 1.0;
+                Throughput = RGB(1.0);
+                // rThr = 1.0, gThr = 1.0, bThr = 1.0;
                 // rThr = 0.0, gThr = 0.0, bThr = 0.0; 
                 // int numRebotes = 0;
 
                 geometryRGBFigures* fig;
-
-/* TODO: INICIO Funcion recursiva rebote camino en material */
                 Radiance = RGB(0.0);
                 do {
                     max = INT_MAX;
@@ -228,12 +227,6 @@ int main(int argc, char* argv[]){
 
                         if(res >= 0 && res < max){
                             max = res;
-                            // rThr = (*it)->getRed();
-                            // gThr = (*it)->getGreen();
-                            // bThr = (*it)->getBlue();
-                            // rmax = (*it).getRed();
-                            // gmax = (*it).getGreen();
-                            // bmax = (*it).getBlue();
                             fig = (*it);
                             colisiona = true;
                         }
@@ -245,7 +238,7 @@ int main(int argc, char* argv[]){
                         
                         // if(!fig->soyFoco()){
                             // Modifica valor rayo r por el nuevo generado del rebote
-                            reboteCamino(r, fig, focos, figuras, Throughput, Radiance);
+                            reboteCamino(r, fig, focos, figuras, Radiance, Throughput);
                             // numRebotes++;
                         // } //else {
                         //     rmax = (*fig).getRed()/255;
@@ -266,9 +259,10 @@ int main(int argc, char* argv[]){
                         //     rThr = Throughput.r, gThr = Throughput.g, bThr = Throughput.b; 
                         // }
                         // else {
-                            rThr *= Throughput.r;
-                            gThr *= Throughput.g;
-                            bThr *= Throughput.b;
+                        // Throughput = Throughput * Rebote;
+                            // rThr *= Rebote.r;
+                            // gThr *= Rebote.g;
+                            // bThr *= Rebote.b;
                         // }
 
                         /*if(numRebotes==1){
@@ -312,36 +306,32 @@ int main(int argc, char* argv[]){
 
                 if(fig->soyFoco()){
                     //cogemos Radiance + Throughput
-                    rThr += Radiance.r;
-                    gThr += Radiance.g;
-                    bThr += Radiance.b;
+                    Throughput = Throughput + Radiance;
+                    // rThr += Radiance.r;
+                    // gThr += Radiance.g;
+                    // bThr += Radiance.b;
                 }else if (!colisiona || (r.hayAbsorcion() && Radiance==0.0)) {
-                    rThr = 0.0;
-                    gThr = 0.0;
-                    bThr = 0.0;
-                }else{
+                    Throughput = RGB(0.0);
+                    // rThr = 0.0;
+                    // gThr = 0.0;
+                    // bThr = 0.0;
+                }else {
                     //cogemos Radiance
-                    rThr = Radiance.r;
-                    gThr = Radiance.g;
-                    bThr = Radiance.b;
+                    Throughput = Radiance;
+                    // rThr = Radiance.r;
+                    // gThr = Radiance.g;
+                    // bThr = Radiance.b;
                 }
-
                 
-/* FIN  Funcion recursiva rebote camino en material */
-
-
-                rThrMedia += rThr, gThrMedia += gThr, bThrMedia += bThr;
+                MediaAntialiasing = MediaAntialiasing + Throughput;
+                // rThrMedia += rThr, gThrMedia += gThr, bThrMedia += bThr;
             }
 
-            int rColour, gColour, bColour;
+            // int rColour, gColour, bColour;
+            RGB rgb;
 
-            fromDoubleToRGB(rThrMedia/rperPixel, gThrMedia/rperPixel, 
-                            bThrMedia/rperPixel, rColour, gColour, bColour);
-            // fromDoubleToRGB(rThrMedia*pow(M_PI,2)/rperPixel, gThrMedia*pow(M_PI,2)/rperPixel, 
-            //                 bThrMedia*pow(M_PI,2)/rperPixel, rColour, gColour, bColour);
-            // fromDoubleToRGB(rThrMedia*pow(M_PI,2)/numRebotes, gThrMedia*pow(M_PI,2)/numRebotes, 
-            //                 bThrMedia*pow(M_PI,2)/numRebotes, rColour, gColour, bColour);
-            ldrfile << rColour << " " << gColour << " " << bColour;
+            fromDoubleToRGB(MediaAntialiasing/(double)rperPixel, rgb);
+            ldrfile << rgb.r << " " << rgb.g << " " << rgb.b;
 
             if (i < numPixAncho-1) {
                 ldrfile << "    ";
@@ -357,13 +347,10 @@ int main(int argc, char* argv[]){
     ldrfile.close();
 }
 
-void fromDoubleToRGB(double thr, double thr1, double thr2,
-                     int &colour, int &colour1, int &colour2) {
-    colour = (thr * 255.0);
-    colour1 = (thr1 * 255.0);
-    colour2 = (thr2 * 255.0);
+void fromDoubleToRGB(RGB thr, RGB &rgb) {
+    rgb = thr * 255.0;
 
-    if (colour > 255) colour = 255;
-    if (colour1 > 255) colour1 = 255;
-    if (colour2 > 255) colour2 = 255;
+    if (rgb.r > 255) rgb.r = 255;
+    if (rgb.g > 255) rgb.g = 255;
+    if (rgb.b > 255) rgb.b = 255;
 }

@@ -93,10 +93,9 @@ Vector muestreoCoseno(Rayo rayo, geometryRGBFigures* figure, Punto inters) {
     return wi;
 }
 
-bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures *figure,
+void nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures *figure,
                     list<geometryRGBFigures*> figuras, 
-                    RGB& Throughput, RGB& Radiance) {
-    bool hayLuzPuntual = false;
+                    RGB& Radiance, RGB Throughput) {
     // Los focos de luz puntuales tendrán la misma probabilidad
     if(focos.size() > 0){
         Punto origen = rayo.getOrigen();
@@ -119,23 +118,21 @@ bool nextEstimation(Rayo rayo, list<FocoPuntual> focos, const geometryRGBFigures
                 }
             }
 
-            if(!colisiona) {             
-                Radiance.r += Throughput.r * foco->getRed()/255.0 / pow(r.getDir().module(),2);
-                Radiance.g += Throughput.g * foco->getGreen()/255.0 / pow(r.getDir().module(),2);
-                Radiance.b += Throughput.b * foco->getBlue()/255.0 / pow(r.getDir().module(),2);
-                const int intensity = 1;
-                // Radiance.r += Throughput.r * (foco->getRed()/255.0) * intensity * figure.getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
-                // Radiance.g += Throughput.g * (foco->getGreen()/255.0) * intensity * figure.getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
-                // Radiance.b += Throughput.b * (foco->getBlue()/255.0) * intensity * figure.getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
-                hayLuzPuntual = true;
+            if(!colisiona) {     
+                Radiance = Radiance * Throughput * foco->getRed()/255.0 / pow(r.getDir().module(),2);
+                // Radiance.r += rThr * foco->getRed()/255.0 / pow(r.getDir().module(),2);
+                // Radiance.g += gThr * foco->getGreen()/255.0 / pow(r.getDir().module(),2);
+                // Radiance.b += bThr * foco->getBlue()/255.0 / pow(r.getDir().module(),2);
+                // const int intensity = 1;
+                // Radiance.r += Rebote.r * (foco->getRed()/255.0) * intensity * (*figure).getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
+                // Radiance.g += Rebote.g * (foco->getGreen()/255.0) * intensity * (*figure).getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
+                // Radiance.b += Rebote.b * (foco->getBlue()/255.0) * intensity * (*figure).getFacingRatio(r) / pow(r.getDir().module(),2) * M_PI;
+                return;
                 // Se sale porque ya se ha encontrado una luz puntual sin
                 // sin intersectar con ningun otro objeto
-                break;
-                //std::cout<<"aporto"<<std::endl;
             }
         }
     }
-    return hayLuzPuntual;
 }
 
 //clamp the value between min and max
@@ -153,7 +150,7 @@ Vector invert(Vector invertable){
 }
 
 void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> focos,
-                  list<geometryRGBFigures*> figuras, RGB &Throughput, RGB &Radiance) {
+                  list<geometryRGBFigures*> figuras, RGB &Radiance, RGB &Throughput) {
 
     double kd, ks, kt, prAbs = rayo.getAbsorcion();
     RGB tupleKd = figure->getKd();
@@ -165,6 +162,7 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
         // rayo.setLuzPuntual(false);
         // si se absorbe no hay next event estimation
     } else{
+        RGB Rebote;
         // fr(x, wi, w0) = kd/pi + ks(x, w0)(delta wr(wi) / n*wi) + kt(x,w0)(delta wt(wi)/n*wi)
         // delta wr = 2n(n*wi) - wi
         // delta wt = arcsin((n0 * sin(w0)) / n1)
@@ -194,13 +192,13 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
             // rmax = ks/(n*wi);
             // gmax = ks/(n*wi);
             // bmax = ks/(n*wi);
-            Throughput.r = ks;
-            Throughput.g = ks;
-            Throughput.b = ks;
+            Rebote.r = ks;
+            Rebote.g = ks;
+            Rebote.b = ks;
 
-            Throughput.r *= abs(n*wi);
-            Throughput.g *= abs(n*wi);
-            Throughput.b *= abs(n*wi);
+            Rebote.r *= abs(n*wi);
+            Rebote.g *= abs(n*wi);
+            Rebote.b *= abs(n*wi);
         }
         else if(kt != 0) { // dielectrico - refraction
             double aire = 1.0, vidrio = 1.45; // Medios
@@ -222,9 +220,9 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
             // rmax = kt/(n*wi);
             // gmax = kt/(n*wi);
             // bmax = kt/(n*wi);
-            Throughput.r = kt;
-            Throughput.g = kt;
-            Throughput.b = kt;
+            Rebote.r = kt;
+            Rebote.g = kt;
+            Rebote.b = kt;
         }else{  //difuso
             // if(figure->soyFoco()) {
             //     //cout << "he colisionado con la esfera difusa" << endl;
@@ -232,14 +230,14 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
             //     gmax = tupleKd.g;
             //     bmax = tupleKd.b;
             // }
-            Throughput.r = tupleKd.r;
-            Throughput.g = tupleKd.g;
-            Throughput.b = tupleKd.b;
+            Rebote.r = tupleKd.r;
+            Rebote.g = tupleKd.g;
+            Rebote.b = tupleKd.b;
 
             // if(!figure->soyFoco()) {
-                Throughput.r *= abs(n*wi);
-                Throughput.g *= abs(n*wi);
-                Throughput.b *= abs(n*wi);
+                Rebote.r *= abs(n*wi);
+                Rebote.g *= abs(n*wi);
+                Rebote.b *= abs(n*wi);
             // }
             // else {
             //     rmax = tupleKd.r*abs(figure->getNormal(p)*wi);
@@ -263,15 +261,12 @@ void reboteCamino(Rayo &rayo, geometryRGBFigures *figure, list<FocoPuntual> foco
                 // bmax *= abs(n*wi);
         // }
 
-        bool hayLuzPuntual = rayo.hayLuzPuntual();
         rayo = Rayo(p, wi);
         rayo.setAbsorcion(prAbs+0.05);
-        rayo.setLuzPuntual(hayLuzPuntual);
         // ahora mismo nextEstimation se aplica también a las areas de luz
-        hayLuzPuntual = nextEstimation(rayo, focos, figure, figuras, Throughput, Radiance);
-        // if(!rayo.hayLuzPuntual() && hayLuzPuntual){
-            rayo.setLuzPuntual(hayLuzPuntual);
-        // }
+        nextEstimation(rayo, focos, figure, figuras, Radiance, Throughput);
+        
+        Throughput = Throughput * Rebote;
     }
 }
 

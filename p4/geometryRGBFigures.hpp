@@ -17,12 +17,21 @@ struct RGB{
     RGB operator*(double i) const{
         return(RGB(r*i, g*i, b*i));
     }
+    
     RGB operator/(double i) const{
         return(RGB(r/i, g/i, b/i));
     }
 
     bool operator==(const double num) const{
         return r==num && g==num && b==num;
+    }
+
+    RGB operator*(RGB x) const{
+        return RGB(r*x.r, g*x.g, b*x.b);
+    }
+
+    RGB operator+(RGB x){
+        return RGB(r+x.r, g+x.g, b+x.b);
     }
 
 };
@@ -45,7 +54,7 @@ public:
 
     virtual double interseccion (Rayo ray) {}
     virtual Vector getNormal(Punto inters) {}
-    virtual double getFacingRatio(Rayo ray){}
+    virtual double getFacingRatio(Rayo ray) {}
     
     Matriz ejeCoord (Rayo ray, Punto inters) {
         // Vector i = ray.getDir().normalizar()->*this->getNormal(inters).normalizar();

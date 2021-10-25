@@ -27,7 +27,6 @@ class Rayo {
     Punto origen;
     Vector direccion;
     double absorcion;
-    bool luzPuntual = false;
 
 public:
 
@@ -49,14 +48,6 @@ public:
 
     bool hayAbsorcion() const {
         return absorcion==1.0;
-    }
-
-    bool hayLuzPuntual(){
-        return luzPuntual;
-    }
-
-    void setLuzPuntual(bool luz){
-        luzPuntual = luz;
     }
 
 };
