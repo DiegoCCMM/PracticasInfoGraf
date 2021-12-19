@@ -22,6 +22,7 @@ public:
         this->green = green;
         this->blue = blue;
         foco=true;
+        this->esDifuso();
     }
 
     Punto getPosition() const { return position; }

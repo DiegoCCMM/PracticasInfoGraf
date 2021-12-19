@@ -108,7 +108,7 @@ Punto getPuntoInters(const Rayo &rayo, geometryRGBFigures* &figure) {
 }
 
 RGB colorBRDF(const Evento &evento, const Rayo &rayoEntrante, geometryRGBFigures* figure,
-        Punto punto_inters) {
+        Punto punto_inters, double prob_absorcion) {
 
     Vector normalFigura = figure->getNormal(punto_inters);
     
@@ -118,9 +118,9 @@ RGB colorBRDF(const Evento &evento, const Rayo &rayoEntrante, geometryRGBFigures
            ks = figure->getKs(),
            kt = figure->getKt();
 
-    double pd = ((1.0-rayoEntrante.getAbsorcion())*kd) / (kd+ks+kt);
-    double ps = ((1.0-rayoEntrante.getAbsorcion())*ks) / (kd+ks+kt);
-    double pt = ((1.0-rayoEntrante.getAbsorcion())*kt) / (kd+ks+kt);
+    double pd = ((1.0-prob_absorcion)*kd) / (kd+ks+kt);
+    double ps = ((1.0-prob_absorcion)*ks) / (kd+ks+kt);
+    double pt = ((1.0-prob_absorcion)*kt) / (kd+ks+kt);
 
     switch (evento) {
         case DIFUSO:
@@ -155,7 +155,8 @@ bool hayColision(const list<geometryRGBFigures*> &figuras, const Rayo &rayoEntra
 }
 
 RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,  
-        const list<geometryRGBFigures*> &figuras, const Evento &evento, const RGB &Throughput) {
+        const list<geometryRGBFigures*> &figuras, const Evento &evento, 
+        const RGB &Throughput, geometryRGBFigures* figura_intersectada) {
 
     RGB Radiance(0.0);
     if(focos.size() > 0){
@@ -167,13 +168,13 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
 
             // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
             // algún otro objeto antes de la luz puntual
-            geometryRGBFigures* figura_intersectada;
-            bool colisiona = hayColision(figuras, rayoSombra, figura_intersectada);
+            geometryRGBFigures* fig;
+            bool colisiona = hayColision(figuras, rayoSombra, fig);
 
             if(!colisiona) {
                 // int intensity = 1;
-                Punto punto_inters = getPuntoInters(rayoSombra, figura_intersectada);
-                Radiance = Radiance + foco->getKd() * colorBRDF(evento, rayoSombra, figura_intersectada, punto_inters) * Throughput / pow(rayoSombra.getDir().module(),2);
+                Punto punto_inters = foco->getPosition();
+                Radiance = Radiance + foco->getKd() * colorBRDF(evento, rayoSombra, figura_intersectada, punto_inters, rayoEntrante.getAbsorcion()) * Throughput / pow(rayoSombra.getDir().module(),2);
             }
         }
     }
@@ -269,7 +270,7 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
                 }
                 else {
                     // Calcular la radiancia - luces directas
-                    Radiance = Radiance + colorLuzDirecta(rayoEntrante, focos, figuras, evento, Throughput);
+                    Radiance = Radiance + colorLuzDirecta(rayoEntrante, focos, figuras, evento, Throughput, figura_intersectada);
 
                     // Se crea el rayo del rebote
                     Vector nuevaDir = nuevaDireccion(rayoEntrante, figura_intersectada, evento);
@@ -277,8 +278,8 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
                     rayoSaliente.setAbsorcion(rayoEntrante.getAbsorcion() + 0.05);
                     
                     Punto punto_inters = getPuntoInters(rayoEntrante, figura_intersectada);
-                    Throughput = Throughput * colorBRDF(evento, rayoEntrante, figura_intersectada, punto_inters);
                     
+                    Throughput = Throughput * colorBRDF(evento, rayoSaliente, figura_intersectada, punto_inters, rayoEntrante.getAbsorcion());
                     rayoEntrante = rayoSaliente;
                 }
             }
