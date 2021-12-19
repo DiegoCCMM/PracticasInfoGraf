@@ -107,12 +107,12 @@ Punto getPuntoInters(const Rayo &rayo, geometryRGBFigures* &figure) {
     return rayo.getOrigen() + rayo.getDir().mul(t); // puntoInterseccion
 }
 
-RGB colorBRDF(const Evento &evento, const Rayo &rayoEntrante, geometryRGBFigures* figure,
+RGB colorBRDF(const Evento &evento, const Vector &dirRayo, geometryRGBFigures* figure,
         Punto punto_inters, double prob_absorcion) {
 
     Vector normalFigura = figure->getNormal(punto_inters);
     
-    double cos = abs(normalFigura * rayoEntrante.getDir().normalizar());
+    double cos = abs(normalFigura * dirRayo);
 
     double kd = figure->getMaxKd(),
            ks = figure->getKs(),
@@ -174,7 +174,7 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
             if(!colisiona) {
                 // int intensity = 1;
                 Punto punto_inters = foco->getPosition();
-                Radiance = Radiance + foco->getKd() * colorBRDF(evento, rayoSombra, figura_intersectada, punto_inters, rayoEntrante.getAbsorcion()) * Throughput / pow(rayoSombra.getDir().module(),2);
+                Radiance = Radiance + foco->getKd() * colorBRDF(evento, rayoSombra.getDir().normalizar(), figura_intersectada, punto_inters, rayoEntrante.getAbsorcion()) * Throughput / pow(rayoSombra.getDir().module(),2);
             }
         }
     }
@@ -278,8 +278,8 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
                     rayoSaliente.setAbsorcion(rayoEntrante.getAbsorcion() + 0.05);
                     
                     Punto punto_inters = getPuntoInters(rayoEntrante, figura_intersectada);
-                    
-                    Throughput = Throughput * colorBRDF(evento, rayoSaliente, figura_intersectada, punto_inters, rayoEntrante.getAbsorcion());
+
+                    Throughput = Throughput * colorBRDF(evento, rayoSaliente.getDir().normalizar().mul(-1), figura_intersectada, punto_inters, rayoEntrante.getAbsorcion());
                     rayoEntrante = rayoSaliente;
                 }
             }
