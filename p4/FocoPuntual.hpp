@@ -24,7 +24,7 @@ public:
         foco=true;
     }
 
-    Punto getPosition() { return position; }
+    Punto getPosition() const { return position; }
     void setPosition(const Punto &position){ this->position = position; }
 
 private:

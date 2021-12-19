@@ -51,7 +51,7 @@ public:
         return Vector(this->x / b, this->y / b, this->z / b);
     }
 
-    Vector mul(const double a) {
+    Vector mul(const double a) const {
         return {this->x*a, this->y*a, this->z*a};
     }
 

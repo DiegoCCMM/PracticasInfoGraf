@@ -52,7 +52,7 @@ public:
     int getGreen() const { return green; }
     int getBlue()  const { return blue;  }
 
-    virtual double interseccion (Rayo ray) {}
+    virtual double interseccion (const Rayo &ray) const {}
     virtual Vector getNormal(Punto inters) {}
     virtual double getFacingRatio(Rayo ray) {}
     
@@ -119,7 +119,7 @@ public:
 
     void setFoco(bool val) {
         foco = val;
-    }    
+    }
 };
 
 

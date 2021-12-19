@@ -35,21 +35,20 @@ public:
     Rayo(const Punto &origen, const Vector &direccion) : 
                 origen(origen), direccion(direccion), absorcion(0.0) {}
 
-    Vector getDir ()   { return direccion; }
-    Punto getOrigen () { return origen;    }
+    Vector getDir () const  { return direccion; }
+    Punto getOrigen () const { return origen;    }
 
     void setAbsorcion(double val){
         absorcion = val;
     }
 
-    double getAbsorcion(){
+    double getAbsorcion() const {
         return absorcion;
     }
 
     bool hayAbsorcion() const {
         return absorcion==1.0;
     }
-
 };
 
 #endif //P3_CAMERA_HPP

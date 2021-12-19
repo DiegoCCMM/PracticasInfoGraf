@@ -35,7 +35,7 @@ public:
     double getRadius() const{ return radius; }
     void setRadius(double radius){ this->radius = radius; }
 
-    double interseccion(Rayo ray) override {
+    double interseccion(const Rayo &ray) const override {
 
         Punto  o = ray.getOrigen(),
                c = center;
@@ -59,7 +59,7 @@ public:
 
 private:
 
-    double secGradeEcuation(double a, double b, double c) {
+    double secGradeEcuation(double a, double b, double c) const {
         if(pow(b,2) - 4 * a * c >= 0) {
 
             double primeraSol = (-b - sqrt(pow(b,2) - 4 * a * c)) / (2*a);

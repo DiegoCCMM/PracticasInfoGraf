@@ -39,7 +39,7 @@ public:
     void setDistance(double distance){ this->distance = distance; }
 
     // cambiar
-    double interseccion(Rayo ray) override {
+    double interseccion(const Rayo &ray) const override {
         double c = distance;
         Punto o = ray.getOrigen();
         Vector  d = ray.getDir(),
