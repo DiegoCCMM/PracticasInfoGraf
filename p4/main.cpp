@@ -85,7 +85,7 @@ int main(int argc, char* argv[]){
     // Plano - techo
     //Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 0, 255, 0);  // Plano foco
     Plane planoFoco4 = Plane(Vector(0,-1,-1), Punto(0,height,0), 255, 255,255);  // Plano foco
-    planoFoco4.setFoco(true);
+    // planoFoco4.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco4.esDifuso();
 
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]){
    //  figuras.push_back(&planoFoco6);
 
 
-    // focos.push_back(FocoPuntual(Punto(0,0,400), 255, 255, 255));
+    focos.push_back(FocoPuntual(Punto(0,0,350), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(5,5,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(10,10,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(0,-5,450), 255, 255, 255));
