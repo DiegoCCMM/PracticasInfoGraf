@@ -120,6 +120,10 @@ public:
     void setFoco(bool val) {
         foco = val;
     }
+
+    RGB getRGB() const {
+        return RGB(red/255.0, green/255.0, blue/255.0);
+    }
 };
 
 

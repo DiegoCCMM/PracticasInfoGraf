@@ -108,7 +108,7 @@ Punto getPuntoInters(const Rayo &rayo, geometryRGBFigures* &figure) {
 }
 
 RGB colorBRDF(const Evento &evento, const Vector &dirRayo, geometryRGBFigures* figure,
-        Punto punto_inters, double prob_absorcion) {
+        Punto punto_inters) {
 
     Vector normalFigura = figure->getNormal(punto_inters);
     
@@ -175,8 +175,7 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
             }
 
             if(!colisiona) {
-                int intensity = 1;
-                Radiance = Radiance + (colorBRDF(evento, rayoSombra.getDir().normalizar(), figura_intersectada, punto_inters, rayoEntrante.getAbsorcion()) * Throughput) * intensity / pow(rayoSombra.getDir().module(),2);
+                Radiance = Radiance + Throughput * (foco->getIntensidad() / pow(rayoSombra.getDir().module(),2)) * colorBRDF(evento, rayoSombra.getDir().normalizar(), figura_intersectada, punto_inters);
             }
         }
     }
@@ -282,8 +281,7 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
                 }
                 else {
                     // Calcular la radiancia - luces directas
-                    if(evento == DIFUSO)
-                        Radiance = Radiance + colorLuzDirecta(rayoEntrante, focos, figuras, evento, Throughput, figura_intersectada);
+                    Radiance = Radiance + colorLuzDirecta(rayoEntrante, focos, figuras, evento, Throughput, figura_intersectada);
 
                     // Se crea el rayo del rebote
                     Vector nuevaDir = nuevaDireccion(rayoEntrante, figura_intersectada, evento);
@@ -292,7 +290,7 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
                     
                     Punto punto_inters = getPuntoInters(rayoEntrante, figura_intersectada);
 
-                    Throughput = Throughput * colorBRDF(evento, rayoSaliente.getDir().normalizar().mul(-1), figura_intersectada, punto_inters, rayoEntrante.getAbsorcion())/getPdf(evento, figura_intersectada, rayoEntrante.getAbsorcion());
+                    Throughput = Throughput * colorBRDF(evento, rayoSaliente.getDir().normalizar().mul(-1), figura_intersectada, punto_inters)/getPdf(evento, figura_intersectada, rayoEntrante.getAbsorcion());
                     rayoEntrante = rayoSaliente;
                 }
             }
