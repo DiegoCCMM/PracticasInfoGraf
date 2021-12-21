@@ -162,7 +162,7 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
             }
         }
     }
-    return Radiance; // TODO: hacer media?
+    return Radiance; // Hacer media?
 }
 
 //clamp the value between min and max
@@ -281,7 +281,7 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
         }
     }
 
-    // return Throughput + Radiance;
+    // return Throughput + Radiance / i; // Hacer media?
     return Throughput + Radiance;
 }
 
