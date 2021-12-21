@@ -56,7 +56,6 @@ int main(int argc, char* argv[]){
     // sphere4.esEspecular();
     sphere4.esDifuso();
     // sphere4.esDielectrico();
-
     // Esfera foco grande en medio que intenta iluminar la sala
     Sphere sphere5 = Sphere(Punto(0,0,470), 2.0, 0, 0, 255);
     // sphere5.setFoco(true);
@@ -85,7 +84,7 @@ int main(int argc, char* argv[]){
     // Plano - techo
     //Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 0, 255, 0);  // Plano foco
     Plane planoFoco4 = Plane(Vector(0,-1,-1), Punto(0,height,0), 255, 255,255);  // Plano foco
-    // planoFoco4.setFoco(true);
+    planoFoco4.setFoco(true);
     // planoFoco.esEspecular();
     planoFoco4.esDifuso();
 
@@ -96,13 +95,13 @@ int main(int argc, char* argv[]){
     planoFoco5.esDifuso();
 
     // Plano - pared trasera
-    Plane planoFoco6 = Plane(Vector(0,0,1), Punto(0,0,300), 255, 255, 255);  // Plano foco
+    // Plane planoFoco6 = Plane(Vector(0,0,1), Punto(0,0,300), 255, 255, 255);  // Plano foco
     //planoFoco6.setFoco(true);
     // planoFoco6.esEspecular();
-    planoFoco6.esDifuso();
+    // planoFoco6.esDifuso();
 
     list<geometryRGBFigures*> figuras;
-   list<FocoPuntual> focos; // Luces puntuales
+
     // figuras.push_back(&sphere1);
     // figuras.push_back(&sphere2);
     figuras.push_back(&sphere3);
@@ -113,10 +112,10 @@ int main(int argc, char* argv[]){
     figuras.push_back(&planoFoco3);
     figuras.push_back(&planoFoco4);
     figuras.push_back(&planoFoco5);
-   //  figuras.push_back(&planoFoco6);
+    // figuras.push_back(&planoFoco6);
 
-
-    focos.push_back(FocoPuntual(Punto(0,0,350), 255, 255, 255));
+    list<FocoPuntual> focos; // puntuales
+    focos.push_back(FocoPuntual(Punto(6,2,440), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(5,5,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(10,10,450), 255, 255, 255));
     // focos.push_back(FocoPuntual(Punto(0,-5,450), 255, 255, 255));
@@ -132,8 +131,8 @@ int main(int argc, char* argv[]){
             z = Vector(0,0,front);
 
 
-    // Sistemas de coordenadas en matriz para hacer el cambio de sistemas
     Punto origen = Punto(0,0,0);
+    //Sistemas de coordenadas en matriz para hacer el cambio de sistemas
     Matriz siscam = Matriz(x,y,z,origen);
     
 
@@ -175,6 +174,9 @@ int main(int argc, char* argv[]){
                 }
                 xLocal /= (m-1);
                 yLocal /= (m-1);
+
+                double dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
+                double dirZ = sqrt(pow(dist,2) + pow(front,2));
             
                 Vector dirLocal = Vector(xLocal, yLocal, 2*width).normalizar();                
 
@@ -208,5 +210,7 @@ int main(int argc, char* argv[]){
 
     ldrfile.close();
 }
+
+
 
 

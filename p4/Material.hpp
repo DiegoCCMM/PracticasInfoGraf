@@ -32,41 +32,24 @@ Evento ruletaRusa(geometryRGBFigures* figure, const double &probabilidad_absorci
 
     if(ks == 0.0 && kt == 0.0){//difuso KD y no tiene KS ni KT
         if( e <= pd) {
-            // kdColours = kdColours/pd;
             return DIFUSO;
         }else{
-            // prAbs = 1.0;
-            // kd = 0.0;
             return NOEVENTO;
         }
     }else if(kt == 0.0){//plastico  KD y KS y no tiene KT
         if( e <= pd ){//difuso
-            // kdColours = kdColours/pd;
-            // ks = 0.0;
             return DIFUSO;
         }else if( e > pd && e <= pd+ps ){  //especular
-            // ks = ks/ps;
-            // kd = 0.0;
             return ESPECULAR;
         }else{ //absorbido
-            // prAbs = 1.0;
-            // ks = 0.0;
-            // kd = 0.0;
             return NOEVENTO;
         }
     }else if(kd == 0.0){//dielectrico   KS Y KT y no tiene KD
         if( e <= pt ){//transparente
-            // kt = kt/pt;
-            // ks = 0.0;
             return DIELECTRICO;
         }else if( e > pt && e <= pt+ps){  //especular
-            // ks = ks/ps;
-            // kt = 0.0;
             return ESPECULAR;
         }else{  //absorbido
-            // prAbs = 1.0;
-            // ks = 0.0;
-            // kt = 0.0;
             return NOEVENTO;
         }
     }
@@ -102,29 +85,23 @@ Vector muestreoCoseno(const Rayo &rayo, geometryRGBFigures* figure, Punto inters
 }
 
 Punto getPuntoInters(const Rayo &rayo, geometryRGBFigures* &figure) {
-    double t = figure->interseccion(rayo); // distancia
+    double dist = figure->interseccion(rayo); // distancia
 
-    return rayo.getOrigen() + rayo.getDir().mul(t); // puntoInterseccion
+    return rayo.getOrigen() + rayo.getDir().mul(dist); // puntoInterseccion
 }
 
-RGB colorBRDF(const Evento &evento, const Vector &dirRayo, geometryRGBFigures* figure,
-        Punto punto_inters) {
+RGB colorBRDF(const Evento &evento, geometryRGBFigures* figure) {    
 
-    Vector normalFigura = figure->getNormal(punto_inters);
-    
-    double cos = abs(normalFigura * dirRayo);
-
-    double kd = figure->getMaxKd(),
-           ks = figure->getKs(),
+    double ks = figure->getKs(),
            kt = figure->getKt();
 
     switch (evento) {
         case DIFUSO:
-            return kd / M_PI * cos;
+            return figure->getKd() / M_PI;
         case ESPECULAR:
-            return ks;
+            return RGB(ks);
         case DIELECTRICO:
-            return kt;
+            return RGB(kt);
         case NOEVENTO:
             return RGB(0.0);
     }
@@ -137,12 +114,12 @@ bool hayColision(const list<geometryRGBFigures*> &figuras, const Rayo &rayoEntra
 
     int max = INT_MAX;
     bool colisiona = false;
-    for(auto it = figuras.begin(); it != figuras.end(); it++){
-        double res = (*it)->interseccion(rayoEntrante);
+    for(const auto &it : figuras){
+        double res = it->interseccion(rayoEntrante);
 
         if(res >= 0 && res < max){
             max = res;
-            figure = (*it);
+            figure = it;
             colisiona = true;
         }
     }
@@ -160,22 +137,28 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
         for(auto foco = focos.begin(); foco != focos.end(); foco++){
         
             Punto posicion_foco = foco->getPosition();
-            Rayo rayoSombra = Rayo(posicion_foco, (punto_inters - posicion_foco).normalizar());
+            Vector dirSombra = (punto_inters - posicion_foco).normalizar();
+            Rayo rayoSombra = Rayo(posicion_foco, dirSombra);
 
             // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
             // algún otro objeto antes de la luz puntual
             bool colisiona = false;
-            for(auto it = figuras.begin(); it != figuras.end() && (*it) != figura_intersectada; it++){
-                double res = (*it)->interseccion(rayoSombra);
+            for(const auto &it : figuras){
+                // if(it != figura_intersectada){
+                    double res = it->interseccion(rayoSombra);
 
-                if(res >= 0){
-                    colisiona = true;
-                    break;
-                }
+                    if(res >= 0){
+                        colisiona = true;
+                        break;
+                    }
+                // }
             }
 
             if(!colisiona) {
-                Radiance = Radiance + Throughput * (foco->getIntensidad() / pow(rayoSombra.getDir().module(),2)) * colorBRDF(evento, rayoSombra.getDir().normalizar(), figura_intersectada, punto_inters);
+                // max(0,n*wi)  si es negativo quita luz
+                double dotProduct = figura_intersectada->getNormal(punto_inters) * rayoSombra.getDir();
+                double cos = dotProduct <= 0 ? 0 : dotProduct;
+                Radiance = Radiance + Throughput * (foco->getRGB() / pow(rayoSombra.getDir().module(),2)) * colorBRDF(evento, figura_intersectada) * cos;
             }
         }
     }
@@ -282,15 +265,16 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
                 else {
                     // Calcular la radiancia - luces directas
                     Radiance = Radiance + colorLuzDirecta(rayoEntrante, focos, figuras, evento, Throughput, figura_intersectada);
-
-                    // Se crea el rayo del rebote
-                    Vector nuevaDir = nuevaDireccion(rayoEntrante, figura_intersectada, evento);
-                    Rayo rayoSaliente = Rayo(getPuntoInters(rayoEntrante, figura_intersectada), nuevaDir);
-                    rayoSaliente.setAbsorcion(rayoEntrante.getAbsorcion() + 0.05);
                     
                     Punto punto_inters = getPuntoInters(rayoEntrante, figura_intersectada);
 
-                    Throughput = Throughput * colorBRDF(evento, rayoSaliente.getDir().normalizar().mul(-1), figura_intersectada, punto_inters)/getPdf(evento, figura_intersectada, rayoEntrante.getAbsorcion());
+                    // Se crea el rayo del rebote
+                    Vector nuevaDir = nuevaDireccion(rayoEntrante, figura_intersectada, evento);
+                    Rayo rayoSaliente = Rayo(punto_inters, nuevaDir);
+                    rayoSaliente.setAbsorcion(rayoEntrante.getAbsorcion() + 0.05);                    
+                    
+                    double cos = abs(rayoSaliente.getDir() * figura_intersectada->getNormal(punto_inters));
+                    Throughput = Throughput * colorBRDF(evento, figura_intersectada) * cos / getPdf(evento, figura_intersectada, rayoEntrante.getAbsorcion());
                     rayoEntrante = rayoSaliente;
                 }
             }
@@ -298,7 +282,7 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
     }
 
     // return Throughput + Radiance;
-    return Throughput + Radiance / i;
+    return Throughput + Radiance;
 }
 
 

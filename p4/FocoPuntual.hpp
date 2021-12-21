@@ -12,7 +12,6 @@
 class FocoPuntual : public geometryRGBFigures {
 
     Punto position = Punto(0,0,0);
-    int intensidad = 1;
 
 public:
 
@@ -28,9 +27,6 @@ public:
 
     Punto getPosition() const { return position; }
     void setPosition(const Punto &position){ this->position = position; }
-
-    int getIntensidad() const { return intensidad; }
-    void setIntensidad(const int &intensidad) { this->intensidad = intensidad; }
 
 private:
     
