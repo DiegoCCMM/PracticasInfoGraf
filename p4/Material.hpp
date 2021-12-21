@@ -134,9 +134,9 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
     RGB Radiance(0.0);
     if(focos.size() > 0){
         Punto punto_inters = getPuntoInters(rayoEntrante, figura_intersectada);
-        for(auto foco = focos.begin(); foco != focos.end(); foco++){
+        for(const auto &foco : focos){
         
-            Punto posicion_foco = foco->getPosition();
+            Punto posicion_foco = foco.getPosition();
             Vector dirSombra = (punto_inters - posicion_foco).normalizar();
             Rayo rayoSombra = Rayo(posicion_foco, dirSombra);
 
@@ -158,7 +158,7 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
                 // max(0,n*wi)  si es negativo quita luz
                 double dotProduct = figura_intersectada->getNormal(punto_inters) * rayoSombra.getDir();
                 double cos = dotProduct <= 0 ? 0 : dotProduct;
-                Radiance = Radiance + Throughput * (foco->getRGB() / pow(rayoSombra.getDir().module(),2)) * colorBRDF(evento, figura_intersectada) * cos;
+                Radiance = Radiance + Throughput * (foco.getRGB() / pow(rayoSombra.getDir().module(),2)) * colorBRDF(evento, figura_intersectada) * cos;
             }
         }
     }
