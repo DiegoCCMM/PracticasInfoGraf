@@ -84,7 +84,7 @@ int main(int argc, char* argv[]){
     
     // Focos puntuales
 
-    focos.push_back(FocoPuntual(Punto(7,-10,10), 50, 50, 50));
+    focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
     // focos.push_back(FocoPuntual(Punto(-7,-10,10), 100, 100, 100));
     // focos.push_back(FocoPuntual(Punto(0,0,10), 100, 100, 100));
 
