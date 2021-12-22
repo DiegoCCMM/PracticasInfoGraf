@@ -98,6 +98,7 @@ RGB colorBRDF(const Evento &evento, geometryRGBFigures* figure) {
     switch (evento) {
         case DIFUSO:
             return figure->getKd() / M_PI;
+            // return figure->getKd();
         case ESPECULAR:
             return RGB(ks);
         case DIELECTRICO:
@@ -112,7 +113,7 @@ RGB colorBRDF(const Evento &evento, geometryRGBFigures* figure) {
 bool hayColision(const list<geometryRGBFigures*> &figuras, const Rayo &rayoEntrante, 
         geometryRGBFigures* &figure){
 
-    int max = INT_MAX;
+    double max = (double)INT_MAX;
     bool colisiona = false;
     for(const auto &it : figuras){
         double res = it->interseccion(rayoEntrante);
