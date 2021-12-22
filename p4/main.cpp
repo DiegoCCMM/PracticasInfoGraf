@@ -18,9 +18,24 @@ void fromDoubleToRGB(RGB thr, RGB &rgb) {
     if (rgb.b > 255) rgb.b = 255;
 }
 
-// Cornel box normal, de paredes difusas
-void cornellBox(list<geometryRGBFigures*> &figuras, int width, int height){
+int main(int argc, char* argv[]){
+    // El tamaño de la imagen ha de ser cuadrado TODO: cambiar esto?
+    int width = 480,
+        height = 480;
     
+    int rperPixel = 10.0; // Antialiasing
+    
+    int pixelRes = width*height; // Número de rayos totales
+    ofstream ldrfile;
+    ldrfile.open("figureLDR.ppm");
+
+    // --------------------------------------------------Escena
+
+    list<geometryRGBFigures*> figuras;
+    list<FocoPuntual> focos; // Luces puntuales
+
+    // Cornel box normal, de paredes difusas
+
     // Plano - izquierda
     Plane izquierda = Plane(Vector(1,0,-1), Punto(-width,0,0), 255, 0, 0);  // Plano foco
     // izquierda.setFoco(true);
@@ -50,24 +65,8 @@ void cornellBox(list<geometryRGBFigures*> &figuras, int width, int height){
     // fondo.setFoco(true);
     fondo.esDifuso();
     figuras.push_back(&fondo);
-}
 
-int main(int argc, char* argv[]){
-    // El tamaño de la imagen ha de ser cuadrado TODO: cambiar esto?
-    int width = 480,
-        height = 480;
-    
-    int rperPixel = 10.0; // Antialiasing
-    
-    int pixelRes = width*height; // Número de rayos totales
-    ofstream ldrfile;
-    ldrfile.open("figureLDR.ppm");
-
-    // --------------------------------------------------Escena
-
-    list<geometryRGBFigures*> figuras;
-    list<FocoPuntual> focos; // Luces puntuales
-    cornellBox(figuras, width, height);
+    // Esferas
 
     Sphere sphere1 = Sphere(Punto(-5,0,460), 2.0, 0, 0, 255);
     sphere1.esDifuso();
@@ -84,9 +83,10 @@ int main(int argc, char* argv[]){
     figuras.push_back(&sphere2);
     
     // Focos puntuales
-    focos.push_back(FocoPuntual(Punto(5,-6,460), 170, 170, 170));
-    focos.push_back(FocoPuntual(Punto(-5,-6,460), 170, 170, 170));
-    focos.push_back(FocoPuntual(Punto(0,0,440), 170, 170, 170));
+
+    focos.push_back(FocoPuntual(Punto(5,-6,460), 100, 100, 100));
+    focos.push_back(FocoPuntual(Punto(-5,-6,460), 100, 100, 100));
+    focos.push_back(FocoPuntual(Punto(0,0,440), 100, 100, 100));
 
     // --------------------------------------------------FIN Escena
 
