@@ -97,8 +97,8 @@ RGB colorBRDF(const Evento &evento, geometryRGBFigures* figure) {
 
     switch (evento) {
         case DIFUSO:
-            return figure->getKd() / M_PI;
-            // return figure->getKd();
+            // return figure->getKd() / M_PI;
+            return figure->getKd();
         case ESPECULAR:
             return RGB(ks);
         case DIELECTRICO:
@@ -138,8 +138,8 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
         for(const auto &foco : focos){
         
             Punto posicion_foco = foco.getPosition();
-            Vector dirSombra = (punto_inters - posicion_foco).normalizar();
-            Rayo rayoSombra = Rayo(posicion_foco, dirSombra);
+            Vector dirSombra = (posicion_foco - punto_inters).normalizar();
+            Rayo rayoSombra = Rayo(punto_inters, dirSombra);
 
             // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
             // algún otro objeto antes de la luz puntual
