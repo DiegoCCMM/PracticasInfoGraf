@@ -90,19 +90,16 @@ Punto getPuntoInters(const Rayo &rayo, geometryRGBFigures* &figure) {
     return rayo.getOrigen() + rayo.getDir().mul(dist); // puntoInterseccion
 }
 
-RGB colorBRDF(const Evento &evento, geometryRGBFigures* figure) {    
-
-    double ks = figure->getKs(),
-           kt = figure->getKt();
+RGB colorBRDF(const Evento &evento, geometryRGBFigures* figure) {
 
     switch (evento) {
         case DIFUSO:
-            // return figure->getKd() / M_PI;
-            return figure->getKd();
+            // return figure->getKd() / M_PI; // colores más apagados PERO LA FÓRMULA ES ASÍ
+            return figure->getKd(); // colores más vivos pero puede que más ruido
         case ESPECULAR:
-            return RGB(ks);
+            return RGB(figure->getKs()); // Habría que dividirlo por normal*wi (diapo 35 - pathtracing)
         case DIELECTRICO:
-            return RGB(kt);
+            return RGB(figure->getKt()); // Habría que dividirlo por normal*wi (diapo 35 - pathtracing)
         case NOEVENTO:
             return RGB(0.0);
     }
@@ -139,20 +136,19 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
         
             Punto posicion_foco = foco.getPosition();
             Vector dirSombra = (posicion_foco - punto_inters).normalizar();
+            double dist = (posicion_foco - punto_inters).module();
             Rayo rayoSombra = Rayo(punto_inters, dirSombra);
 
             // Comprobar si el rayo de sombra hasta la luz puntal 'foco' intersecta con
             // algún otro objeto antes de la luz puntual
             bool colisiona = false;
             for(const auto &it : figuras){
-                // if(it != figura_intersectada){
                     double res = it->interseccion(rayoSombra);
 
-                    if(res >= 0){
+                    if(res >= 0 && res < dist){
                         colisiona = true;
                         break;
                     }
-                // }
             }
 
             if(!colisiona) {
@@ -162,6 +158,7 @@ RGB colorLuzDirecta(const Rayo &rayoEntrante, const list<FocoPuntual> &focos,
                 Radiance = Radiance + Throughput * (foco.getRGB() / pow(rayoSombra.getDir().module(),2)) * colorBRDF(evento, figura_intersectada) * cos;
             }
         }
+        return Radiance / focos.size();
     }
     return Radiance; // Hacer media?
 }
@@ -282,7 +279,6 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
         }
     }
 
-    // return Throughput + Radiance / i; // Hacer media?
     return Throughput + Radiance;
 }
 

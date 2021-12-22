@@ -2,7 +2,6 @@
 #include <fstream>
 #include "Plane.hpp"
 #include "Camera.hpp"
-#include "Escena.hpp"
 #include "Sphere.hpp"
 #include "Material.hpp"
 #include "../p1/Matriz.hpp"
@@ -19,108 +18,75 @@ void fromDoubleToRGB(RGB thr, RGB &rgb) {
     if (rgb.b > 255) rgb.b = 255;
 }
 
+// Cornel box normal, de paredes difusas
+void cornellBox(list<geometryRGBFigures*> &figuras, int width, int height){
+    
+    // Plano - izquierda
+    Plane izquierda = Plane(Vector(1,0,-1), Punto(-width,0,0), 255, 0, 0);  // Plano foco
+    // izquierda.setFoco(true);
+    izquierda.esDifuso();
+    figuras.push_back(&izquierda);
+
+    // Plano - derecha
+    Plane derecha = Plane(Vector(-1,0,-1), Punto(width,0,0), 0, 255, 0);  // Plano foco
+    // derecha.setFoco(true);
+    derecha.esDifuso();
+    figuras.push_back(&derecha);
+
+    // Plano - techo
+    Plane techo = Plane(Vector(0,-1,-1), Punto(0,height,0), 200, 200, 200);  // Plano foco
+    // planoFoco4.setFoco(true);
+    techo.esDifuso();
+    figuras.push_back(&techo);
+
+    // Plano - suelo
+    Plane suelo = Plane(Vector(0,1,-1), Punto(0,-height,0), 255, 255, 255);  // Plano foco
+    // suelo.setFoco(true);
+    suelo.esDifuso();
+    figuras.push_back(&suelo);
+
+    // Plano - fondo
+    Plane fondo = Plane(Vector(0,0,-1), Punto(0,0,475), 255, 255, 255);  // Plano foco
+    // fondo.setFoco(true);
+    fondo.esDifuso();
+    figuras.push_back(&fondo);
+}
+
 int main(int argc, char* argv[]){
-    // El tamanyo de la imagen ha de ser cuadrado
+    // El tamaño de la imagen ha de ser cuadrado TODO: cambiar esto?
     int width = 480,
         height = 480;
-    // Antialiasing
-    int rperPixel = 10.0;
     
-    int pixelRes = width*height; // Número de rayos
+    int rperPixel = 10.0; // Antialiasing
+    
+    int pixelRes = width*height; // Número de rayos totales
     ofstream ldrfile;
     ldrfile.open("figureLDR.ppm");
 
-    // Escena escena(width, height); escena.escena1();
     // --------------------------------------------------Escena
-    Sphere sphere1 = Sphere(Punto(-5,0,460), 2.0);
-    // Sphere sphere1 = Sphere(Punto(10,0,2000), 10.0, 255, 255, 255);   // blanca
-    // sphere1.esDifuso();
-    sphere1.esEspecular();
-    // sphere1.setFoco(true);
-    // sphere1.esDielectrico();*/
-
-    Sphere sphere2 = Sphere(Punto(5,0,460), 2.0);
-    sphere2.esDielectrico();
-    // sphere2.esEspecular();
-    // sphere2.esDifuso();
-    // sphere2.setFoco(true);
-
-    Sphere sphere3 = Sphere(Punto(5,0,460), 2.0, 235, 23, 181); // rosa
-    // sphere3.setFoco(true);
-    // sphere3.esEspecular();
-    sphere3.esDifuso();
-    // sphere3.esDielectrico();
-
-   /* Sphere sphere4 = Sphere(Punto(-10,0,2100), 8.0, 200, 200, 200); // Pelota detrás
-    sphere4.setFoco(true);
-    // sphere4.esEspecular();
-    sphere4.esDifuso();
-    // sphere4.esDielectrico();
-    // Esfera foco grande en medio que intenta iluminar la sala
-    Sphere sphere5 = Sphere(Punto(0,0,470), 2.0, 0, 0, 255);
-    // sphere5.setFoco(true);
-    // sphere5.esEspecular();
-    sphere5.esDifuso();
-    // sphere5.esDielectrico(); */
-
-    // Plano - fondo
-    Plane planoFoco1 = Plane(Vector(0,0,-1), Punto(0,0,475), 255, 255, 255);  // Plano foco
-    // planoFoco1.setFoco(true);
-    // planoFoco.esEspecular();
-    planoFoco1.esDifuso();
-
-    // Plano - izquierda
-    Plane planoFoco2 = Plane(Vector(1,0,-1), Punto(-width,0,0), 255, 0, 0);  // Plano foco
-    // planoFoco2.setFoco(true);
-    // planoFoco.esEspecular();
-    planoFoco2.esDifuso();
-
-    // Plano - derecha
-    Plane planoFoco3 = Plane(Vector(-1,0,-1), Punto(width,0,0), 0, 255, 0);  // Plano foco
-    // planoFoco3.setFoco(true);
-    // planoFoco.esEspecular();
-    planoFoco3.esDifuso();
-
-    // Plano - techo
-    //Plane planoFoco4 = Plane(Vector(0,-30,-30), Punto(0,170,2220), 0, 255, 0);  // Plano foco
-    Plane planoFoco4 = Plane(Vector(0,-1,-1), Punto(0,height,0), 255, 255,255);  // Plano foco
-    // planoFoco4.setFoco(true);
-    // planoFoco.esEspecular();
-    planoFoco4.esDifuso();
-
-    // Plano - suelo
-    Plane planoFoco5 = Plane(Vector(0,1,-1), Punto(0,-height,0), 255, 255, 255);  // Plano foco
-    //planoFoco5.setFoco(true);
-    // planoFoco.esEspecular();
-    planoFoco5.esDifuso();
-
-    // Plano - pared trasera
-    // Plane planoFoco6 = Plane(Vector(0,0,1), Punto(0,0,300), 255, 255, 255);  // Plano foco
-    //planoFoco6.setFoco(true);
-    // planoFoco6.esEspecular();
-    // planoFoco6.esDifuso();
 
     list<geometryRGBFigures*> figuras;
+    list<FocoPuntual> focos; // Luces puntuales
+    cornellBox(figuras, width, height);
 
-    // figuras.push_back(&sphere1);
-    // figuras.push_back(&sphere2);
-    figuras.push_back(&sphere3);
-    // figuras.push_back(&sphere4);
-    // figuras.push_back(&sphere5);
-    figuras.push_back(&planoFoco1);
-    figuras.push_back(&planoFoco2);
-    figuras.push_back(&planoFoco3);
-    figuras.push_back(&planoFoco4);
-    figuras.push_back(&planoFoco5);
-    // figuras.push_back(&planoFoco6);
+    Sphere sphere1 = Sphere(Punto(-5,0,460), 2.0, 0, 0, 255);
+    sphere1.esDifuso();
+    // sphere1.esEspecular();
+    // sphere1.esDielectrico();
+    // sphere1.setFoco(true);
+    figuras.push_back(&sphere1);
 
-    list<FocoPuntual> focos; // puntuales
-    focos.push_back(FocoPuntual(Punto(6,2,440), 255, 255, 255));
-    // focos.push_back(FocoPuntual(Punto(5,5,450), 255, 255, 255));
-    // focos.push_back(FocoPuntual(Punto(10,10,450), 255, 255, 255));
-    // focos.push_back(FocoPuntual(Punto(0,-5,450), 255, 255, 255));
-    // focos.push_back(FocoPuntual(Punto(5,-5,450), 255, 255, 255));
-    // focos.push_back(FocoPuntual(Punto(-5,-5,450), 255, 255, 255));
+    Sphere sphere2 = Sphere(Punto(5,0,460), 2.0, 235, 23, 181); // Rosa
+    sphere2.esDifuso();
+    // sphere2.esEspecular();
+    // sphere2.esDielectrico();
+    // sphere2.setFoco(true);
+    figuras.push_back(&sphere2);
+    
+    // Focos puntuales
+    focos.push_back(FocoPuntual(Punto(5,-6,460), 170, 170, 170));
+    focos.push_back(FocoPuntual(Punto(-5,-6,460), 170, 170, 170));
+    focos.push_back(FocoPuntual(Punto(0,0,440), 170, 170, 170));
 
     // --------------------------------------------------FIN Escena
 
@@ -132,7 +98,7 @@ int main(int argc, char* argv[]){
 
 
     Punto origen = Punto(0,0,0);
-    //Sistemas de coordenadas en matriz para hacer el cambio de sistemas
+    // Sistemas de coordenadas en matriz para hacer el cambio de sistemas
     Matriz siscam = Matriz(x,y,z,origen);
     
 
@@ -201,7 +167,7 @@ int main(int argc, char* argv[]){
                 ldrfile << "    ";
             }
 
-            //punto por el que queremos pasar
+            // Punto por el que queremos pasar
             xInit += pixelUnit;
         }
         ldrfile << endl;
@@ -210,7 +176,3 @@ int main(int argc, char* argv[]){
 
     ldrfile.close();
 }
-
-
-
-
