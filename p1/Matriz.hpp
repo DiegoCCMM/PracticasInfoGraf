@@ -132,57 +132,6 @@ public:
 		return sol;
 	}
 
-	Matriz inverse(){
-		float A2323 = matriz[2][2] * matriz[3][3] - matriz[2][3] * matriz[3][2];
-		float A1323 = matriz[2][1] * matriz[3][3] - matriz[2][3] * matriz[3][1];
-		float A1223 = matriz[2][1] * matriz[3][2] - matriz[2][2] * matriz[3][1];
-		float A0323 = matriz[2][0] * matriz[3][3] - matriz[2][3] * matriz[3][0];
-		float A0223 = matriz[2][0] * matriz[3][2] - matriz[2][2] * matriz[3][0];
-		float A0123 = matriz[2][0] * matriz[3][1] - matriz[2][1] * matriz[3][0];
-		float A2313 = matriz[1][2] * matriz[3][3] - matriz[1][3] * matriz[3][2];
-		float A1313 = matriz[1][1] * matriz[3][3] - matriz[1][3] * matriz[3][1];
-		float A1213 = matriz[1][1] * matriz[3][2] - matriz[1][2] * matriz[3][1];
-		float A2312 = matriz[1][2] * matriz[2][3] - matriz[1][3] * matriz[2][2];
-		float A1312 = matriz[1][1] * matriz[2][3] - matriz[1][3] * matriz[2][1];
-		float A1212 = matriz[1][1] * matriz[2][2] - matriz[1][2] * matriz[2][1];
-		float A0313 = matriz[1][0] * matriz[3][3] - matriz[1][3] * matriz[3][0];
-		float A0213 = matriz[1][0] * matriz[3][2] - matriz[1][2] * matriz[3][0];
-		float A0312 = matriz[1][0] * matriz[2][3] - matriz[1][3] * matriz[2][0];
-		float A0212 = matriz[1][0] * matriz[2][2] - matriz[1][2] * matriz[2][0];
-		float A0113 = matriz[1][0] * matriz[3][1] - matriz[1][1] * matriz[3][0];
-		float A0112 = matriz[1][0] * matriz[2][1] - matriz[1][1] * matriz[2][0];
-
-		float det = matriz[0][0] * (matriz[1][1] * A2323 - matriz[1][2] * A1323 + matriz[1][3] * A1223)
-					- matriz[0][1] * (matriz[1][0] * A2323 - matriz[1][2] * A0323 + matriz[1][3] * A0223)
-					+ matriz[0][2] * (matriz[1][0] * A1323 - matriz[1][1] * A0323 + matriz[1][3] * A0123)
-					- matriz[0][3] * (matriz[1][0] * A1223 - matriz[1][1] * A0223 + matriz[1][2] * A0123);
-		det = 1 / det;
-
-		Matriz sol(filas, columnas);
-
-		sol.matriz[0][0] = det * (matriz[1][1] * A2323 - matriz[1][2] * A1323 + matriz[1][3] * A1223),
-		sol.matriz[1][0] = det * -(matriz[0][1] * A2323 - matriz[0][2] * A1323 + matriz[0][3] * A1223),
-		sol.matriz[2][0] = det * (matriz[0][1] * A2313 - matriz[0][2] * A1313 + matriz[0][3] * A1213),
-		sol.matriz[3][0] = det * -(matriz[0][1] * A2312 - matriz[0][2] * A1312 + matriz[0][3] * A1212),
-
-		sol.matriz[0][1] = det * -(matriz[1][0] * A2323 - matriz[1][2] * A0323 + matriz[1][3] * A0223),
-		sol.matriz[1][1] = det * (matriz[0][0] * A2323 - matriz[0][2] * A0323 + matriz[0][3] * A0223),
-		sol.matriz[2][1] = det * -(matriz[0][0] * A2313 - matriz[0][2] * A0313 + matriz[0][3] * A0213),
-		sol.matriz[3][1] = det * (matriz[0][0] * A2312 - matriz[0][2] * A0312 + matriz[0][3] * A0212),
-
-		sol.matriz[0][2] = det * (matriz[1][0] * A1323 - matriz[1][1] * A0323 + matriz[1][3] * A0123),
-		sol.matriz[1][2] = det * -(matriz[0][0] * A1323 - matriz[0][1] * A0323 + matriz[0][3] * A0123),
-		sol.matriz[2][2] = det * (matriz[0][0] * A1313 - matriz[0][1] * A0313 + matriz[0][3] * A0113),
-		sol.matriz[3][2] = det * -(matriz[0][0] * A1312 - matriz[0][1] * A0312 + matriz[0][3] * A0112),
-
-		sol.matriz[0][3] = det * -(matriz[1][0] * A1223 - matriz[1][1] * A0223 + matriz[1][2] * A0123),
-		sol.matriz[1][3] = det * (matriz[0][0] * A1223 - matriz[0][1] * A0223 + matriz[0][2] * A0123),
-		sol.matriz[2][3] = det * -(matriz[0][0] * A1213 - matriz[0][1] * A0213 + matriz[0][2] * A0113),
-		sol.matriz[3][3] = det * (matriz[0][0] * A1212 - matriz[0][1] * A0212 + matriz[0][2] * A0112);
-
-		return sol;
-	}
-
 	Punto punto() {
 		return {matriz[0][0], matriz[1][0], matriz[2][0]};
 	}

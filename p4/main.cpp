@@ -37,31 +37,31 @@ int main(int argc, char* argv[]){
     // Cornel box normal, de paredes difusas
 
     // Plano - izquierda
-    Plane izquierda = Plane(Vector(1,0,-1), Punto(-30,0,0), 255, 0, 0);  // Plano foco
-    // izquierda.setFoco(true);
+    Plane izquierda = Plane(Vector(1,0,0), Punto(-30,0,0), 200, 0, 0);  // Plano foco
+    izquierda.setFoco(true);
     izquierda.esDifuso();
     figuras.push_back(&izquierda);
 
     // Plano - derecha
-    Plane derecha = Plane(Vector(-1,0,-1), Punto(30,0,0), 0, 255, 0);  // Plano foco
-    // derecha.setFoco(true);
+    Plane derecha = Plane(Vector(-1,0,0), Punto(30,0,0), 0, 200, 0);  // Plano foco
+    derecha.setFoco(true);
     derecha.esDifuso();
     figuras.push_back(&derecha);
 
     // Plano - techo
-    Plane techo = Plane(Vector(0,-1,-1), Punto(0,30,0), 200, 200, 200);  // Plano foco
-    // techo.setFoco(true);
+    Plane techo = Plane(Vector(0,-1,0), Punto(0,30,0), 170, 170, 170);  // Plano foco
+    techo.setFoco(true);
     techo.esDifuso();
     figuras.push_back(&techo);
 
     // Plano - suelo
-    Plane suelo = Plane(Vector(0,1,-1), Punto(0,-30,0), 255, 255, 255);  // Plano foco
+    Plane suelo = Plane(Vector(0,1,0), Punto(0,-30,0), 170, 170, 170);  // Plano foco
     // suelo.setFoco(true);
     suelo.esDifuso();
     figuras.push_back(&suelo);
 
     // Plano - fondo
-    Plane fondo = Plane(Vector(0,0,-1), Punto(0,0,15), 255, 255, 255);  // Plano foco
+    Plane fondo = Plane(Vector(0,0,-1), Punto(0,0,15), 65, 170, 72);  // Plano foco
     // fondo.setFoco(true);
     fondo.esDifuso();
     figuras.push_back(&fondo);
@@ -69,24 +69,24 @@ int main(int argc, char* argv[]){
     // Esferas
 
     Sphere sphere1 = Sphere(Punto(-7,0,10), 6.0, 0, 0, 255);
-    sphere1.esDifuso();
-    // sphere1.esEspecular();
+    // sphere1.esDifuso();
+    sphere1.esEspecular();
     // sphere1.esDielectrico();
     // sphere1.setFoco(true);
     figuras.push_back(&sphere1);
 
     Sphere sphere2 = Sphere(Punto(7,0,10), 6.0, 235, 23, 181); // Rosa
-    sphere2.esDifuso();
+    // sphere2.esDifuso();
     // sphere2.esEspecular();
-    // sphere2.esDielectrico();
+    sphere2.esDielectrico();
     // sphere2.setFoco(true);
     figuras.push_back(&sphere2);
     
     // Focos puntuales
 
-    focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
+    // focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
     // focos.push_back(FocoPuntual(Punto(-7,-10,10), 100, 100, 100));
-    // focos.push_back(FocoPuntual(Punto(0,0,10), 100, 100, 100));
+    focos.push_back(FocoPuntual(Punto(0,0,10), 100, 100, 100));
 
     // --------------------------------------------------FIN Escena
 
@@ -146,19 +146,20 @@ int main(int argc, char* argv[]){
                 xLocal /= (m-1);
                 yLocal /= (m-1);
 
-                double dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
-                double dirZ = sqrt(pow(dist,2) + pow(front,2));
-            
-                Vector dirLocal = Vector(xLocal, yLocal, 2*width).normalizar();                
+                // double dist = sqrt(pow(xLocal,2) + pow(yLocal,2));
+                // double dirZ = sqrt(pow(dist,2) + pow(front,2));
+
+                Punto puntoLocal = Punto(xLocal, yLocal, front/2);                
 
                 // Vector con la dirección local a la matriz de proyección
                 // de tipo matriz para poder operar con la matriz de cambio de base
-                Matriz local = Matriz(dirLocal, 0);
+                Matriz local = Matriz(puntoLocal, 1);
 
                 // Cambio de base, de salida tendremos la dirección del vector en coordenadas globales
                 Matriz Global = siscam * local;
+                Punto puntoGlobal = Global.punto();
 
-                Rayo rayo = Rayo(origen, Global.vector());
+                Rayo rayo = Rayo(origen, (puntoGlobal - origen).normalizar());
 
                 MediaAntialiasing = MediaAntialiasing + colorCamino(focos, figuras, rayo);
             }

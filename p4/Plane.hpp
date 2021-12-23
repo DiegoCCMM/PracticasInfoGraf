@@ -44,12 +44,8 @@ public:
         Punto o = ray.getOrigen();
         Vector  d = ray.getDir(),
                 n = normal;
-        
-        if(d*n > 0){
-            n = n.mul(-1);
-        }
 
-        if(d*n == 0){
+        if(d*n >= 0){
             return -1.0;
         }
 
