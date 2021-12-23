@@ -68,7 +68,7 @@ int main(int argc, char* argv[]){
 
     // Esferas
 
-    Sphere sphere1 = Sphere(Punto(-7,0,10), 6.0, 0, 0, 255);
+    Sphere sphere1 = Sphere(Punto(-7,0,10), 6.0, 0, 0, 0);
     // sphere1.esDifuso();
     sphere1.esEspecular();
     // sphere1.esDielectrico();

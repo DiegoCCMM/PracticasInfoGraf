@@ -78,6 +78,7 @@ public:
         ks = 0.3;
         kt = 0.7;
     }
+    
     void esRefractario(){
         kt = 1.0;
         ks = 0;
