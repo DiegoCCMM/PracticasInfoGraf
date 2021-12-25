@@ -79,7 +79,6 @@ Vector muestreoCoseno(const Rayo &rayo, geometryRGBFigures* figure, Punto inters
 
     Matriz matriz_wi = T * angulo;
     Vector wi = matriz_wi.vector();
-    wi = wi.normalizar();
 
     return wi;
 }
@@ -187,13 +186,12 @@ Vector nuevaDireccion(const Rayo &rayoEntrante, geometryRGBFigures* &figure,
 
     switch (evento) {
         case ESPECULAR: { // especular - reflection
-            wi = rayoEntrante.getDir().normalizar() - (normal_fig.mul(2.0)).mul(normal_fig*rayoEntrante.getDir().normalizar());
-            wi = wi.normalizar();
+            wi = rayoEntrante.getDir() - (normal_fig.mul(2.0)).mul(normal_fig*rayoEntrante.getDir());
             break;
         }
         case DIELECTRICO: {
             double aire = 1.0, vidrio = 1.45; // Medios
-            double cosenoAnguloIncidencia = clamp(-1, 1, rayoEntrante.getDir().normalizar()*normal_fig);
+            double cosenoAnguloIncidencia = clamp(-1, 1, rayoEntrante.getDir()*normal_fig);
 
             Vector N = normal_fig; 
             
@@ -202,7 +200,7 @@ Vector nuevaDireccion(const Rayo &rayoEntrante, geometryRGBFigures* &figure,
 
             double relacionMedios = aire / vidrio; 
             double k = 1 - relacionMedios * relacionMedios * (1 - cosenoAnguloIncidencia * cosenoAnguloIncidencia); 
-            k < 0 ? wi = Vector(0,0,0) : wi = (rayoEntrante.getDir().normalizar().mul(relacionMedios) + 
+            k < 0 ? wi = Vector(0,0,0) : wi = (rayoEntrante.getDir().mul(relacionMedios) + 
             N.mul(relacionMedios * cosenoAnguloIncidencia - (double)sqrtf(k)));
             break;
         }
@@ -212,7 +210,7 @@ Vector nuevaDireccion(const Rayo &rayoEntrante, geometryRGBFigures* &figure,
         }
     }
 
-    return wi;
+    return wi.normalizar();
 }
 
 double getPdf(Evento evento, geometryRGBFigures* figura_intersectada, double prob_absorcion){
@@ -235,8 +233,8 @@ RGB colorCamino(const list<FocoPuntual> &focos, const list<geometryRGBFigures*> 
 
     RGB Throughput(1.0), Radiance(0.0);
 
-    int i; // number of paths that go through the pixel
-    for(i = 1 ;; i++){
+    // Number of paths that go through the pixel
+    while(true){
         // Se verifica si el rayoEntrante intersecta con algún objeto
         geometryRGBFigures* figura_intersectada;
         bool colisiona = hayColision(figuras, rayoEntrante, figura_intersectada);
