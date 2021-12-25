@@ -19,10 +19,8 @@ void fromDoubleToRGB(RGB thr, RGB &rgb) {
     if (rgb.b > 255) rgb.b = 255;
 }
 
-    std::cout << "heeey" << std::endl;
-}
-
 int main(int argc, char* argv[]){
+
     // El tamaño de la imagen ha de ser cuadrado TODO: cambiar esto?
     int width = 480,
         height = 480;
