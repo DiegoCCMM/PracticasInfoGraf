@@ -7,6 +7,7 @@
 #include "../p1/Matriz.hpp"
 #include <limits.h>
 #include <random>
+#include <ctime>
 
 
 void fromDoubleToRGB(RGB thr, RGB &rgb) {
@@ -124,6 +125,7 @@ int main(int argc, char* argv[]){
     ldrfile << numPixAncho << " " << numPixAlto << endl;
     ldrfile << 255 << endl;
 
+    clock_t start = clock();
     // Procedimiento pixeles en imagen: izq -> der, arriba -> abajo
     for (int j = 0; j < numPixAlto; j++) {
 
@@ -179,6 +181,12 @@ int main(int argc, char* argv[]){
         ldrfile << endl;
         yInit -= pixelUnit;
     }
+
+    clock_t end = clock();
+
+    std::cout << "Tiempo de ejecución: " 
+              << ((double)end - start) / CLOCKS_PER_SEC
+              << " seg" << std::endl;
 
     ldrfile.close();
 }
