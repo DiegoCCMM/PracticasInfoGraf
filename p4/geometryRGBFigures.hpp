@@ -52,9 +52,9 @@ public:
     int getGreen() const { return green; }
     int getBlue()  const { return blue;  }
 
-    virtual double interseccion (const Rayo &ray) const {}
-    virtual Vector getNormal(Punto inters) {}
-    virtual double getFacingRatio(Rayo ray) {}
+    virtual double interseccion (const Rayo &ray) const = 0;
+    virtual Vector getNormal(Punto inters) = 0;
+    virtual double getFacingRatio(Rayo ray) = 0;
     
     Matriz ejeCoord (Rayo ray, Punto inters) {
         

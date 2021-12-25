@@ -53,6 +53,7 @@ Evento ruletaRusa(geometryRGBFigures* figure, const double &probabilidad_absorci
             return NOEVENTO;
         }
     }
+    exit(1);
 }
 
 Vector muestreoCoseno(const Rayo &rayo, geometryRGBFigures* figure, Punto inters) {
@@ -101,6 +102,8 @@ RGB colorBRDF(const Evento &evento, geometryRGBFigures* figure, const double &co
             return RGB(figure->getKt()/cos_wi);
         case NOEVENTO:
             return RGB(0.0);
+        default:
+            exit(1);
     }
 }
 
@@ -225,6 +228,8 @@ double getPdf(Evento evento, geometryRGBFigures* figura_intersectada, double pro
             return ((1.0-prob_absorcion)*kt) / (kd+ks+kt); // pt
         case DIFUSO:
             return ((1.0-prob_absorcion)*kd) / (kd+ks+kt); // pd
+        default:
+            exit(1);
     }
 }
 

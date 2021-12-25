@@ -19,6 +19,9 @@ void fromDoubleToRGB(RGB thr, RGB &rgb) {
     if (rgb.b > 255) rgb.b = 255;
 }
 
+    std::cout << "heeey" << std::endl;
+}
+
 int main(int argc, char* argv[]){
     // El tamaño de la imagen ha de ser cuadrado TODO: cambiar esto?
     int width = 480,
@@ -85,9 +88,9 @@ int main(int argc, char* argv[]){
     
     // Focos puntuales
 
-    // focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
+    focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
     // focos.push_back(FocoPuntual(Punto(-7,-10,10), 100, 100, 100));
-    focos.push_back(FocoPuntual(Punto(0,0,10), 100, 100, 100));
+    // focos.push_back(FocoPuntual(Punto(0,0,10), 100, 100, 100));
 
     // --------------------------------------------------FIN Escena
 
