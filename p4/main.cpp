@@ -75,9 +75,9 @@ int main(int argc, char* argv[]){
     sphere1.esEspecular();
     // sphere1.esDielectrico();
     // sphere1.setFoco(true);
-    figuras.push_back(&sphere1);
+    // figuras.push_back(&sphere1);
 
-    Sphere sphere2 = Sphere(Punto(7,0,10), 6.0, 235, 23, 181); // Rosa
+    Sphere sphere2 = Sphere(Punto(0,0,10), 8.0, 235, 23, 181); // Rosa
     // sphere2.esDifuso();
     // sphere2.esEspecular();
     sphere2.esDielectrico();
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]){
     
     // Focos puntuales
 
-    focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
+    // focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
     // focos.push_back(FocoPuntual(Punto(-7,-10,10), 100, 100, 100));
     // focos.push_back(FocoPuntual(Punto(0,0,10), 100, 100, 100));
 
