@@ -40,53 +40,60 @@ int main(int argc, char* argv[]){
 
     // Plano - izquierda
     Plane izquierda = Plane(Vector(1,0,0), Punto(-30,0,0), 200, 0, 0);  // Plano foco
-    izquierda.setFoco(true);
+    // izquierda.setFoco(true);
     izquierda.esDifuso();
     figuras.push_back(&izquierda);
 
     // Plano - derecha
     Plane derecha = Plane(Vector(-1,0,0), Punto(30,0,0), 0, 200, 0);  // Plano foco
-    derecha.setFoco(true);
+    // derecha.setFoco(true);
     derecha.esDifuso();
     figuras.push_back(&derecha);
 
     // Plano - techo
-    Plane techo = Plane(Vector(0,-1,0), Punto(0,30,0), 170, 170, 170);  // Plano foco
+    Plane techo = Plane(Vector(0,-1,0), Punto(0,30,0), 200, 200, 200);  // Plano foco
     techo.setFoco(true);
     techo.esDifuso();
     figuras.push_back(&techo);
 
     // Plano - suelo
-    Plane suelo = Plane(Vector(0,1,0), Punto(0,-30,0), 170, 170, 170);  // Plano foco
+    Plane suelo = Plane(Vector(0,1,0), Punto(0,-30,0), 200, 200, 200);  // Plano foco
     // suelo.setFoco(true);
     suelo.esDifuso();
     figuras.push_back(&suelo);
 
     // Plano - fondo
-    Plane fondo = Plane(Vector(0,0,-1), Punto(0,0,15), 65, 170, 72);  // Plano foco
+    Plane fondo = Plane(Vector(0,0,-1), Punto(0,0,15), 200, 200, 200);  // Plano foco
     // fondo.setFoco(true);
     fondo.esDifuso();
     figuras.push_back(&fondo);
 
     // Esferas
 
-    Sphere sphere1 = Sphere(Punto(-7,0,10), 6.0, 0, 0, 0);
+    Sphere sphere1 = Sphere(Punto(-7,0,0), 6.0, 0, 0, 0);
     // sphere1.esDifuso();
     sphere1.esEspecular();
     // sphere1.esDielectrico();
     // sphere1.setFoco(true);
     figuras.push_back(&sphere1);
 
-    Sphere sphere2 = Sphere(Punto(7,0,10), 6.0, 235, 23, 181); // Rosa
+    Sphere sphere2 = Sphere(Punto(23,23,-10), 6.0, 235, 23, 181); // Rosa
     // sphere2.esDifuso();
     // sphere2.esEspecular();
     sphere2.esDielectrico();
     // sphere2.setFoco(true);
     figuras.push_back(&sphere2);
+
+    Sphere sphere3 = Sphere(Punto(0,-10,0), 6.0, 235, 23, 181); // Rosa
+    sphere3.esDifuso();
+    // sphere3.esEspecular();
+    // sphere3.esDielectrico();
+    // sphere3.setFoco(true);
+    figuras.push_back(&sphere3);
     
     // Focos puntuales
 
-    focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
+    // focos.push_back(FocoPuntual(Punto(7,-10,10), 60, 60, 60));
     // focos.push_back(FocoPuntual(Punto(-7,-10,10), 100, 100, 100));
     // focos.push_back(FocoPuntual(Punto(0,0,10), 100, 100, 100));
 
