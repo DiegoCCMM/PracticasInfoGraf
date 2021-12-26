@@ -32,7 +32,7 @@ public:
 
 	Real getComponent(const int dimension) const;
 	Real operator[](const int dimension) const;
-	Real &Vector2::operator[](const int dimension);
+	Real operator[](const int dimension);
 private:
 	Real data[2];
 };
