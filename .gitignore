@@ -133,3 +133,6 @@ figureLDR.ppm
 p4/.vscode/settings.json
 p4/.vscode/settings.json
 p4/main
+photon_mapping/.vscode/tasks.json
+photon_mapping/.vscode/settings.json
+photon_mapping/.vscode/launch.json
