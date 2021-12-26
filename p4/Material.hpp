@@ -194,20 +194,17 @@ Vector nuevaDireccion(const Rayo &rayoEntrante, geometryRGBFigures* &figure,
         }
         case DIELECTRICO: {
             double aire = 1.0, vidrio = 1.45; // Medios
-            double cosenoAnguloIncidencia = -clamp(-1, 1, rayoEntrante.getDir()*normal_fig);
+            double cosenoAnguloIncidencia = clamp(-1, 1, rayoEntrante.getDir()*normal_fig);
 
             Vector N = normal_fig; 
-            double relacionMedios = aire / vidrio; // TODO: poner en los objetos su medio de refraccion
             
-            if (cosenoAnguloIncidencia < 0 ) {
-                cosenoAnguloIncidencia = -cosenoAnguloIncidencia;
-                N = invert(normal_fig);
-                relacionMedios = 1 / relacionMedios;
-            }
+            if (cosenoAnguloIncidencia < 0 ) 
+            { cosenoAnguloIncidencia = -cosenoAnguloIncidencia; } else { std::swap(aire, vidrio); N = invert(normal_fig); } 
 
+            double relacionMedios = aire / vidrio; 
             double k = 1 - relacionMedios * relacionMedios * (1 - cosenoAnguloIncidencia * cosenoAnguloIncidencia); 
-            k < 0 ? wi = Vector(0,0,0) 
-            : wi = (rayoEntrante.getDir().mul(relacionMedios) + N.mul(relacionMedios * cosenoAnguloIncidencia - (double)sqrtf(k)));
+            k < 0 ? wi = Vector(0,0,0) : wi = (rayoEntrante.getDir().mul(relacionMedios) + 
+            N.mul(relacionMedios * cosenoAnguloIncidencia - (double)sqrtf(k)));
             break;
         }
         case DIFUSO:{
