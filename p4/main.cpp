@@ -8,6 +8,9 @@
 #include <limits.h>
 #include <random>
 #include <ctime>
+#include <iostream>
+#include <vector>
+#include "../p2/fromhdrToldr.hpp"
 
 
 void fromDoubleToRGB(RGB thr, RGB &rgb) {
@@ -29,7 +32,8 @@ int main(int argc, char* argv[]){
     
     int pixelRes = width*height; // Número de rayos totales
     ofstream ldrfile;
-    ldrfile.open("figureLDR.ppm");
+    string path = "figure";
+    ldrfile.open(path + ".ppm");
 
     // --------------------------------------------------Escena
 
@@ -52,7 +56,7 @@ int main(int argc, char* argv[]){
 
     // Plano - techo
     Plane techo = Plane(Vector(0,-1,0), Punto(0,30,0), 200, 200, 200);  // Plano foco
-    // techo.setFoco(true);
+    techo.setFoco(true);
     techo.esDifuso();
     figuras.push_back(&techo);
 
@@ -70,44 +74,44 @@ int main(int argc, char* argv[]){
 
     // Esferas
 
-    // Sphere sphere1 = Sphere(Punto(-7,0,0), 6.0, 0, 0, 0);
+    Sphere sphere1 = Sphere(Punto(-7,0,0), 6.0, 0, 0, 0);
     // // sphere1.esDifuso();
-    // sphere1.esEspecular();
+    sphere1.esEspecular();
     // // sphere1.esDielectrico();
     // // sphere1.setFoco(true);
-    // figuras.push_back(&sphere1);
+    figuras.push_back(&sphere1);
 
-    // Sphere sphere2 = Sphere(Punto(23,23,-10), 6.0, 235, 23, 181); // Rosa
+    Sphere sphere2 = Sphere(Punto(23,23,-10), 6.0, 235, 23, 181); // Rosa
     // // sphere2.esDifuso();
     // // sphere2.esEspecular();
-    // sphere2.esDielectrico();
+    sphere2.esDielectrico();
     // // sphere2.setFoco(true);
-    // figuras.push_back(&sphere2);
+    figuras.push_back(&sphere2);
 
-    // Sphere sphere3 = Sphere(Punto(0,-10,0), 6.0, 235, 23, 181); // Rosa
-    // sphere3.esDifuso();
+    Sphere sphere3 = Sphere(Punto(0,-10,0), 6.0, 235, 23, 181); // Rosa
+    sphere3.esDifuso();
     // // sphere3.esEspecular();
     // // sphere3.esDielectrico();
     // // sphere3.setFoco(true);
-    // figuras.push_back(&sphere3);
+    figuras.push_back(&sphere3);
 
     Sphere sphere4 = Sphere(Punto(-15,-10,0), 10.0, 235, 23, 181); // Rosa
     sphere4.esDifuso();
     // sphere3.esEspecular();
     // sphere3.esDielectrico();
     // sphere3.setFoco(true);
-    figuras.push_back(&sphere4);
+    // figuras.push_back(&sphere4);
 
     Sphere sphere5 = Sphere(Punto(15,-10,0), 10.0, 0, 0, 255); // Rosa
     sphere5.esDifuso();
     // sphere3.esEspecular();
     // sphere3.esDielectrico();
     // sphere3.setFoco(true);
-    figuras.push_back(&sphere5);
+    // figuras.push_back(&sphere5);
     
     // Focos puntuales
 
-    focos.push_back(FocoPuntual(Punto(0,10,0), 60, 60, 60));
+    // focos.push_back(FocoPuntual(Punto(0,10,0), 60, 60, 60));
     // focos.push_back(FocoPuntual(Punto(-7,-10,10), 100, 100, 100));
     // focos.push_back(FocoPuntual(Punto(0,0,10), 100, 100, 100));
 
@@ -143,7 +147,8 @@ int main(int argc, char* argv[]){
     int numPixAlto = height/pixelUnit;
 
     ldrfile << "P3" << endl;
-    ldrfile << "#MAX=255" << endl;
+    ldrfile << "#MAX=4" << endl;
+    ldrfile << "# figure.ppm" << endl;
     ldrfile << numPixAncho << " " << numPixAlto << endl;
     ldrfile << 255 << endl;
 
@@ -211,4 +216,7 @@ int main(int argc, char* argv[]){
               << " seg" << std::endl;
 
     ldrfile.close();
+
+    fromhdrToldr operacion(path + ".ppm", path + "LDR.ppm");
+    operacion.fromhdrToldr::readWrite();
 }

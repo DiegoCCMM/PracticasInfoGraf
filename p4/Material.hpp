@@ -94,8 +94,8 @@ RGB colorBRDF(const Evento &evento, geometryRGBFigures* figure, const double &co
 
     switch (evento) {
         case DIFUSO:
-            // return figure->getKd() / M_PI; // colores más apagados PERO *LA FÓRMULA ES ASÍ*
-            return figure->getKd(); // colores más vivos pero puede que más ruido
+            return figure->getKd() / M_PI; // colores más apagados PERO *LA FÓRMULA ES ASÍ*
+            // return figure->getKd(); // colores más vivos pero puede que más ruido
         case ESPECULAR:
             return RGB(figure->getKs()/cos_wi);
         case DIELECTRICO:
