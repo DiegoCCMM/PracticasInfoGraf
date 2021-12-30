@@ -31,14 +31,14 @@ In no event shall copyright holders be liable for any damage.
 // The function will return true when there are more photons (caustic
 // or diffuse) to be shot, and false otherwise.
 //---------------------------------------------------------------------
+
+// TODO: explain thoroughly what the function does and why
 bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p, 
-			   std::list<Photon> &global_photons, std::list<Photon> &caustic_photons, bool direct, bool direct_only)
+		std::list<Photon> &global_photons, std::list<Photon> &caustic_photons, bool direct, bool direct_only)
 {
 #ifndef MAX_PHOTON_ITERATIONS
 #define MAX_PHOTON_ITERATIONS 20
 #endif
-
-
 
 	//Check if max number of shots done...
 	if( ++m_nb_current_shots > m_max_nb_shots )
@@ -155,7 +155,7 @@ void PhotonMapping::preprocess()
 // using k-nearest neighbors ('m_nb_photons') to define the bandwidth
 // of the kernel.
 //---------------------------------------------------------------------
-Vector3 PhotonMapping::shade(Intersection &it0)const
+Vector3 PhotonMapping::shade(Intersection &it0) const
 {
 	Vector3 L(0);
 	Vector3 W(1);
