@@ -40,7 +40,7 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 #define MAX_PHOTON_ITERATIONS 20
 #endif
 
-	//Check if max number of shots done...
+	// Check if max number of shots done...
 	if( ++m_nb_current_shots > m_max_nb_shots )
 	{
 		return false;
@@ -54,7 +54,7 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 
 	bool is_caustic_particle = false;
 
-	//Iterate the path
+	// Iterate the path
 	while(1)
 	{
 		// Throw ray and update current_it
@@ -64,7 +64,7 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 		if( !it.did_hit() )
 			break;
 
-		//Check if has hit a delta material...
+		// Check if has hit a delta material...
 		if( it.intersected()->material()->is_delta() )
 		{
 			// If delta material, then is caustic...
@@ -73,7 +73,7 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 		}
 		else if (photon_ray.get_level() > 0 || direct || direct_only )
 		{
-			//If non-delta material, store the photon!
+			// If non-delta material, store the photon!
 			if( is_caustic_particle )	
 			{				
 				//If caustic particle, store in caustics
@@ -82,7 +82,7 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 			}
 			else						
 			{
-				//If non-caustic particle, store in global
+				// If non-caustic particle, store in global
 				if( global_photons.size() < m_nb_global_photons )
 					global_photons.push_back( Photon(it.get_position(), photon_ray.get_direction(), energy ));
 			}
