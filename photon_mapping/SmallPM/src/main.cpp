@@ -42,7 +42,6 @@ namespace {
 int main(int argc, char* argv[])
 {
 
-
 	Real focal_distance = 2.6;
 
 	char *name_file = NULL, *default_name_file = "name_file";
@@ -176,6 +175,7 @@ int main(int argc, char* argv[])
 		w->add_object(sphere2);
 	}
 	break;
+	// TODO: crear al menos 2 escenas más
 	default:
 	{
 		Object3D* sphere1 = new Sphere(Vector3(0.5,0.3,.5), 0.3, white);

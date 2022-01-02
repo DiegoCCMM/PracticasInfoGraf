@@ -11,11 +11,14 @@ students.
 This software is provided as is, and any express or implied warranties are disclaimed.
 In no event shall copyright holders be liable for any damage.
 **********************************************************************************/
+#define _USE_MATH_DEFINES
 #include "PhotonMapping.h"
 #include "World.h"
 #include "Intersection.h"
 #include "Ray.h"
 #include "BSDF.h"
+#include <random>
+#include <cmath>
 
 //*********************************************************************
 // Compute the photons by tracing the Ray 'r' from the light source
@@ -33,6 +36,16 @@ In no event shall copyright holders be liable for any damage.
 //---------------------------------------------------------------------
 
 // TODO: explain thoroughly what the function does and why
+/*
+* @param r - rayo desde la luz a una dirección aleatoria
+* @param p - energía, intensidad de la luz de la que parte
+* @param global_photons - fotones de superficies difusas
+* @param caustic_photons - fotones que se reflejaron en almenos una 
+		reflexión especular antes de hacerlo en una difusa
+* @param direct	- iluminación directa
+* @param direct_only
+* @return bool, devuelve también una lista de global_photons y caustic_photons
+*/
 bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p, 
 		std::list<Photon> &global_photons, std::list<Photon> &caustic_photons, bool direct, bool direct_only)
 {
@@ -50,11 +63,11 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 	Vector3 energy(p);
 	
 	Ray photon_ray(r);
-	photon_ray.shift();
+	photon_ray.shift(); // ???
 
 	bool is_caustic_particle = false;
 
-	// Iterate the path
+	// Itera un camino en una dirección
 	while(1)
 	{
 		// Throw ray and update current_it
@@ -142,6 +155,58 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 //---------------------------------------------------------------------
 void PhotonMapping::preprocess()
 {
+	// Elegir una de las fuentes de luz (puntual) (aleaotoriamente) y muestrear uniformemente alrededor de todas las diercciones, una dirección de salida aleatoria
+	// direcciones con un ángulo sólido de 4PI (el ángulo que recoge todas las direcciones de una esfera) posibilidad de hacerlo con:
+	// - Rejection sampling o **sampling phi and theta (más eficiente ya que no se rechazan muestras) 
+	// IMP: tener en cuenta la probabilidad de cada dirección que sale ****(donde?)
+	// La probabilidad de muestrear un punto único en una esfera, una dirección tiene que integrar a 1 en todas las direcciones de la esfera posibles
+	// es decir, la probabilidad de todas las direcciones que se muestreen tiene que ser 1 / 4PI
+	// para trazar un photon que va a ir por la escena, mediante trace_ray
+	// Guardar los photones en una estructura de aceleración (kdTree)
+	// https://stackoverflow.com/questions/5408276/sampling-uniformly-distributed-random-points-inside-a-spherical-volume
+	// http://corysimon.github.io/articles/uniformdistn-on-sphere/
+	// https://www.cs.princeton.edu/courses/archive/fall16/cos526/lectures/03-photonmapping.pdf *****
+
+	std::random_device rd;
+	std::default_random_engine random(rd());
+	std::uniform_real_distribution<Real> distr_phi(0.0, 2.0 * M_PI);
+	std::uniform_real_distribution<Real> distr_theta(-1.0, 1.0);
+	std::uniform_int_distribution<int> distr_luz(0, world->nb_lights()-1);
+
+	std::list<Photon> global_photons, caustic_photons;
+	bool caminos_restantes = true;
+
+	while (caminos_restantes) {
+
+		// Sampling phi and theta
+		Real phi = distr_phi(random);
+		Real theta = acos(distr_theta(random));
+
+		Real x = sin(theta) * cos(phi);
+		Real y = sin(theta) * sin(phi);
+		Real z = cos(theta);
+
+		// Seleccionar una luz aleatoria
+		LightSource* luz = world->light_source_list[distr_luz(random)];
+
+		// Crear rayo desde la luz a dirección aleatoria
+		const Ray rayo_luz(luz->get_position(), Vector3(x, y, z)); // normalizar dirección?
+		
+		caminos_restantes = trace_ray(rayo_luz, luz->get_intensities(), global_photons, caustic_photons, false, false); // qué poner en los booleanos?
+		//caminos_restantes = trace_ray( , luz->get_incoming_light(luz->get_position()), global_photons, caustic_photons, false, false); ??
+	}
+
+	// Almacenar los photones cáusticos y globales en el KdTree
+	//KDTree<Photon, 3> m_global_map, m_caustics_map;
+	//store(const std::vector<Real>& point, const T& data)
+	for (Photon photon : caustic_photons) {
+		// La intesidad de los photones (flux) depende del número de photones emitidos, no en el
+		// número de photones en el photon map --> flux = flux/power
+		// Flux, position, direction
+		photon.flux = photon.flux / (global_photons.size() + caustic_photons.size());
+		m_caustics_map.store(photon.position, photon); // Transformar Vector3() --> Vector()
+	}
+	if(!caustic_photons.empty()) m_caustics_map.balance();
 }
 
 //*********************************************************************
@@ -157,6 +222,18 @@ void PhotonMapping::preprocess()
 //---------------------------------------------------------------------
 Vector3 PhotonMapping::shade(Intersection &it0) const
 {
+	/*
+		Buscar los k photones más cercanos al punto y calcular la estimación de radiancia en base a las propiedades que
+		nos proporcione la intersección:
+		- Función de reflectancia de la superficie con un ángulo de entrada
+		- Y en base al ángulo del photon, su energía y su probabilidad al salir de la fuente de luz
+		- Y el tamaño del kernel que dependerá radio máximo que den los k photones más cercanos de la estructura aceleración (existe una función que los devuelve)
+		Computar la estimación de radiancia en ese punto
+
+		https://es.wikipedia.org/wiki/Mapeado_de_fotones
+
+	*/
+
 	Vector3 L(0);
 	Vector3 W(1);
 	
