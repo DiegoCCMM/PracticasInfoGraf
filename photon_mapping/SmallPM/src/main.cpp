@@ -100,6 +100,7 @@ int main(int argc, char* argv[])
 	BSDF* white = new Lambertian(w, Vector3(.85,.85,.85));
 	BSDF* red = new Lambertian(w, Vector3(.85,.085,.085));
 	BSDF* green = new Lambertian(w, Vector3(.085,.85,.085));
+	BSDF* orange = new Lambertian(w, Vector3(.85, .6, .02));
 
 	Triangle* floor1 = new Triangle( Vector3(-1.5,0,1.5),Vector3(1.5,0.,1.5),
 									 Vector3(-1.5,0.,-1.5), white);
@@ -170,6 +171,15 @@ int main(int argc, char* argv[])
 		w->add_object(bunny);
 	}
 	break;
+	case 4:
+	{
+		Object3D* sphere1 = new Sphere(Vector3(0, 0.8, 0), 0.6, glass);
+		w->add_object(sphere1);
+		Object3D* sphere2 = new Sphere(Vector3(0, 0.8, 0), 0.3, orange);
+		w->add_object(sphere2);
+	}
+	break;
+	// TODO: crear al menos 2 escenas más
 	default:
 	{
 		Object3D* sphere1 = new Sphere(Vector3(0.5,0.3,.5), 0.3, white);
