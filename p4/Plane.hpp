@@ -19,7 +19,7 @@ class Plane : public geometryRGBFigures{
 
 public:
 
-    Plane(Vector normal, Punto punto, int red, int green, int blue){
+    Plane(Vector normal, Punto punto, int red = 0, int green = 0, int blue = 0){
         this->normal = normal;
         this->punto = punto;
         this->distance = -(punto*normal);
@@ -28,17 +28,8 @@ public:
         this->blue = blue;
     }
 
-    // Plane(Vector normal, double distance, int red, int green, int blue){
-    //     this->normal = normal;
-    //     this->distance = distance;
-    //     this->red = red;
-    //     this->green = green;
-    //     this->blue = blue;
-    // }
-
     Vector getNormal(Punto inters) override { 
-        // return normal/normal.module();
-        return normal;
+        return normal.normalizar();
     }
 
     void setNormal(const Vector &normal){ this->normal = normal; }
@@ -48,17 +39,13 @@ public:
     void setDistance(double distance){ this->distance = distance; }
 
     // cambiar
-    double interseccion(Rayo ray) override {
+    double interseccion(const Rayo &ray) const override {
         double c = distance;
         Punto o = ray.getOrigen();
         Vector  d = ray.getDir(),
                 n = normal;
-        
-        if(d*n > 0){
-            n = n.mul(-1);
-        }
 
-        if(d*n == 0){
+        if(d*n >= 0){
             return -1.0;
         }
 
@@ -69,14 +56,8 @@ public:
         return -(c + o*n) / (d*n);
     }
 
-    Matriz ejeCoord (Rayo ray, Punto inters) override {
-        Vector i = ray.getDir()->*this->getNormal(inters);
-        i.normalizar();
-        Vector j = i->*this->getNormal(inters).normalizar();
-
-        Matriz resul(i, j, this->getNormal(inters).normalizar());
-
-        return resul;
+    double getFacingRatio(Rayo rayo) override {
+        return (getNormal(rayo.getOrigen()) * rayo.getDir());
     }
 
 };

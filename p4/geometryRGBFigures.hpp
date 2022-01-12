@@ -10,14 +10,28 @@
 
 struct RGB{
     double r, g, b;
-
+    RGB():r(0.0), g(0.0), b(0.0){}
+    RGB(double initialVal) : r(initialVal), g(initialVal), b(initialVal) {}
     RGB(double r, double g, double b) : r(r), g(g), b(b) {}
 
     RGB operator*(double i) const{
         return(RGB(r*i, g*i, b*i));
     }
+    
     RGB operator/(double i) const{
         return(RGB(r/i, g/i, b/i));
+    }
+
+    bool operator==(const double num) const{
+        return r==num && g==num && b==num;
+    }
+
+    RGB operator*(RGB x) const{
+        return RGB(r*x.r, g*x.g, b*x.b);
+    }
+
+    RGB operator+(RGB x){
+        return RGB(r+x.r, g+x.g, b+x.b);
     }
 
 };
@@ -38,24 +52,49 @@ public:
     int getGreen() const { return green; }
     int getBlue()  const { return blue;  }
 
-    virtual double interseccion (Rayo ray) {}
-    virtual Matriz ejeCoord (Rayo ray, Punto inters) {}
-    virtual Vector getNormal(Punto inters) {}
+    virtual double interseccion (const Rayo &ray) const = 0;
+    virtual Vector getNormal(Punto inters) = 0;
+    virtual double getFacingRatio(Rayo ray) = 0;
+    
+    Matriz ejeCoord (Rayo ray, Punto inters) {
+        
+        Vector k = this->getNormal(inters); // normal
+
+        Vector j = (k ->* ray.getDir().normalizar()).normalizar();
+        Vector i = (j ->* k).normalizar();
+
+        Matriz resul(i, j, k);
+
+        return resul;
+    }
 
     void esDifuso(){
-        kd = max(max(red, green), blue)/(double)(red + green + blue);
+        kd = getMaxKd();
         kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
     }
 
     void esDielectrico(){
-        ks = 0.4;
-        kt = 0.6;
+        red = 0, green = 0, blue = 0;
+        ks = 0.3;
+        kt = 0.7;
+    }
+    
+    void esRefractario(){
+        kt = 1.0;
+        ks = 0;
+        red = 0, green = 0, blue = 0;
     }
 
     void esEspecular(){
-        kd = max(max(red, green), blue)/(double)(red + green + blue);
+        kd = getMaxKd();
         kdTuple = RGB(red/255.0, green/255.0, blue/255.0);
         ks = 1-kd;
+        
+    }
+    void esEspejo(){
+        red = 0, green = 0, blue = 0;
+        ks = 1.0;
+        kt = 0;
     }
 
     RGB getKd() const {
@@ -63,7 +102,8 @@ public:
     }
 
     double getMaxKd() const{
-        return max(max(red, green), blue)/(double)(red + green + blue);
+        return (red + green + blue) == 0 ? 0 :
+                max(max(red, green), blue)/(double)(red + green + blue);
     }
 
     double getKs() const {
@@ -80,7 +120,11 @@ public:
 
     void setFoco(bool val) {
         foco = val;
-    }    
+    }
+
+    RGB getRGB() const {
+        return RGB(red/255.0, green/255.0, blue/255.0);
+    }
 };
 
 

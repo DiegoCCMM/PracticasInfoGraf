@@ -27,6 +27,11 @@ public:
 		this->columnas = columnas;
 	}
 
+	Matriz() {
+		this->filas = DIM;
+		this->columnas = DIM;
+	}
+
 	/* Matriz de transformacion */
 	Matriz(Vector i, Vector j, Vector k, Punto o) {
 		filas = DIM, columnas = DIM;
@@ -53,8 +58,59 @@ public:
 		matriz[3][0] = n;
 	}
 
+	/* Matriz pixel resolution scaling */
+	void resolution(double width, double height) {
+		filas = DIM, columnas = DIM;
+		matriz[0][0] = width/2.0, matriz[0][1] = 0, matriz[0][2] = 0, matriz[0][3] = width/2.0;
+		matriz[1][0] = 0, matriz[1][1] = height/2.0, matriz[1][2] = 0, matriz[1][3] = height/2.0;
+		matriz[2][0] = 0, matriz[2][1] = 0, matriz[2][2] = 0, matriz[2][3] = 0;
+		matriz[3][0] = 0, matriz[3][1] = 0, matriz[3][2] = 0, matriz[3][3] = 0;
+	}
+
+	/* Matriz perspectiva */	
+	void perspectiva() {
+		filas = DIM, columnas = DIM;
+		matriz[0][0] = 1, matriz[0][1] = 0, matriz[0][2] = 0, matriz[0][3] = 0;
+		matriz[1][0] = 0, matriz[1][1] = 1, matriz[1][2] = 0, matriz[1][3] = 0;
+		matriz[2][0] = 0, matriz[2][1] = 0, matriz[2][2] = 1, matriz[2][3] = 0;
+		matriz[3][0] = 0, matriz[3][1] = 0, matriz[3][2] = 1, matriz[3][3] = 0;
+	}
+
+
 	void setNum(int i, int j, double valor){
 		matriz[i][j] = valor;
+	}
+
+	Matriz operator-(const Matriz derecha){
+		if(columnas != derecha.filas) {
+			cout << "Matrices incompatibles" << endl;
+		}
+
+		Matriz sol(filas, columnas);
+
+		for(int i=0; i<filas; i++) {
+			for(int j=0; j<derecha.columnas; j++) {
+				sol.matriz[i][j] = matriz[i][j] - derecha.matriz[i][j];
+			}
+		}
+
+		return sol;
+	}
+
+	Matriz operator+(const Matriz derecha){
+		if(columnas != derecha.filas) {
+			cout << "Matrices incompatibles" << endl;
+		}
+
+		Matriz sol(filas, columnas);
+
+		for(int i=0; i<filas; i++) {
+			for(int j=0; j<derecha.columnas; j++) {
+				sol.matriz[i][j] = matriz[i][j] + derecha.matriz[i][j];
+			}
+		}
+
+		return sol;
 	}
 
 	Matriz operator*(const Matriz derecha) {
@@ -82,6 +138,10 @@ public:
 
 	Vector vector() {
 		return {matriz[0][0], matriz[1][0], matriz[2][0]};
+	}
+
+	Vector vector2() {
+		return {matriz[0][0]/matriz[3][0], matriz[1][0]/matriz[3][0], matriz[2][0]/matriz[3][0]};
 	}
 };
 

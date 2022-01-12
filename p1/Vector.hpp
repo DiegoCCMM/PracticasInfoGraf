@@ -19,8 +19,12 @@ public:
         z = coordz;
     }
 
+    void setZ(double coordz){
+        z = coordz;
+    }
+
     double module() {
-        return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+        return sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(z, 2.0));
     }
 
     Vector operator+(const Vector b) {
@@ -47,7 +51,7 @@ public:
         return Vector(this->x / b, this->y / b, this->z / b);
     }
 
-    Vector mul(const double a) {
+    Vector mul(const double a) const {
         return {this->x*a, this->y*a, this->z*a};
     }
 
