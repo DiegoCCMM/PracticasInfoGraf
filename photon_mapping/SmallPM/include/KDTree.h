@@ -25,6 +25,7 @@ to the original code.
 #include <iostream>
 #include <math.h>
 #include <algorithm>
+#include <limits>
 
 #ifndef Real
 #define Real float

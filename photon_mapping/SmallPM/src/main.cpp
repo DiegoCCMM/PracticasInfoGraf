@@ -13,6 +13,7 @@ In no event shall copyright holders be liable for any damage.
 **********************************************************************************/
 
 #include <iostream>
+#include <string.h>
 #include "globals.h"
 
 #include "World.h"
@@ -24,6 +25,7 @@ In no event shall copyright holders be liable for any damage.
 #include "Plane.h"
 #include "Mesh.h"
 #include "BSDF.h"
+#include "Phong.h"
 #include "Lambertian.h"
 #include "Specular.h"
 #include "Transmissive.h"
@@ -41,6 +43,7 @@ namespace {
 // main function - parse arguments and begin rendering.
 int main(int argc, char* argv[])
 {
+
 
 	Real focal_distance = 2.6;
 
@@ -97,7 +100,6 @@ int main(int argc, char* argv[])
 	BSDF* white = new Lambertian(w, Vector3(.85,.85,.85));
 	BSDF* red = new Lambertian(w, Vector3(.85,.085,.085));
 	BSDF* green = new Lambertian(w, Vector3(.085,.85,.085));
-	BSDF* orange = new Lambertian(w, Vector3(.85,.6,.02));
 
 	Triangle* floor1 = new Triangle( Vector3(-1.5,0,1.5),Vector3(1.5,0.,1.5),
 									 Vector3(-1.5,0.,-1.5), white);
@@ -167,15 +169,7 @@ int main(int argc, char* argv[])
 		Mesh* bunny = new Mesh("data\\bunny.obj", mirror);
 		w->add_object(bunny);
 	}
-	case 4:
-	{	
-		Object3D* sphere1 = new Sphere(Vector3(0,0.8,0), 0.6, glass);
-		w->add_object(sphere1);
-		Object3D* sphere2 = new Sphere(Vector3(0,0.8,0), 0.3, orange);
-		w->add_object(sphere2);
-	}
 	break;
-	// TODO: crear al menos 2 escenas más
 	default:
 	{
 		Object3D* sphere1 = new Sphere(Vector3(0.5,0.3,.5), 0.3, white);

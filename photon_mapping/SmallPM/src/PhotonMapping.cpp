@@ -27,8 +27,8 @@ In no event shall copyright holders be liable for any damage.
 // photons respectively. For efficiency, both are computed at the same
 // time, since computing them separately would result into a lost of
 // several samples marked as caustic or diffuse.
-// Same goes with the boolean 'direct', that specifies if direct 
-// photons (from light to surface) are being stored or not. 
+// Same goes with the boolean 'direct', that specifies if direct
+// photons (from light to surface) are being stored or not.
 // The initial traced photon has energy defined by the tristimulus
 // 'p', that accounts for the emitted power of the light source.
 // The function will return true when there are more photons (caustic
@@ -37,106 +37,111 @@ In no event shall copyright holders be liable for any damage.
 
 // TODO: explain thoroughly what the function does and why
 /*
-* @param r - rayo desde la luz a una dirección aleatoria
-* @param p - energía, intensidad de la luz de la que parte
+* @param r - rayo desde la luz a una direcciï¿½n aleatoria
+* @param p - energï¿½a, intensidad de la luz de la que parte
 * @param global_photons - fotones de superficies difusas
-* @param caustic_photons - fotones que se reflejaron en almenos una 
-		reflexión especular antes de hacerlo en una difusa
-* @param direct	- iluminación directa
+* @param caustic_photons - fotones que se reflejaron en almenos una
+		reflexiï¿½n especular antes de hacerlo en una difusa
+* @param direct	- iluminaciï¿½n directa
 * @param direct_only
-* @return bool, devuelve también una lista de global_photons y caustic_photons
+* @return bool, devuelve tambiï¿½n una lista de global_photons y caustic_photons
 */
-bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p, 
-		std::list<Photon> &global_photons, std::list<Photon> &caustic_photons, bool direct, bool direct_only)
+bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
+                              std::list<Photon> &global_photons, std::list<Photon> &caustic_photons, bool direct, bool direct_only)
 {
 #ifndef MAX_PHOTON_ITERATIONS
 #define MAX_PHOTON_ITERATIONS 20
 #endif
 
-	// Check if max number of shots done...
-	if( ++m_nb_current_shots > m_max_nb_shots )
-	{
-		return false;
-	}
-	
-	// Compute irradiance photon's energy
-	Vector3 energy(p);
-	
-	Ray photon_ray(r);
-	photon_ray.shift(); // ???
+    // Check if max number of shots done...
+    if( ++m_nb_current_shots > m_max_nb_shots )
+    {
+        return false;
+    }
 
-	bool is_caustic_particle = false;
+    // Compute irradiance photon's energy
+    Vector3 energy(p);
 
-	// Itera un camino en una dirección
-	while(1)
-	{
-		// Throw ray and update current_it
-		Intersection it;
-		world->first_intersection(photon_ray, it);
+    Ray photon_ray(r);
+    photon_ray.shift(); // ???
 
-		if( !it.did_hit() )
-			break;
+    bool is_caustic_particle = false;
 
-		// Check if has hit a delta material...
-		if( it.intersected()->material()->is_delta() )
-		{
-			// If delta material, then is caustic...
-			// Don't store the photon!
-			is_caustic_particle = true;
-		}
-		else if (photon_ray.get_level() > 0 || direct || direct_only )
-		{
-			// If non-delta material, store the photon!
-			if( is_caustic_particle )	
-			{				
-				//If caustic particle, store in caustics
-				if( caustic_photons.size() < m_nb_caustic_photons )
-					caustic_photons.push_back( Photon(it.get_position(), photon_ray.get_direction(), energy ));
-			}
-			else						
-			{
-				// If non-caustic particle, store in global
-				if( global_photons.size() < m_nb_global_photons )
-					global_photons.push_back( Photon(it.get_position(), photon_ray.get_direction(), energy ));
-			}
-			is_caustic_particle = false;
-		}	
-		
-		Real pdf;
+    // Itera un camino en una direcciï¿½n
+    while(1)
+    {
+        // Throw ray and update current_it
+        Intersection it;
+        world->first_intersection(photon_ray, it);
 
-		Vector3 surf_albedo = it.intersected()->material()->get_albedo(it);
-		Real avg_surf_albedo = surf_albedo.avg();
+        if( !it.did_hit() )
+            break;
 
-		Real epsilon2 = static_cast<Real>(rand())/static_cast<Real>(RAND_MAX);
-		while (epsilon2 < 0.)
-			epsilon2 = static_cast<Real>(rand())/static_cast<Real>(RAND_MAX);
-		
-		if (epsilon2 > avg_surf_albedo || photon_ray.get_level() > MAX_PHOTON_ITERATIONS ) 
-			break;
-		
-		if (direct_only && !is_caustic_particle && photon_ray.get_level() > 1)
-			break;
+        // Check if has hit a delta material...
+        if( it.intersected()->material()->is_delta() )
+        {
+            // If delta material, then is caustic...
+            // Don't store the photon!
+            is_caustic_particle = true;
+        }
+        else if (photon_ray.get_level() > 0 || direct || direct_only )
+        {
+            // If non-delta material, store the photon!
+            if( is_caustic_particle )
+            {
+                //If caustic particle, store in caustics
+                if( caustic_photons.size() < m_nb_caustic_photons )
+                    caustic_photons.push_back( Photon(it.get_position(), photon_ray.get_direction(), energy ));
+            }
+            else
+            {
+                // If non-caustic particle, store in global
+                if( global_photons.size() < m_nb_global_photons )
+                    global_photons.push_back( Photon(it.get_position(), photon_ray.get_direction(), energy ));
+            }
+            is_caustic_particle = false;
+        }
 
-		// Random walk's next step
-		// Get sampled direction plus pdf, and update attenuation
-		it.intersected()->material()->get_outgoing_sample_ray(it, photon_ray, pdf );
+        Real pdf;
 
-		// Shade...
-		energy = energy*surf_albedo;
-		if( !it.intersected()->material()->is_delta() )
-			energy *= dot_abs(it.get_normal(), photon_ray.get_direction())/3.14159;		
+        Vector3 surf_albedo = it.intersected()->material()->get_albedo(it);
+        Real avg_surf_albedo = surf_albedo.avg();
 
-		energy = energy /(pdf*avg_surf_albedo);
-	}
-	
-	if( caustic_photons.size() == m_nb_caustic_photons && 
-		global_photons.size() == m_nb_global_photons )
-	{
-		m_max_nb_shots = m_nb_current_shots-1;
-		return false;
-	}
+        Real epsilon2 = static_cast<Real>(rand())/static_cast<Real>(RAND_MAX);
+        while (epsilon2 < 0.)
+            epsilon2 = static_cast<Real>(rand())/static_cast<Real>(RAND_MAX);
 
-	return true;
+        if (epsilon2 > avg_surf_albedo || photon_ray.get_level() > MAX_PHOTON_ITERATIONS )
+            break;
+
+        if (direct_only && !is_caustic_particle && photon_ray.get_level() > 1)
+            break;
+
+        // Random walk's next step
+        // Get sampled direction plus pdf, and update attenuation
+        it.intersected()->material()->get_outgoing_sample_ray(it, photon_ray, pdf );
+
+        // Shade...
+        energy = energy*surf_albedo;
+        if( !it.intersected()->material()->is_delta() )
+            energy *= dot_abs(it.get_normal(), photon_ray.get_direction())/3.14159;
+
+        energy = energy /(pdf*avg_surf_albedo);
+    }
+
+    if( caustic_photons.size() == m_nb_caustic_photons &&
+        global_photons.size() == m_nb_global_photons )
+    {
+        m_max_nb_shots = m_nb_current_shots-1;
+        return false;
+    }
+
+    return true;
+}
+
+std::vector<Real> vector3_to_vector(const Vector3& vect)
+{
+    return { vect.data[0], vect.data[1], vect.data[2] };
 }
 
 //*********************************************************************
@@ -150,70 +155,82 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 //		the function 'trace_ray' for this purpose.
 //	3 - Finally, once all the photons have been shot, you'll
 //		need to build the photon maps, that will be used later
-//		for rendering. 
+//		for rendering.
 //		NOTE: Careful with function
 //---------------------------------------------------------------------
 void PhotonMapping::preprocess()
 {
-	// Elegir una de las fuentes de luz (puntual) (aleaotoriamente) y muestrear uniformemente alrededor de todas las diercciones, una dirección de salida aleatoria
-	// direcciones con un ángulo sólido de 4PI (el ángulo que recoge todas las direcciones de una esfera) posibilidad de hacerlo con:
-	// - Rejection sampling o **sampling phi and theta (más eficiente ya que no se rechazan muestras) 
-	// IMP: tener en cuenta la probabilidad de cada dirección que sale ****(donde?)
-	// La probabilidad de muestrear un punto único en una esfera, una dirección tiene que integrar a 1 en todas las direcciones de la esfera posibles
-	// es decir, la probabilidad de todas las direcciones que se muestreen tiene que ser 1 / 4PI
-	// para trazar un photon que va a ir por la escena, mediante trace_ray
-	// Guardar los photones en una estructura de aceleración (kdTree)
-	// https://stackoverflow.com/questions/5408276/sampling-uniformly-distributed-random-points-inside-a-spherical-volume
-	// http://corysimon.github.io/articles/uniformdistn-on-sphere/
-	// https://www.cs.princeton.edu/courses/archive/fall16/cos526/lectures/03-photonmapping.pdf *****
+    // Elegir una de las fuentes de luz (puntual) (aleaotoriamente) y muestrear uniformemente alrededor de todas
+    // las diercciones, una direcciï¿½n de salida aleatoria
+    // direcciones con un ï¿½ngulo sï¿½lido de 4PI (el ï¿½ngulo que recoge todas las direcciones de una esfera)
+    // posibilidad de hacerlo con:
+    // - Rejection sampling o **sampling phi and theta (mï¿½s eficiente ya que no se rechazan muestras)
+    // IMP: tener en cuenta la probabilidad de cada direcciï¿½n que sale ****(donde?)
+    // La probabilidad de muestrear un punto ï¿½nico en una esfera, una direcciï¿½n tiene que integrar a 1 en todas
+    // las direcciones de la esfera posibles
+    // es decir, la probabilidad de todas las direcciones que se muestreen tiene que ser 1 / 4PI
+    // para trazar un photon que va a ir por la escena, mediante trace_ray
+    // Guardar los photones en una estructura de aceleraciï¿½n (kdTree)
+    // https://stackoverflow.com/questions/5408276/sampling-uniformly-distributed-random-points-inside-a-spherical-volume
+    // http://corysimon.github.io/articles/uniformdistn-on-sphere/
+    // https://www.cs.princeton.edu/courses/archive/fall16/cos526/lectures/03-photonmapping.pdf *****
 
-	std::random_device rd;
-	std::default_random_engine random(rd());
-	std::uniform_real_distribution<Real> distr_phi(0.0, 2.0 * M_PI);
-	std::uniform_real_distribution<Real> distr_theta(-1.0, 1.0);
-	std::uniform_int_distribution<int> distr_luz(0, world->nb_lights()-1);
+    std::random_device rd;
+    std::default_random_engine random(rd());
+    std::uniform_real_distribution<Real> distr_phi(0.0, 2.0 * M_PI);
+    std::uniform_real_distribution<Real> distr_theta(-1.0, 1.0);
+    std::uniform_int_distribution<int> distr_luz(0, world->nb_lights()-1);
 
-	std::list<Photon> global_photons, caustic_photons;
-	bool caminos_restantes = true;
+    std::list<Photon> global_photons, caustic_photons;
+    bool caminos_restantes = true;
+    int numero_max_fotones = m_max_nb_shots / world->nb_lights();
 
-	while (caminos_restantes) {
+    while(caminos_restantes || numero_max_fotones > 0) {
 
-		// Sampling phi and theta
-		Real phi = distr_phi(random);
-		Real theta = acos(distr_theta(random));
+        // Sampling phi and theta
+        Real phi = distr_phi(random);
+        Real theta = acos(distr_theta(random));
 
-		Real x = sin(theta) * cos(phi);
-		Real y = sin(theta) * sin(phi);
-		Real z = cos(theta);
+        Real x = sin(theta) * cos(phi);
+        Real y = sin(theta) * sin(phi);
+        Real z = cos(theta);
 
-		// Seleccionar una luz aleatoria
-		LightSource* luz = world->light_source_list[distr_luz(random)];
+        // Seleccionar una luz aleatoria
+        LightSource* luz = world->light_source_list[distr_luz(random)];
 
-		// Crear rayo desde la luz a dirección aleatoria
-		const Ray rayo_luz(luz->get_position(), Vector3(x, y, z)); // normalizar dirección?
-		
-		caminos_restantes = trace_ray(rayo_luz, luz->get_intensities(), global_photons, caustic_photons, false, false); // qué poner en los booleanos?
-		//caminos_restantes = trace_ray( , luz->get_incoming_light(luz->get_position()), global_photons, caustic_photons, false, false); ??
-	}
+        auto intensidad_de_cada_foton = luz->get_intensities() / (numero_max_fotones / 4*M_PI);
 
-	// Almacenar los photones cáusticos y globales en el KdTree
-	//KDTree<Photon, 3> m_global_map, m_caustics_map;
-	//store(const std::vector<Real>& point, const T& data)
-	for (Photon photon : caustic_photons) {
-		// La intesidad de los photones (flux) depende del número de photones emitidos, no en el
-		// número de photones en el photon map --> flux = flux/power
-		// Flux, position, direction
-		photon.flux = photon.flux / (global_photons.size() + caustic_photons.size());
-		m_caustics_map.store(photon.position, photon); // Transformar Vector3() --> Vector()
-	}
-	if(!caustic_photons.empty()) m_caustics_map.balance();
+        // Crear rayo desde la luz a direcciï¿½n aleatoria
+        const Ray rayo_luz(luz->get_position(), Vector3(x, y, z));
+
+        caminos_restantes = trace_ray(rayo_luz, intensidad_de_cada_foton, global_photons, caustic_photons, false, false); // quï¿½ poner en los booleanos?
+        numero_max_fotones--;
+    }
+
+    // Almacenar los photones cï¿½usticos y globales en el KdTree
+    //KDTree<Photon, 3> m_global_map, m_caustics_map;
+    //store(const std::vector<Real>& point, const T& data)
+    for (Photon photon : caustic_photons) {
+        // La intesidad de los photones (flux) depende del nï¿½mero de photones emitidos, no en el
+        // nï¿½mero de photones en el photon map --> flux = flux/power
+        // Flux, position, direction
+        photon.flux = photon.flux / (global_photons.size() + caustic_photons.size());
+        m_caustics_map.store(vector3_to_vector(photon.position), photon);
+    }
+    if(!caustic_photons.empty()) m_caustics_map.balance();
+
+    for (Photon photon : global_photons) {
+        photon.flux = photon.flux / (global_photons.size() + caustic_photons.size());
+        m_global_map.store(vector3_to_vector(photon.position), photon);
+    }
+    if(!global_photons.empty()) m_global_map.balance();
 }
 
 //*********************************************************************
-// TODO: Implement the function that computes the rendering equation 
+// TODO: Implement the function that computes the rendering equation
 // using radiance estimation with photon mapping, using the photon
 // maps computed as a proprocess. Note that you will need to handle
-// both direct and global illumination, together with recursive the 
+// both direct and global illumination, together with the
 // recursive evaluation of delta materials. For an optimal implemen-
 // tation you should be able to do it iteratively.
 // In principle, the class is prepared to perform radiance estimation
@@ -222,87 +239,97 @@ void PhotonMapping::preprocess()
 //---------------------------------------------------------------------
 Vector3 PhotonMapping::shade(Intersection &it0) const
 {
-	/*
-		Buscar los k photones más cercanos al punto y calcular la estimación de radiancia en base a las propiedades que
-		nos proporcione la intersección:
-		- Función de reflectancia de la superficie con un ángulo de entrada
-		- Y en base al ángulo del photon, su energía y su probabilidad al salir de la fuente de luz
-		- Y el tamaño del kernel que dependerá radio máximo que den los k photones más cercanos de la estructura aceleración (existe una función que los devuelve)
-		Computar la estimación de radiancia en ese punto
+    /*
+        Buscar los k photones mï¿½s cercanos al punto y calcular la estimaciï¿½n de radiancia en base a las propiedades que
+        nos proporcione la intersecciï¿½n:
+        - Funciï¿½n de reflectancia de la superficie con un ï¿½ngulo de entrada
+        - Y en base al ï¿½ngulo del photon, su energï¿½a y su probabilidad al salir de la fuente de luz
+        - Y el tamaï¿½o del kernel que dependerï¿½ radio mï¿½ximo que den los k photones mï¿½s cercanos de la estructura aceleraciï¿½n (existe una funciï¿½n que los devuelve)
+        Computar la estimaciï¿½n de radiancia en ese punto
 
-		https://es.wikipedia.org/wiki/Mapeado_de_fotones
+        https://es.wikipedia.org/wiki/Mapeado_de_fotones
 
-	*/
+    */
 
-	Vector3 L(0);
-	Vector3 W(1);
-	
-	Intersection it(it0);
+    Vector3 L(0);
+    Vector3 W(1);
 
-	//**********************************************************************
-	// The following piece of code is included here for two reasons: first
-	// it works as a 'hello world' code to check that everthing compiles 
-	// just fine, and second, to illustrate some of the functions that you 
-	// will need when doing the work. Goes without saying: remove the 
-	// pieces of code that you won't be using.
-	//
-	unsigned int debug_mode = 7;
+    Intersection it(it0);
 
-	switch (debug_mode)
-	{
-	case 1:
-		// ----------------------------------------------------------------
-		// Display Albedo Only
-		L = it.intersected()->material()->get_albedo(it);
-		break;
-	case 2:
-		// ----------------------------------------------------------------
-		// Display Normal Buffer
-		L = it.get_normal();
-		break;
-	case 3:
-		// ----------------------------------------------------------------
-		// Display whether the material is specular (or refractive) 
-		L = Vector3(it.intersected()->material()->is_delta());
-		break;
+    if(!it.did_hit()){  //no colisiona, devolvemos nada
+        return Vector3(0);
+    }
 
-	case 4:
-		// ----------------------------------------------------------------
-		// Display incoming illumination from light(0)
-		L = world->light(0).get_incoming_light(it.get_position());
-		break;
+    //TODO CHECK REFRACCION O REFLEXION
+    //TODO RULETA RUSA PARA RELANZAR O ABSORBER
 
-	case 5:
-		// ----------------------------------------------------------------
-		// Display incoming direction from light(0)
-		L = world->light(0).get_incoming_direction(it.get_position());
-		break;
+    //TODO CHECK DIFUSO
+    //todo GUARDAR PHOTON CON EL COLOR
 
-	case 6:
-		// ----------------------------------------------------------------
-		// Check Visibility from light(0)
-		if (world->light(0).is_visible(it.get_position()))
-			L = Vector3(1.);
-		break;
-	case 7:
-		// ----------------------------------------------------------------
-		// Reflect and refract until a diffuse surface is found, then show its albedo...
-		int nb_bounces = 0;
-		// MAX_NB_BOUNCES defined in ./SmallRT/include/globals.h
-		while( it.intersected()->material()->is_delta() && ++nb_bounces < MAX_NB_BOUNCES)
-		{
-			Ray r; float pdf;
-			it.intersected()->material()->get_outgoing_sample_ray(it, r, pdf );		
-			W = W * it.intersected()->material()->get_albedo(it)/pdf;
-			
-			r.shift();
-			world->first_intersection(r, it);
-		}
-		L = it.intersected()->material()->get_albedo(it);
+    //**********************************************************************
+    // The following piece of code is included here for two reasons: first
+    // it works as a 'hello world' code to check that everthing compiles
+    // just fine, and second, to illustrate some of the functions that you
+    // will need when doing the work. Goes without saying: remove the
+    // pieces of code that you won't be using.
+    //
+    unsigned int debug_mode = 7;
 
-	}
-	// End of exampled code
-	//**********************************************************************
+    switch (debug_mode)
+    {
+        case 1:
+            // ----------------------------------------------------------------
+            // Display Albedo Only
+            L = it.intersected()->material()->get_albedo(it);
+            break;
+        case 2:
+            // ----------------------------------------------------------------
+            // Display Normal Buffer
+            L = it.get_normal();
+            break;
+        case 3:
+            // ----------------------------------------------------------------
+            // Display whether the material is specular (or refractive)
+            L = Vector3(it.intersected()->material()->is_delta());
+            break;
 
-	return L*W;
+        case 4:
+            // ----------------------------------------------------------------
+            // Display incoming illumination from light(0)
+            L = world->light(0).get_incoming_light(it.get_position());
+            break;
+
+        case 5:
+            // ----------------------------------------------------------------
+            // Display incoming direction from light(0)
+            L = world->light(0).get_incoming_direction(it.get_position());
+            break;
+
+        case 6:
+            // ----------------------------------------------------------------
+            // Check Visibility from light(0)
+            if (world->light(0).is_visible(it.get_position()))
+                L = Vector3(1.);
+            break;
+        case 7:
+            // ----------------------------------------------------------------
+            // Reflect and refract until a diffuse surface is found, then show its albedo...
+            int nb_bounces = 0;
+            // MAX_NB_BOUNCES defined in ./smallrt/include/globals.h
+            while( it.intersected()->material()->is_delta() && ++nb_bounces < MAX_NB_BOUNCES)
+            {
+                Ray r; float pdf;
+                it.intersected()->material()->get_outgoing_sample_ray(it, r, pdf );
+                W = W * it.intersected()->material()->get_albedo(it)/pdf;
+
+                r.shift();
+                world->first_intersection(r, it);
+            }
+            L = it.intersected()->material()->get_albedo(it);
+
+    }
+    // End of exampled code
+    //**********************************************************************
+
+    return L*W;
 }
