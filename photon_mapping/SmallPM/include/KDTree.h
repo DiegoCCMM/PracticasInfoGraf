@@ -110,7 +110,7 @@ public:
 	}
 	//========================================================================================================
 	// Nearest Neighbor search
-	void find(const std::vector<Real>& p, int nb_elements, std::vector<const Node*> &nodes, Real &max_distance) const
+	void nearest_neighbor_search(const std::vector<Real>& p, int nb_elements, std::vector<const Node*> &nodes, Real &max_distance) const
 	{
 		nodes.clear(); 
 		max_distance = std::numeric_limits<Real>::infinity();

@@ -88,6 +88,14 @@ public:
 	// Computes shading at the intersection 'it0' and returns the estimated
 	// radiance.
 	Vector3 shade(Intersection &it0)const;
+
+	void relanzar_interseccion(Intersection &it) const;
+
+    Vector3 calculo_luz_directa(Intersection intersection) const;
+
+    Vector3 calculo_nearest_neighbour(Intersection intersection, KDTree<Photon, 3> tree) const;
+
+    Vector3 radiancia(const KDTree<Photon, 3>::Node *foton, Intersection intersection, float r) const;
 };
 
 #endif

@@ -240,11 +240,12 @@ void PhotonMapping::preprocess()
 Vector3 PhotonMapping::shade(Intersection &it0) const
 {
     /*
-        Buscar los k photones m�s cercanos al punto y calcular la estimaci�n de radiancia en base a las propiedades que
-        nos proporcione la intersecci�n:
+        Buscar los k photones m�s cercanos al punto y calcular la estimaci�n de radiancia en base a las
+        propiedades que nos proporcione la intersecci�n:
         - Funci�n de reflectancia de la superficie con un �ngulo de entrada
         - Y en base al �ngulo del photon, su energ�a y su probabilidad al salir de la fuente de luz
-        - Y el tama�o del kernel que depender� radio m�ximo que den los k photones m�s cercanos de la estructura aceleraci�n (existe una funci�n que los devuelve)
+        - Y el tama�o del kernel que depender� radio m�ximo que den los k photones
+        m�s cercanos de la estructura aceleraci�n (existe una funci�n que los devuelve)
         Computar la estimaci�n de radiancia en ese punto
 
         https://es.wikipedia.org/wiki/Mapeado_de_fotones
@@ -256,15 +257,26 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
 
     Intersection it(it0);
 
-    if(!it.did_hit()){  //no colisiona, devolvemos nada
+    if(it.intersected()->material()->is_delta()){
+        int rebotes = 0;
+        Ray rebote;
+        Real pdf = 0;
+        while(rebotes < MAX_NB_SPECULAR_BOUNCES && it.intersected()->material()->is_delta()){
+            it.intersected()->material()->get_outgoing_sample_ray(it, rebote, pdf);
+            rebote.shift();
+            world->first_intersection(rebote, it);
+            rebotes++;
+        }
+    }
+
+    if(!it.did_hit()||it.intersected()->material()->is_delta()){
+        //no colisiona o acaba en un material delta, devolvemos 0
         return Vector3(0);
     }
 
-    //TODO CHECK REFRACCION O REFLEXION
-    //TODO RULETA RUSA PARA RELANZAR O ABSORBER
+    Vector3 aporte_fotones_causticos = calculo_nearest_neighbour(it, m_caustics_map);
+    Vector3 aporte_fotones_globales = calculo_nearest_neighbour(it, m_global_map);
 
-    //TODO CHECK DIFUSO
-    //todo GUARDAR PHOTON CON EL COLOR
 
     //**********************************************************************
     // The following piece of code is included here for two reasons: first
@@ -312,6 +324,9 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
                 L = Vector3(1.);
             break;
         case 7:
+            return aporte_fotones_causticos + aporte_fotones_globales;
+
+        case 8:
             // ----------------------------------------------------------------
             // Reflect and refract until a diffuse surface is found, then show its albedo...
             int nb_bounces = 0;
@@ -332,4 +347,27 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
     //**********************************************************************
 
     return L*W;
+
 }
+
+
+Vector3 PhotonMapping::radiancia(const KDTree<Photon, 3>::Node* foton, Intersection intersection, Real r) const {
+    return intersection.get_normal().dot_abs(-foton->data().direction)  //n*wi
+    * intersection.intersected()->material()->get_specular(intersection)   //Kmaterial
+    * intersection.intersected()->material()->get_albedo(intersection)  //albedo
+    * foton->data().flux / M_PI*(r*r);
+}
+
+
+Vector3 PhotonMapping::calculo_nearest_neighbour(Intersection intersection, KDTree<Photon, 3> tree) const {
+    vector<const KDTree<Photon, 3>::Node*> fotones = vector<const KDTree<Photon, 3>::Node*>();
+    Real distancia_max_alcanzada;
+    tree.nearest_neighbor_search(vector3_to_vector(intersection.get_position()), MAX_NB_PHOTONS,
+                                 fotones, distancia_max_alcanzada);
+
+    for (const KDTree<Photon, 3>::Node*foton:fotones) {
+        PhotonMapping::radiancia(foton, intersection,
+                  distancia_max_alcanzada);
+    }
+}
+
