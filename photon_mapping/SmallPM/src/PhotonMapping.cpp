@@ -358,12 +358,14 @@ Vector3 PhotonMapping::radiancia(const KDTree<Photon, 3>::Node* foton, Intersect
 Vector3 PhotonMapping::calculo_nearest_neighbour(Intersection intersection, KDTree<Photon, 3> tree) const {
     vector<const KDTree<Photon, 3>::Node*> fotones = vector<const KDTree<Photon, 3>::Node*>();
     Real distancia_max_alcanzada;
+    Vector3 radiancia(0);
     tree.nearest_neighbor_search(vector3_to_vector(intersection.get_position()), MAX_NB_PHOTONS,
                                  fotones, distancia_max_alcanzada);
 
     for (const KDTree<Photon, 3>::Node*foton:fotones) {
-        PhotonMapping::radiancia(foton, intersection,
+        radiancia += PhotonMapping::radiancia(foton, intersection,
                   distancia_max_alcanzada);
     }
+    return(radiancia);
 }
 
