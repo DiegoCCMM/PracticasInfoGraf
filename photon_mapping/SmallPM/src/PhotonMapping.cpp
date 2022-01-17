@@ -257,7 +257,7 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
 
     Intersection it(it0);
 
-    if(it.intersected()->material()->is_delta()){
+    if(it.did_hit() && it.intersected()->material()->is_delta()){
         int rebotes = 0;
         Ray rebote;
         Real pdf = 0;
@@ -269,7 +269,7 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
         }
     }
 
-    if(!it.did_hit()||it.intersected()->material()->is_delta()){
+    if(!it.did_hit()){
         //no colisiona o acaba en un material delta, devolvemos 0
         return Vector3(0);
     }
@@ -325,7 +325,7 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
             break;
         case 7:
             return aporte_fotones_causticos + aporte_fotones_globales;
-
+            break;
         case 8:
             // ----------------------------------------------------------------
             // Reflect and refract until a diffuse surface is found, then show its albedo...
@@ -341,13 +341,9 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
                 world->first_intersection(r, it);
             }
             L = it.intersected()->material()->get_albedo(it);
+            return L*W;
 
     }
-    // End of exampled code
-    //**********************************************************************
-
-    return L*W;
-
 }
 
 
