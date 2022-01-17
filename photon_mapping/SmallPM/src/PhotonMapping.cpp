@@ -114,7 +114,7 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
         if (epsilon2 > avg_surf_albedo || photon_ray.get_level() > MAX_PHOTON_ITERATIONS )
             break;
 
-        if (direct_only && !is_caustic_particle && photon_ray.get_level() > 1)
+        if (direct_only && !is_caustic_particle)
             break;
 
         // Random walk's next step
