@@ -95,7 +95,7 @@ public:
 
     Vector3 calculo_nearest_neighbour(Intersection intersection, KDTree<Photon, 3> tree) const;
 
-    Vector3 radiancia(const KDTree<Photon, 3>::Node *foton, Intersection intersection, float r) const;
+    Vector3 radiancia(const KDTree<Photon, 3>::Node *foton, Intersection intersection, Real r) const;
 };
 
 #endif
