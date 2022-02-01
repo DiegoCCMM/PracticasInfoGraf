@@ -203,9 +203,12 @@ void PhotonMapping::preprocess()
         // Crear rayo desde la luz a direcci�n aleatoria
         const Ray rayo_luz(luz->get_position(), Vector3(x, y, z));
 
-        caminos_restantes = trace_ray(rayo_luz, intensidad_de_cada_foton, global_photons, caustic_photons, false, false); // qu� poner en los booleanos?
+        caminos_restantes = trace_ray(rayo_luz, intensidad_de_cada_foton, global_photons, caustic_photons, true, true);
         numero_max_fotones--;
     }
+
+    cout << "caustic_photons " << caustic_photons.size() << endl;
+    cout << "global_photons " << global_photons.size() << endl;
 
     // Almacenar los photones c�usticos y globales en el KdTree
     //KDTree<Photon, 3> m_global_map, m_caustics_map;
@@ -257,16 +260,15 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
 
     Intersection it(it0);
 
-    if(it.did_hit() && it.intersected()->material()->is_delta()){
-        int rebotes = 0;
-        Ray rebote;
-        Real pdf = 0;
-        while(rebotes < MAX_NB_SPECULAR_BOUNCES && it.intersected()->material()->is_delta()){
-            it.intersected()->material()->get_outgoing_sample_ray(it, rebote, pdf);
-            rebote.shift();
-            world->first_intersection(rebote, it);
-            rebotes++;
-        }
+    int nb_bounces = 0;
+    while(it.intersected()->material()->is_delta() && ++nb_bounces < MAX_NB_BOUNCES)
+    {
+        Ray r; float pdf;
+        it.intersected()->material()->get_outgoing_sample_ray(it, r, pdf );
+        W = W * it.intersected()->material()->get_albedo(it)/pdf;
+
+        r.shift();
+        world->first_intersection(r, it);
     }
 
     if(!it.did_hit()){
@@ -274,6 +276,7 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
         return Vector3(0);
     }
 
+    Vector3 aporte_luz_directa = calculo_luz_directa(it);
     Vector3 aporte_fotones_causticos = calculo_nearest_neighbour(it, m_caustics_map);
     Vector3 aporte_fotones_globales = calculo_nearest_neighbour(it, m_global_map);
 
@@ -285,7 +288,7 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
     // will need when doing the work. Goes without saying: remove the
     // pieces of code that you won't be using.
     //
-    unsigned int debug_mode = 7;
+    unsigned int debug_mode = 8;
 
     switch (debug_mode)
     {
@@ -324,7 +327,7 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
                 L = Vector3(1.);
             break;
         case 7:
-            return aporte_fotones_causticos + aporte_fotones_globales;
+            return aporte_luz_directa + aporte_fotones_causticos + aporte_fotones_globales;
             break;
         case 8:
             // ----------------------------------------------------------------
@@ -341,19 +344,38 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
                 world->first_intersection(r, it);
             }
             L = it.intersected()->material()->get_albedo(it);
-            return L*W;
 
     }
+    return L*W;
 }
 
+Vector3 PhotonMapping::calculo_luz_directa(Intersection intersection) const {
+    Vector3 radiancia(0);
+    for(auto& luz : world->light_source_list){
+        if(!luz->is_visible(intersection.get_position())){
+            return(Vector3(0));
+        }
+        radiancia += PhotonMapping::radiancia(luz->get_incoming_light(intersection.get_position()),
+                  -luz->get_incoming_direction(intersection.get_position()).normalize(),
+                  intersection, -luz->get_incoming_direction(intersection.get_position()).length());
+    }
+    return radiancia;
+}
 
+Vector3 PhotonMapping::radiancia(Vector3 luz, Vector3 wi, Intersection intersection, Real r) const {
+    return intersection.get_normal().dot_abs(wi)  //n*wi
+           * intersection.intersected()->material()->get_specular(intersection)   //Kmaterial
+           * intersection.intersected()->material()->get_albedo(intersection)  //albedo
+           * luz / (M_PI*(r*r));
+}
+/*
 Vector3 PhotonMapping::radiancia(const KDTree<Photon, 3>::Node* foton, Intersection intersection, Real r) const {
     return intersection.get_normal().dot_abs(-foton->data().direction)  //n*wi
     * intersection.intersected()->material()->get_specular(intersection)   //Kmaterial
     * intersection.intersected()->material()->get_albedo(intersection)  //albedo
-    * foton->data().flux / M_PI*(r*r);
+    * foton->data().flux / (M_PI*(r*r));
 }
-
+*/
 
 Vector3 PhotonMapping::calculo_nearest_neighbour(Intersection intersection, KDTree<Photon, 3> tree) const {
     vector<const KDTree<Photon, 3>::Node*> fotones = vector<const KDTree<Photon, 3>::Node*>();
@@ -363,8 +385,10 @@ Vector3 PhotonMapping::calculo_nearest_neighbour(Intersection intersection, KDTr
                                  fotones, distancia_max_alcanzada);
 
     for (const KDTree<Photon, 3>::Node*foton:fotones) {
-        radiancia += PhotonMapping::radiancia(foton, intersection,
-                  distancia_max_alcanzada);
+        radiancia += PhotonMapping::radiancia(foton->data().flux,
+                                              -foton->data().direction,
+                                              intersection,
+                                              distancia_max_alcanzada);
     }
     return(radiancia);
 }
