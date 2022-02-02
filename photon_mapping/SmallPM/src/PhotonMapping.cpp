@@ -198,7 +198,7 @@ void PhotonMapping::preprocess()
         // Seleccionar una luz aleatoria
         LightSource* luz = world->light_source_list[distr_luz(random)];
 
-        auto intensidad_de_cada_foton = luz->get_intensities() / (numero_max_fotones / 4*M_PI);
+        auto intensidad_de_cada_foton = luz->get_intensities() / (4*M_PI);
 
         // Crear rayo desde la luz a direcci�n aleatoria
         const Ray rayo_luz(luz->get_position(), Vector3(x, y, z));
@@ -288,7 +288,7 @@ Vector3 PhotonMapping::shade(Intersection &it0) const
     // will need when doing the work. Goes without saying: remove the
     // pieces of code that you won't be using.
     //
-    unsigned int debug_mode = 8;
+    unsigned int debug_mode = 7;
 
     switch (debug_mode)
     {
@@ -361,13 +361,6 @@ Vector3 PhotonMapping::calculo_luz_directa(Intersection intersection) const {
     }
     return radiancia;
 }
-
-Vector3 PhotonMapping::radiancia(Vector3 luz, Vector3 wi, Intersection intersection, Real r) const {
-    return intersection.get_normal().dot_abs(wi)  //n*wi
-           * intersection.intersected()->material()->get_specular(intersection)   //Kmaterial
-           * intersection.intersected()->material()->get_albedo(intersection)  //albedo
-           * luz / (M_PI*(r*r));
-}
 /*
 Vector3 PhotonMapping::radiancia(const KDTree<Photon, 3>::Node* foton, Intersection intersection, Real r) const {
     return intersection.get_normal().dot_abs(-foton->data().direction)  //n*wi
@@ -393,3 +386,10 @@ Vector3 PhotonMapping::calculo_nearest_neighbour(Intersection intersection, KDTr
     return(radiancia);
 }
 
+Vector3 PhotonMapping::radiancia(Vector3 luz, Vector3 wi, Intersection intersection, Real r) const {
+    Vector3 a = intersection.get_normal().dot_abs(wi)  //n*wi
+                * (intersection.intersected()->material()->get_specular(intersection) + 2)   //Kmaterial
+                * intersection.intersected()->material()->get_albedo(intersection)  //albedo
+                * luz / (M_PI*(r*r));
+    return a;
+}
