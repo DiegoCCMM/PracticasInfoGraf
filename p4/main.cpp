@@ -28,7 +28,7 @@ int main(int argc, char* argv[]){
     int width = 480,
         height = 480;
     
-    int rperPixel = 10.0; // Antialiasing
+    int rperPixel = atoi(argv[1]); // Antialiasing
     
     int pixelRes = width*height; // Número de rayos totales
     ofstream ldrfile;
