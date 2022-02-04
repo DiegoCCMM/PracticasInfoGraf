@@ -11,6 +11,8 @@
 #include <iostream>
 #include <vector>
 #include "../p2/fromhdrToldr.hpp"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 void fromDoubleToRGB(RGB thr, RGB &rgb) {
@@ -61,13 +63,13 @@ int main(int argc, char* argv[]){
     figuras.push_back(&techo);
 
     // Plano - suelo
-    Plane suelo = Plane(Vector(0,1,0), Punto(0,-100,0), 200, 200, 200);  // Plano foco
+    Plane suelo = Plane(Vector(0,1,0), Punto(0,-100,0), 255, 255, 255);  // Plano foco
     // suelo.setFoco(true);
     suelo.esDifuso();
     figuras.push_back(&suelo);
 
     // Plano - fondo
-    Plane fondo = Plane(Vector(0,0,-1), Punto(0,0,450), 200, 200, 200);  // Plano foco
+    Plane fondo = Plane(Vector(0,0,-1), Punto(0,0,450), 255, 255, 255);  // Plano foco
     // fondo.setFoco(true);
     fondo.esDifuso();
     figuras.push_back(&fondo);
@@ -89,18 +91,19 @@ int main(int argc, char* argv[]){
     // // sphere2.setFoco(true);
     // figuras.push_back(&sphere2);
 
-    Sphere sphere3 = Sphere(Punto(0,-60,270), 35.0, 255, 0, 0); // Roja
-    sphere3.esDifuso();
-    // // sphere3.esEspecular();
-    // // sphere3.esDielectrico();
-    // // sphere3.setFoco(true);
-    figuras.push_back(&sphere3);
-
-    Sphere sphere4 = Sphere(Punto(60,-60,230), 30.0, 235, 23, 181); // Rosa
-    sphere4.esDifuso();
-    // sphere3.esEspecular();
+    Sphere sphere3 = Sphere(Punto(0,-60,270), 35.0, 0, 0, 0); // Roja
+    // sphere3.esDifuso();
+    sphere3.esEspecular();
     // sphere3.esDielectrico();
     // sphere3.setFoco(true);
+    figuras.push_back(&sphere3);
+
+    Sphere sphere4 = Sphere(Punto(60,-60,230), 30.0, 255, 255, 255); // Rosa
+    // sphere4.esDifuso();
+    // sphere4.esEspecular();
+    sphere4.esRefractario();
+    // sphere4.esDielectrico();
+    // sphere4.setFoco(true);
     figuras.push_back(&sphere4);
 
     Sphere sphere5 = Sphere(Punto(-60,-60,200), 35.0, 0, 0, 255); // Azul
@@ -119,7 +122,7 @@ int main(int argc, char* argv[]){
     // --------------------------------------------------FIN Escena
 
     // Sistema de coordenadas de la cámara
-    int front = (double)height/(1.0*tan(M_PI/12.0));
+    // int front = (double)height/(1.0*tan(M_PI/12.0));
     Vector  x = Vector(1.0,0,0),
             y = Vector(0,1.0,0),
             z = Vector(0,0,1.0);
